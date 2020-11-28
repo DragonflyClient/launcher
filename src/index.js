@@ -139,6 +139,7 @@ ipcMain.on('drgn-auth', async (event, data) => {
     });
   loginWindow.hide();
   createMainWindow();
+  loginWindow.close();
 });
 
 // read access token
