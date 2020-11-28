@@ -59,7 +59,7 @@ module.exports.login = function (clientId) {
  */
 module.exports.setPresence = async (options) => {
   if (!loggedIn) {
-    await this.login('777509861780226069 1123');
+    await this.login('777509861780226069');
   } else {
     console.log('DISCORD: Actually setting rpc');
   }
