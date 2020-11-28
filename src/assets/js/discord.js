@@ -3,6 +3,7 @@ const rpc = new RPC.Client({
   transport: 'ipc',
 });
 let loggedIn = false;
+let failedConnectionCount = 1;
 
 const pjson = require('../../../package.json');
 console.log(pjson.version);
@@ -28,21 +29,27 @@ module.exports.isReady = function () {
  */
 module.exports.login = function (clientId) {
   console.log('DISCORD: Logging in...');
-  return new Promise((resolve, reject) => {
-    rpc
-      .login({
-        clientId: clientId,
-      })
-      .then(() => {
-        console.log('DISCORD: Logged in');
-        loggedIn = true;
-        resolve({ success: true });
-      })
-      .catch((err) => {
-        console.log('DISCORD: An error occurred while while logging in', err);
-        reject({ success: false, error: 'An error occurred while while logging in' });
-      });
-  });
+  if (failedConnectionCount <= 5) {
+    return new Promise((resolve, reject) => {
+      rpc
+        .login({
+          clientId: clientId,
+        })
+        .then(() => {
+          console.log('DISCORD: Logged in');
+          loggedIn = true;
+          resolve({ success: true });
+        })
+        .catch((err) => {
+          console.log('DISCORD: An error occurred while while logging in', err);
+          failedConnectionCount += 1;
+          console.log(`DISCORD: Failed ${failedConnectionCount} times to connect to Discord`);
+          reject({ success: false, error: 'An error occurred while while logging in' });
+        });
+    });
+  } else {
+    console.log('DISCORD: No more tries to connect');
+  }
 };
 
 /**
@@ -50,10 +57,12 @@ module.exports.login = function (clientId) {
  * @param  {String} Test
  *
  */
-module.exports.setPresence = (options) => {
-  console.log('DISCORD: Actually setting rpc');
-  console.log(loggedIn, 'LI', options, 'O');
-  if (!loggedIn) return;
+module.exports.setPresence = async (options) => {
+  if (!loggedIn) {
+    await this.login('777509861780226069 1123');
+  } else {
+    console.log('DISCORD: Actually setting rpc');
+  }
   console.log(options);
 
   if (!options) {
