@@ -83,7 +83,7 @@ const createMainWindow = async () => {
     webPreferences: globalWebPreferences,
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'sites/landing.html'));
+  mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
 
   mainWindow.once('ready-to-show', async () => {
     autoUpdater.checkForUpdatesAndNotify();
