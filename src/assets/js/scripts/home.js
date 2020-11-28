@@ -22,7 +22,7 @@ ipcRenderer.send('app_version');
 ipcRenderer.on('app_version', (event, arg) => {
   ipcRenderer.removeAllListeners('app_version');
   console.log(arg, 'VERSION');
-  document.title = 'v' + arg;
+  document.title = 'Dragonfly Launcher v' + arg.version;
 });
 
 function closeNotification() {
