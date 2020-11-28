@@ -27,6 +27,11 @@ ipcRenderer.on('app_version', (event, arg) => {
   document.title = 'Dragonfly Launcher v' + arg.version;
 });
 
+ipcRenderer.send('check_for_updates');
+ipcRenderer.on('check_for_updates', (event, arg) => {
+  console.log(arg);
+});
+
 function closeNotification() {
   notification.classList.add('hidden');
 }
