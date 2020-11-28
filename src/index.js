@@ -86,7 +86,6 @@ const createMainWindow = async () => {
   mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
 
   mainWindow.once('ready-to-show', async () => {
-    autoUpdater.checkForUpdatesAndNotify();
     discordRPC
       .setPresence({
         details: 'Home',
@@ -94,10 +93,6 @@ const createMainWindow = async () => {
       .catch((err) => {
         console.log(err);
       });
-  });
-
-  mainWindow.once('ready-to-show', async () => {
-    autoUpdater.checkForUpdatesAndNotify();
   });
 };
 
@@ -162,4 +157,15 @@ autoUpdater.on('update-downloaded', () => {
 
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
+});
+
+ipcMain.on('check_for_updates', (event) => {
+  autoUpdater
+    .checkForUpdatesAndNotify()
+    .then(() => {
+      event.sender.send('check_for_updates', 'Checked for updates');
+    })
+    .catch((err) => {
+      event.sender.send('check_for_updates', `Check for updates failed: ${err}`);
+    });
 });
