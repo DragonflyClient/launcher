@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log in to your Dragonfly account</title>
+    <link rel="stylesheet" href="../assets/css/login.css" />
+    <link rel="shortcut icon" href="img/Logo.svg" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="bg-overlay"></div>
+    <video autoplay muted loop id="bg-video">
+        <source src="../assets/media/D_Launcher_Background.mp4" type="video/mp4" />
+        Your browser does not support HTML5 videos.
+    </video>
+    <main>
+        <header>
+            <img src="../assets/media/Logo.svg" width="120" alt="Dragonfly" />
+            <h3>Login with your <span class="dragonfly-lettering"><a
+                        href="https://playdragonfly.net/">Dragonfly</a></span> account</h3>
+        </header>
+        <div id="form-wrapper">
+            <form id="login-form">
+                <div class="form-item">
+                    <input type="text" name="email" placeholder="Email or username" />
+                    <div class="border"></div>
+                </div>
+
+                <div class="form-item">
+                    <input type="password" id="password-input" name="password" placeholder="Password" />
+                    <div class="border"></div>
+                    <div id="toggle-pw"><i class="fas fa-eye"></i></div>
+                </div>
+                <button type="submit" class="btn btn-primary text-uppercase">Login</button>
+            </form>
+        </div>
+        <p class="mj-disclaimer"><span class="dragonfly-lettering">Dragonfly</span> is not affiliated with Mojang AB</p>
+        <button onclick="readToken()">Read token</button>
+    </main>
+    <div id="notification" class="hidden">
+        <p id="message"></p>
+        <button id="close-button" onClick="closeNotification()">
+            Close
+        </button>
+        <button id="restart-button" onClick="restartApp()" class="hidden">
+            Restart
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <script src="../assets/js/scripts/login.js"></script>
+</body>
+
+</html>

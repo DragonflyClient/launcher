@@ -1,0 +1,167 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Rubik;
+}
+
+h3,
+p {
+  color: white;
+}
+
+#bg-overlay {
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+#bg-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -2;
+}
+
+main {
+  margin-top: 10vh;
+  text-align: center;
+}
+
+.dragonfly-lettering {
+  font-weight: 500 !important;
+  background: -webkit-linear-gradient(#f9b12d, #c42023);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+header img {
+  margin-bottom: 5px;
+}
+
+header h3 {
+  font-weight: 300;
+  font-size: 20px;
+  margin: 15px 0;
+}
+
+#form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form {
+  width: 450px;
+  margin-top: 5px;
+}
+
+.form-item {
+  margin: 30px 0;
+}
+
+input {
+  box-sizing: border-box;
+  border-radius: 2px 2px 0px 0px;
+  width: 100%;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: #37393a;
+  height: 55px;
+  padding: 20px;
+  font-size: 18px;
+}
+
+#toggle-pw {
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#toggle-pw .fa-eye,
+#toggle-pw .fa-eye-slash {
+  color: #37393a;
+  pointer-events: none;
+}
+
+.form-item {
+  width: 100%;
+  position: relative;
+}
+
+.border {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  left: 0;
+  bottom: 0;
+  background-color: #ef852e;
+  transition: 0.25s ease;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+input:focus + .border {
+  transform: scaleX(1);
+}
+
+.btn {
+  all: unset;
+  cursor: pointer;
+  color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.btn.btn-primary {
+  background-color: #ef852e;
+}
+
+.btn.btn-primary:hover {
+  background-color: #f07d1e;
+}
+
+.mj-disclaimer {
+  margin-top: 25px;
+}
+
+/* Auto updater */
+.border {
+  position: absolute;
+  background: gold;
+  left: 0px;
+  top: -2px;
+  height: 90px;
+  z-index: -100;
+  width: 100%;
+  transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 5px;
+}
+
+#notification {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 200px;
+  height: 100px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+  display: none;
+}
