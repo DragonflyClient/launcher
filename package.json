@@ -9,30 +9,12 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "lint": "echo \"No linting configured\"",
-    "build": "electron-builder --win --publish never",
+    "build": "electron-builder build --win --publish never",
     "publish": "electron-builder build --win --publish always"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DragonflyClient/launcher-releases.git"
-  },
-  "build": {
-    "appId": "Dragonfly Launcher",
-    "win": {
-      "target": [
-        "nsis"
-      ],
-      "icon": "src/assets/media/Logo.png",
-      "requestedExecutionLevel": "requireAdministrator"
-    },
-    "nsis": {
-      "installerIcon": "src/assets/media/Logo.ico",
-      "uninstallerIcon": "src/assets/media/Logo.ico",
-      "uninstallDisplayName": "Dragonfly Launcher",
-      "license": "license.txt",
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "url": "https://github.com/DragonflyClient/launcher.git"
   },
   "keywords": [],
   "author": {
