@@ -154,10 +154,10 @@ ipcMain.on('app_version', (event) => {
 
 // Auto updater
 autoUpdater.on('update-available', () => {
-  loginWindow.webContents.send('update_available');
+  mainWindow.webContents.send('update_available');
 });
 autoUpdater.on('update-downloaded', () => {
-  loginWindow.webContents.send('update_downloaded');
+  mainWindow.webContents.send('update_downloaded');
 });
 
 ipcMain.on('restart_app', () => {
