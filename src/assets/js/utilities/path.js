@@ -12,20 +12,41 @@ exports.appPath = function (appPath) {
   }
 };
 
-module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(filePath, create) {
-  var dirname = path.dirname(filePath);
-  if (fs.existsSync(dirname)) {
-    return true;
-  }
-  if (create) {
-    ensureDirectoryExistence(dirname);
-    fs.mkdirSync(dirname);
+/**
+ *
+ * @Important Files within a nonexisting folder need to be marked as "dir"
+ *
+ */
+module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(filePath, create, type) {
+  console.log(filePath, 'FILEPATH');
+  if (type == 'dir') {
+    var dirname = path.dirname(filePath);
+    if (fs.existsSync(dirname)) {
+      return true;
+    }
+    if (create) {
+      ensureDirectoryExistence(dirname);
+      fs.mkdirSync(dirname);
+    }
+  } else if (type == 'file') {
+    console.log('Requested file');
+    if (fs.existsSync(filePath)) {
+      return true;
+    }
+    if (create) {
+      try {
+        fs.writeFileSync(filePath, '');
+        console.log('File written.');
+      } catch (error) {
+        console.log('Error while writing file', error);
+      }
+    }
   }
 };
 
 module.exports.readToken = async (currentAppPath) => {
   const accessPath = path.join(currentAppPath, '.secrets/access.txt');
-  if (!(await this.ensureDirectoryExistence(accessPath, false))) return null;
+  if (!(await this.ensureDirectoryExistence(accessPath, false, 'file'))) return null;
   return await new Promise((resolve, reject) => {
     fs.readFile(accessPath, 'utf-8', (err, data) => {
       if (err) reject(err);
