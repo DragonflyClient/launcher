@@ -1,0 +1,42 @@
+SOFTWARE LICENSE AGREEMENT
+PLEASE READ CAREFULLY
+
+The terms of this Software License Agreement (this "Agreement") shall apply to all versions, editions, and future updates of DRAGONFLY software and constitute a legal agreement between you (the "Licensee") and Inception Cloud. Access to and use of Inception Cloud websites or other services related to the DRAGONFLY CLIENT is governed by the Inception Cloud Terms of Use, located at https://www.inceptioncloud.net/en/drgn/terms.
+
+BY INSTALLING, ENABLING OR USING DRAGONFLY CLIENT SOFTWARE, THE LICENSEE IS CONSENTING TO BE BOUND BY AND IS BECOMING A PARTY TO THIS AGREEMENT AND THE Inception Cloud TERMS OF USE, WHICH ARE HEREBY INCORPORATED BY REFERENCE. IF LICENSEE DOES NOT AGREE TO ALL OF THE TERMS OF THIS AGREEMENT AND THE TERMS OF USE, ACCEPTANCE MUST NOT BE SPECIFIED BELOW AND LICENSEE MUST NOT INSTALL OR USE THE SOFTWARE.
+
+By accepting the terms of this Agreement, you consent to the collection and usage of your information as described in Inception Cloud's Privacy Policy, located at https://www.inceptioncloud.net/en/privacy.
+
+License Grant:
+
+Licensor grants Licensee a non-exclusive and non-transferable license to use DRAGONFLY CLIENT software only for non-commercial entertainment purposes. Licensee may not disassemble, decompile, reverse engineer, redistribute (in any form), create derivative works of, or modify DRAGONFLY CLIENT software in any way. Licensor reserves the right to terminate the license at any time and for any reason, or no reason at all, and without notice to licensee. Additionally, upon breach of any term of this Agreement, the license granted under this Agreement shall automatically terminate without any additional notice to Licensee. Upon termination of the license, Licensee shall destroy all copies of DRAGONFLY CLIENT software in Licensee�s possession.
+
+Monitoring and Collection of Data:
+
+Licensee acknowledges and agrees that DRAGONFLY CLIENT software is self-updating, which means that future updates will, from time to time and without any notice, automatically be downloaded and installed as a normal and expected function of DRAGONFLY CLIENT software. BY INSTALLING THE DRAGONFLY CLIENT YOU CONSENT TO THE AUTOMATIC DOWNLOADING AND INSTALLATION OF DRAGONFLY CLIENT FILES AND UPDATES.
+
+For more information on data collection, use and disclosure, refer to the Inception Cloud Privacy Policy, available at https://www.inceptioncloud.net/en/privacy.
+
+Export Restrictions:
+
+Licensee agrees not to export or re-export into any country subject to U.S. trade sanctions or to which the U.S. has embargoed goods or to any nationals or residents of such countries unless such nationals are permanent residents of a country that is not subject either to such sanctions or embargoed goods. LICENSEE AGREES NOT TO DOWNLOAD, INSTALL, OR USE DRAGONFLY CLIENT SOFTWARE IN A COUNTRY OR LOCALE WHERE SUCH ACTION WOULD VIOLATE ANY LAW OR ORDINANCE. 
+
+Disclaimer of Warranties:
+
+The DRAGONFLY CLIENT IS PROVIDED "AS-IS" AND Inception Cloud DISCLAIMS ANY AND ALL REPRESENTATIONS AND WARRANTIES, WHETHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION IMPLIED WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT. Inception Cloud CANNOT GUARANTEE AND DOES NOT PROMISE ANY SPECIFIC RESULTS FROM USE OF THE DRAGONFLY CLIENT. Inception Cloud DOES NOT REPRESENT OR WARRANT THAT THE DRAGONFLY CLIENT OR ANY PART THEREOF IS ACCURATE, COMPLETE, RELIABLE, CURRENT OR ERROR-FREE OR THAT THE DRAGONFLY CLIENT FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS. THEREFORE, YOU SHOULD EXERCISE CAUTION IN THE USE AND DOWNLOADING OF ANY SUCH CONTENT OR MATERIALS AND USE INDUSTRY-RECOGNIZED SOFTWARE TO DETECT AND DISINFECT VIRUSES.
+
+Limitation of Liability:
+
+LICENSEE AGREES THAT NEITHER Inception Cloud, ITS OFFICERS, DIRECTORS, SHAREHOLDERS, EMPLOYEES, CONTRACTORS, LICENSORS, BUSINESS PARTNERS, SUCCESSORS NOR ASSIGNS SHALL BE LIABLE FOR ANY CLAIM WHATSOEVER INVOLVING DRAGONFLY CLIENT SOFTWARE IN ANY WAY. FURTHERMORE, SHOULD ANY VERSION OF DRAGONFLY CLIENT SOFTWARE, INCLUDING FUTURE VERSIONS, PROVE DEFECTIVE IN ANY WAY, LICENSEE ASSUMES THE ENTIRE COST, IF ANY, OF LOSS OR DAMAGE OF ANY TYPE AND TO ANY DEGREE. THIS WARRANTY DISCLAIMER SHALL SURVIVE TERMINATION OF THE LICENSE OF DRAGONFLY CLIENT SOFTWARE BY LICENSEE, REGARDLESS OF WHETHER THE LICENSE IS TERMINATED BY Inception Cloud OR LICENSEE.
+
+Arbitration and Dispute Resolution:
+
+To the fullest extent permitted by applicable law, NO ARBITRATION OR CLAIM UNDER THIS AGREEMENT SHALL BE JOINED TO ANY OTHER ARBITRATION OR CLAIM, INCLUDING ANY ARBITRATION OR CLAIM INVOLVING ANY OTHER CURRENT OR FORMER USER OF THE DRAGONFLY CLIENT, AND NO CLASS ARBITRATION PROCEEDINGS SHALL BE PERMITTED. In no event shall any claim, action or proceeding by you related in any way to the DRAGONFLY CLIENT be instituted more than three (3) years after the cause of action arose.
+
+Indemnification:
+
+You agree to defend, indemnify and hold harmless Inception Cloud, Inception Cloud affiliated companies and their respective directors, officers, employees, agents, assignees and licensees from and against all claims and expenses, including attorneys' fees, resulting from (i) any breach of these Terms of Use or your negligent and wrongful conduct; (ii) your use and access of the Services, including the posting of any content on the Services by you; and (iii) violation by you of any applicable law, rule or regulation.
+
+Miscellaneous:
+
+This Software License Agreement constitutes the entire agreement of the parties with respect to the subject matter. The provisions of this Software License Agreement will be deemed severable, and the unenforceability of any one or more provisions will not affect the enforceability of any other provisions. In addition, if any provision of this Software License Agreement, for any reason, is declared to be unenforceable, the parties will substitute an enforceable provision that, to the maximum extent possible under applicable law, preserves the intentions of the original provision.
