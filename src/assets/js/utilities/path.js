@@ -23,6 +23,7 @@ module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(file
 
 module.exports.readToken = async (currentAppPath) => {
   const accessPath = path.join(currentAppPath, '.secrets/access.txt');
+  await this.ensureDirectoryExistence(accessPath);
   return await new Promise((resolve, reject) => {
     fs.readFile(accessPath, 'utf-8', (err, data) => {
       if (err) reject(err);
