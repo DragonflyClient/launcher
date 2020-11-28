@@ -1,7 +1,7 @@
 {
   "name": "dragonfly-launcher",
   "productName": "Dragonfly Launcher",
-  "version": "1.1.4",
+  "version": "1.0.1",
   "description": "The launcher for the Dragonfly minecraft client",
   "main": "src/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DragonflyClient/launcher.git"
+    "url": "https://github.com/DragonflyClient/launcher-releases.git"
   },
   "keywords": [],
   "author": {
