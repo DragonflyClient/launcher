@@ -12,18 +12,20 @@ exports.appPath = function (appPath) {
   }
 };
 
-module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(filePath) {
+module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(filePath, create) {
   var dirname = path.dirname(filePath);
   if (fs.existsSync(dirname)) {
     return true;
   }
-  ensureDirectoryExistence(dirname);
-  fs.mkdirSync(dirname);
+  if (create) {
+    ensureDirectoryExistence(dirname);
+    fs.mkdirSync(dirname);
+  }
 };
 
 module.exports.readToken = async (currentAppPath) => {
   const accessPath = path.join(currentAppPath, '.secrets/access.txt');
-  await this.ensureDirectoryExistence(accessPath);
+  if (!(await this.ensureDirectoryExistence(accessPath, false))) return null;
   return await new Promise((resolve, reject) => {
     fs.readFile(accessPath, 'utf-8', (err, data) => {
       if (err) reject(err);
