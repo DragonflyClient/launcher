@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DragonflyClient/launcher.git"
+    "url": "https://github.com/DragonflyClient/launcher-releases.git"
   },
   "build": {
     "appId": "Dragonfly Launcher",
