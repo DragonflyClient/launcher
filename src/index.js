@@ -50,10 +50,6 @@ const createLoadingWindow = async () => {
     createLoginWindow();
     loadingWindow.close();
   }
-
-  // loginWindow.once('ready-to-show', async () => {
-  //   autoUpdater.checkForUpdatesAndNotify();
-  // });
 };
 
 const createLoginWindow = async () => {
@@ -99,6 +95,10 @@ const createMainWindow = async () => {
         console.log(err);
       });
   });
+
+  mainWindow.once('ready-to-show', async () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
 };
 
 app.on('ready', () => {
@@ -137,6 +137,8 @@ ipcMain.on('drgn-auth', async (event, data) => {
     .catch((err) => {
       console.log(err);
     });
+  loginWindow.hide();
+  createMainWindow();
 });
 
 // read access token
@@ -144,6 +146,12 @@ ipcMain.on('drgn-auth-read', async (event, data) => {
   event.reply('drgn-auth-reply', reply);
 });
 
+// Respond app version
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+
+// Auto updater
 autoUpdater.on('update-available', () => {
   loginWindow.webContents.send('update_available');
 });
