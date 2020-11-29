@@ -1,25 +1,28 @@
 const { ipcRenderer } = require('electron');
 
-// Handle update
-const notification = document.getElementById('notification');
-const message = document.getElementById('message');
-const restartButton = document.getElementById('restart-button');
+/* #region Handle auto-updating */
+const updaterNotification = document.getElementById('updater-notification');
+const updaterMessage = document.getElementById('updater__message');
+const updaterRestartButton = document.getElementById('updater__restart-button');
 
+// handle update available
 ipcRenderer.on('update_available', () => {
   console.log('UPDATE AVAILABLE');
   ipcRenderer.removeAllListeners('update_available');
-  message.innerText = 'A new update is available. Downloading now...';
-  notification.classList.remove('hidden');
+  updaterMessage.innerText = 'A new update is available. Downloading now...';
+  updaterNotification.classList.remove('hidden');
 });
 
+// handle update download
 ipcRenderer.on('update_downloaded', () => {
   console.log('UPDATE DOWNLOADED');
   ipcRenderer.removeAllListeners('update_downloaded');
-  message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
-  restartButton.classList.remove('hidden');
-  notification.classList.remove('hidden');
+  updaterMessage.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+  updaterRestartButton.classList.remove('hidden');
+  updaterNotification.classList.remove('hidden');
 });
 
+// Receive current app version
 ipcRenderer.send('app_version');
 ipcRenderer.on('app_version', (event, arg) => {
   ipcRenderer.removeAllListeners('app_version');
@@ -33,13 +36,4 @@ ipcRenderer.on('check_for_updates', (event, arg) => {
   console.log(arg);
 });
 
-function closeNotification() {
-  notification.classList.add('hidden');
-}
-function restartApp() {
-  ipcRenderer.send('restart_app');
-}
-
-ipcRenderer.on('restart_app', (event, args) => {
-  console.log(args);
-});
+/* #endregion */
