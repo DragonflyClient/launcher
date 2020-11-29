@@ -1,7 +1,7 @@
 {
   "name": "dragonfly-launcher",
   "productName": "Dragonfly Launcher",
-  "version": "1.0.1",
+  "version": "0.2.0",
   "description": "The launcher for the Dragonfly minecraft client",
   "main": "src/index.js",
   "scripts": {
@@ -9,7 +9,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "lint": "echo \"No linting configured\"",
-    "build": "electron-builder build --win --publish never",
+    "build": "electron-builder build --win --l --mac --publish never",
+    "build-linux": "electron-builder build --l --publish never",
+    "build-mac": "electron-builder build --mac --publish never",
+    "build-win": "electron-builder build --win --publish never",
     "publish": "electron-builder build --win --publish always"
   },
   "repository": {
