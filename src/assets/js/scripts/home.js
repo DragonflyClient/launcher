@@ -36,6 +36,11 @@ ipcRenderer.on('check_for_updates', (event, arg) => {
   console.log(arg);
 });
 
+ipcRenderer.on('update_progress', (event, arg) => {
+  console.log(arg);
+  document.querySelector('.updater__border').style.width = arg;
+});
+
 function closeNotification() {
   notification.classList.add('hidden');
 }
