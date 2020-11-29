@@ -6,29 +6,28 @@
   --clr-plight: #ffc247;
 }
 
-.updater__border {
-  position: absolute;
-  background: var(--clr-pdark);
-  left: 0px;
-  top: -2px;
-  height: 90px;
-  z-index: -100;
-  width: 100%;
-  transition: 0.4s ease;
-  border-radius: 5px;
-}
-
 #updater-notification {
-  position: absolute;
+  position: fixed;
   left: 20px;
   bottom: 20px;
   width: 250px;
-  height: 100px;
-  padding: 20px;
+  padding: 1.2rem;
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   background-color: var(--clr-bg);
+}
+
+.updater__border {
+  position: absolute;
+  background: var(--clr-pdark);
+  left: 0px;
+  top: 0px;
+  height: 4px;
+  z-index: -100;
+  width: 100%;
+  transition: 0.4s ease;
+  border-radius: 5px;
 }
 
 #updater__message {
