@@ -28,6 +28,8 @@ const globalWebPreferences = {
   contextIsolation: false,
 };
 
+let checkedForUpdates = false;
+
 const createLoadingWindow = async () => {
   console.log('Starting "loading" window');
   loadingWindow = new BrowserWindow({
@@ -149,23 +151,29 @@ ipcMain.on('app_version', (event) => {
 
 // Auto updater
 autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update_available');
+  BrowserWindow.getFocusedWindow().webContents.send('update_available');
 });
 autoUpdater.on('update-downloaded', () => {
-  mainWindow.webContents.send('update_downloaded');
+  BrowserWindow.getFocusedWindow().webContents.send('update_downloaded');
 });
 
 ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
+  BrowserWindow.getFocusedWindow().quitAndInstall();
 });
 
 ipcMain.on('check_for_updates', (event) => {
-  autoUpdater
-    .checkForUpdatesAndNotify()
-    .then(() => {
-      event.sender.send('check_for_updates', 'Checked for updates');
-    })
-    .catch((err) => {
-      event.sender.send('check_for_updates', `Check for updates failed: ${err}`);
-    });
+  if (!checkedForUpdates) {
+    autoUpdater
+      .checkForUpdatesAndNotify()
+      .then(() => {
+        event.sender.send('check_for_updates', 'Checked for updates');
+      })
+      .catch((err) => {
+        event.sender.send('check_for_updates', `Check for updates failed: ${err}`);
+      });
+    checkedForUpdates = true;
+  } else {
+    console.log('Already checked for updates.');
+    event.sender.send('check_for_updates', 'Already checked for updates');
+  }
 });
