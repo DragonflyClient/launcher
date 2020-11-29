@@ -45,14 +45,14 @@ ipcRenderer.on('check_for_updates', (event, arg) => {
   console.log(arg);
 });
 
-/* #endregion */
-
 function closeNotification() {
   notification.classList.add('hidden');
 }
 function restartApp() {
   ipcRenderer.send('restart_app');
 }
+
+/* #endregion */
 
 ipcRenderer.on('restart_app', (event, args) => {
   console.log(args);
