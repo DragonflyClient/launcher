@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log in to your Dragonfly account</title>
     <link rel="stylesheet" href="../assets/css/login.css" />
+    <link rel="stylesheet" href="../assets/css/partials/auto-udpate.css" />
     <link rel="shortcut icon" href="img/Logo.svg" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -41,6 +42,16 @@
         <p class="mj-disclaimer"><span class="dragonfly-lettering">Dragonfly</span> is not affiliated with Mojang AB</p>
         <button onclick="readToken()">Read token</button>
     </main>
+
+    <div id="notification" class="hidden">
+        <p id="message"></p>
+        <button id="close-button" onClick="closeNotification()">
+            Close
+        </button>
+        <button id="restart-button" onClick="restartApp()" class="hidden">
+            Restart
+        </button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
     <script src="../assets/js/scripts/login.js"></script>

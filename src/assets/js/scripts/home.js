@@ -27,6 +27,7 @@ ipcRenderer.on('app_version', (event, arg) => {
   document.title = 'Dragonfly Launcher v' + arg.version;
 });
 
+// check for updates
 ipcRenderer.send('check_for_updates');
 ipcRenderer.on('check_for_updates', (event, arg) => {
   console.log(arg);

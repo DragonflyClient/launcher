@@ -45,6 +45,7 @@ const createLoadingWindow = async () => {
     console.log(err);
   });
   const accessToken = await readToken(currentAppPath);
+
   if (await validateDragonflyAccount(accessToken)) {
     createMainWindow();
     loadingWindow.close();
