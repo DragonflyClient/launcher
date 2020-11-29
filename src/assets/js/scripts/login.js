@@ -12,6 +12,12 @@ const path = require('path');
 
 console.log(app.getAppPath(), 'APP PATH');
 
+// Check for updates
+ipcRenderer.send('check_for_updates');
+ipcRenderer.on('check_for_updates', (event, arg) => {
+  console.log(arg);
+});
+
 const loginForm = document.getElementById('login-form');
 
 // Request verification
