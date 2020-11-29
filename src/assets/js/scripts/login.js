@@ -49,6 +49,10 @@ function restartApp() {
   ipcRenderer.send('restart_app');
 }
 
+ipcRenderer.on('restart_app', (event, args) => {
+  console.log(args);
+});
+
 const loginForm = document.getElementById('login-form');
 
 // Request verification

@@ -39,3 +39,7 @@ function closeNotification() {
 function restartApp() {
   ipcRenderer.send('restart_app');
 }
+
+ipcRenderer.on('restart_app', (event, args) => {
+  console.log(args);
+});

@@ -151,15 +151,15 @@ ipcMain.on('app_version', (event) => {
 });
 
 // Auto updater
-autoUpdater.on('update-available', () => {
-  BrowserWindow.getFocusedWindow().webContents.send('update_available');
+autoUpdater.on('update-available', (e) => {
+  BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_available');
 });
 autoUpdater.on('update-downloaded', () => {
-  BrowserWindow.getFocusedWindow().webContents.send('update_downloaded');
+  BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_downloaded');
 });
 
 ipcMain.on('restart_app', () => {
-  BrowserWindow.getFocusedWindow().quitAndInstall();
+  autoUpdater.quitAndInstall();
 });
 
 ipcMain.on('check_for_updates', (event) => {
