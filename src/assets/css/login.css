@@ -36,6 +36,7 @@ main {
 .dragonfly-lettering {
   font-weight: 500 !important;
   background: -webkit-linear-gradient(#f9b12d, #c42023);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

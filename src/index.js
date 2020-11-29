@@ -7,6 +7,7 @@ const { autoUpdater } = require('electron-updater');
 
 const { appPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
 const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
+const { windowIndex } = require('./utilities/browser-window');
 
 const currentAppPath = appPath(app.getAppPath());
 
@@ -29,6 +30,7 @@ const globalWebPreferences = {
 };
 
 let checkedForUpdates = false;
+const openWindows = [];
 
 const createLoadingWindow = async () => {
   console.log('Starting "loading" window');
@@ -63,8 +65,17 @@ const createLoginWindow = async () => {
     show: false,
     webPreferences: globalWebPreferences,
   });
-
+  let windowId = loginWindow.id;
   loginWindow.loadFile(path.join(__dirname, 'sites/login.html'));
+
+  loginWindow.on('close', () => {
+    openWindows.splice(windowIndex(windowId, openWindows), 1);
+    console.log(openWindows, 'OW after login close');
+  });
+
+  loginWindow.on('closed', function () {
+    loginWindow = null;
+  });
 
   loginWindow.once('ready-to-show', () => {
     discordRPC
@@ -75,18 +86,30 @@ const createLoginWindow = async () => {
         console.log(err, 'IN INDEX!!!');
       });
     loginWindow.show();
+    openWindows.push(windowId);
+    console.log(openWindows, 'OW after login open');
   });
 };
 
 const createMainWindow = async () => {
-  console.log('Starting "login" window');
+  console.log('Starting "main" window');
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: globalWebPreferences,
   });
 
+  let windowId = mainWindow.id;
   mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
+
+  mainWindow.on('close', () => {
+    openWindows.splice(windowIndex(windowId, openWindows.length), 1);
+    console.log(openWindows, 'OW after main close');
+  });
+
+  mainWindow.on('closed', function () {
+    mainWindow = null;
+  });
 
   mainWindow.once('ready-to-show', async () => {
     discordRPC
@@ -96,6 +119,8 @@ const createMainWindow = async () => {
       .catch((err) => {
         console.log(err);
       });
+    openWindows.push(windowId);
+    console.log(openWindows, 'OW after main open');
   });
 };
 
@@ -142,7 +167,13 @@ ipcMain.on('drgn-auth', async (event, data) => {
 
 // read access token
 ipcMain.on('drgn-auth-read', async (event, data) => {
-  event.reply('drgn-auth-reply', reply);
+  try {
+    console.log(BrowserWindow.fromId(openWindows[0]));
+
+    event.reply('drgn-auth-reply', 'Worked');
+  } catch (error) {
+    event.reply('drgn-auth-reply', `Some kinda error: ${error}`);
+  }
 });
 
 // Respond app version
@@ -152,17 +183,15 @@ ipcMain.on('app_version', (event) => {
 
 // Auto updater
 autoUpdater.on('update-available', (e) => {
-  BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_available');
+  BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_available');
 });
 autoUpdater.on('update-downloaded', () => {
-  BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_downloaded');
+  BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_downloaded');
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = progressObj.percent + '%';
-  if (BrowserWindow.getFocusedWindow()) {
-    BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_progress', log_message);
-  }
+  BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_progress', log_message);
 });
 
 ipcMain.on('restart_app', () => {
