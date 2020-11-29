@@ -5,8 +5,8 @@ const fswin = require('fswin');
 var CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
-const { appPath, ensureDirectoryExistence, readToken } = require('./assets/js/utilities/path.js');
-const { validateDragonflyAccount } = require('./assets/js/utilities/dragonflyAccount');
+const { appPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
+const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
 
 const currentAppPath = appPath(app.getAppPath());
 

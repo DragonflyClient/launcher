@@ -2,7 +2,7 @@ const { ipcRenderer } = require('electron');
 const app = require('electron').remote.app;
 const shell = require('electron').shell;
 
-const { appPath } = require('../assets/js/utilities/path');
+const { appPath } = require('../utilities/path');
 
 const currentAppPath = appPath(app.getAppPath());
 console.log('Root folder path: ', currentAppPath);
