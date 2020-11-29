@@ -160,7 +160,9 @@ autoUpdater.on('update-downloaded', () => {
 
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = progressObj.percent + '%';
-  BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_progress', log_message);
+  if (BrowserWindow.getFocusedWindow()) {
+    BrowserWindow.fromId(BrowserWindow.getFocusedWindow().id).webContents.send('update_progress', log_message);
+  }
 });
 
 ipcMain.on('restart_app', () => {
