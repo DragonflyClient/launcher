@@ -35,7 +35,7 @@ const openWindows = [];
 const createLoadingWindow = async () => {
   console.log('Starting "loading" window');
   loadingWindow = new BrowserWindow({
-    width: 400,
+    width: 320,
     height: 400,
     frame: false,
     webPreferences: globalWebPreferences,
