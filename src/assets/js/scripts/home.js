@@ -1,5 +1,7 @@
 const { ipcRenderer } = require('electron');
 
+require('../assets/js/devtools');
+
 /* #region Handle auto-updating */
 const updaterNotification = document.getElementById('updater-notification');
 const updaterMessage = document.getElementById('updater__message');
@@ -26,18 +28,16 @@ ipcRenderer.on('update_downloaded', () => {
 ipcRenderer.send('app_version');
 ipcRenderer.on('app_version', (event, arg) => {
   ipcRenderer.removeAllListeners('app_version');
-  console.log(arg, 'VERSION');
   document.title = 'Dragonfly Launcher v' + arg.version;
 });
 
 // check for updates
 ipcRenderer.send('check_for_updates');
 ipcRenderer.on('check_for_updates', (event, arg) => {
-  console.log(arg);
+  console.log('Checked for updates.');
 });
 
 ipcRenderer.on('update_progress', (event, arg) => {
-  console.log(arg);
   document.querySelector('.updater__border').style.width = arg;
 });
 
