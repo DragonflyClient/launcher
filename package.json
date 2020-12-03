@@ -58,7 +58,8 @@
     "discord-rpc": "^3.1.4",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^4.3.5",
-    "fswin": "^3.19.908"
+    "fswin": "^3.19.908",
+    "sweetalert2": "^10.11.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
