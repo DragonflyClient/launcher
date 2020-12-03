@@ -5,11 +5,11 @@ const fswin = require('fswin');
 var CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
-const { appPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
+const { rootPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
 const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
 const { windowIndex } = require('./utilities/browser-window');
 
-const currentAppPath = appPath(app.getAppPath());
+const currentAppPath = rootPath(app.getAppPath());
 
 // Require discord rpc
 const discordRPC = require('./assets/js/discord');
@@ -175,7 +175,6 @@ ipcMain.on('drgn-auth-read', async (event, data) => {
     event.reply('drgn-auth-reply', `Some kinda error: ${error}`);
   }
 });
-
 // Respond app version
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });

@@ -3,11 +3,13 @@ const fs = require('fs');
 const fswin = require('fswin');
 var CryptoJS = require('crypto-js');
 
-exports.appPath = function (appPath) {
-  console.log(appPath, 'AP');
+module.exports.rootPath = function (appPath) {
+  console.log(appPath, 'APPP PATH');
   if (appPath.toLowerCase().indexOf('app.asar') > -1) {
+    console.log('WITH ASAR');
     return path.resolve(appPath, '../..');
   } else {
+    console.log('WITHOUT ASAR');
     return appPath;
   }
 };

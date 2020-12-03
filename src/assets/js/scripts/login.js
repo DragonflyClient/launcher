@@ -4,9 +4,9 @@ const shell = require('electron').shell;
 
 const Swal = require('sweetalert2');
 
-const { appPath } = require('../utilities/path');
+const { rootPath } = require('../utilities/path');
 
-const currentAppPath = appPath(app.getAppPath());
+const currentAppPath = rootPath(app.getAppPath());
 console.log('Root folder path: ', currentAppPath);
 
 console.log(app.getAppPath(), 'APP PATH');
