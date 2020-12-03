@@ -2,6 +2,8 @@ const { ipcRenderer } = require('electron');
 const app = require('electron').remote.app;
 const shell = require('electron').shell;
 
+const Swal = require('sweetalert2');
+
 const { appPath } = require('../utilities/path');
 
 const currentAppPath = appPath(app.getAppPath());
@@ -64,10 +66,13 @@ ipcRenderer.on('restart_app', (event, args) => {
 });
 
 const loginForm = document.getElementById('login-form');
+const loginSubmitButton = document.getElementById('login-submit-btn');
 
 // Request verification
 loginForm.addEventListener('submit', async function (e) {
   e.preventDefault();
+
+  changeButtonState();
 
   const formData = new FormData(loginForm);
   const name = formData.get('email');
@@ -89,9 +94,23 @@ loginForm.addEventListener('submit', async function (e) {
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log(data, data.token);
+      changeButtonState();
       if (data.success) {
-        ipcRenderer.send('drgn-auth', data);
+        return ipcRenderer.send('drgn-auth', data);
+      } else if (!data.success) {
+        return Swal.fire({
+          title: 'Error!',
+          text: data.error,
+          icon: 'error',
+          confirmButtonText: 'Okay',
+        });
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'An internal error occurred please try again later.',
+          icon: 'error',
+          confirmButtonText: 'Okay',
+        });
       }
     })
     .catch((err) => console.log(err));
@@ -123,6 +142,26 @@ Array.from(externalLinks).forEach(function (link) {
 
 function readToken() {
   ipcRenderer.send('drgn-auth-read');
+}
+
+function changeButtonState(button = document.querySelector('#login-submit-btn')) {
+  if (button.getAttribute('disabled') || button.getAttribute('disabled' == 'true')) {
+    setTimeout(() => {
+      button.removeAttribute('disabled');
+      button.innerText = 'Login';
+    }, 150);
+  } else {
+    button.setAttribute('disabled', true);
+    button.innerHTML = `
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+    `;
+  }
 }
 
 // Receive Dragonfly authentication replies
