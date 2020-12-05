@@ -22,13 +22,22 @@ module.exports.rootPath = function (appPath) {
 module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(filePath, create, type) {
   console.log(filePath, 'FILEPATH');
   if (type == 'dir') {
-    var dirname = path.dirname(filePath);
+    var sep = filePath.split('\\');
+    var last = sep.pop();
+
+    if (last.indexOf('.') > 0) {
+      last = '';
+    }
+
+    var dirname = sep.join('\\') + last;
+    console.log('dirname', dirname);
+
     if (fs.existsSync(dirname)) {
       return true;
-    }
-    if (create) {
-      ensureDirectoryExistence(dirname);
+    } else if (create) {
+      console.log('creating directory!!');
       fs.mkdirSync(dirname);
+      return false;
     }
   } else if (type == 'file') {
     console.log('Requested file');
@@ -42,6 +51,7 @@ module.exports.ensureDirectoryExistence = function ensureDirectoryExistence(file
       } catch (error) {
         console.log('Error while writing file', error);
       }
+      return false;
     }
   }
 };
