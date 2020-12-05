@@ -23,6 +23,8 @@ let loadingWindow;
 let loginWindow;
 let mainWindow;
 
+let gameOutputWindow;
+
 const globalWebPreferences = {
   nodeIntegration: true,
   enableRemoteModule: true,
@@ -43,18 +45,18 @@ const createLoadingWindow = async () => {
 
   loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
-  await discordRPC.login('777509861780226069').catch((err) => {
-    console.log(err);
-  });
+  discordRPC.login('777509861780226069').catch((err) => console.log(err));
   const accessToken = await readToken(currentAppPath);
 
-  if (await validateDragonflyAccount(accessToken)) {
-    createMainWindow();
-    loadingWindow.close();
-  } else {
-    createLoginWindow();
-    loadingWindow.close();
-  }
+  setTimeout(async () => {
+    if (await validateDragonflyAccount(accessToken)) {
+      createMainWindow();
+      loadingWindow.close();
+    } else {
+      createLoginWindow();
+      loadingWindow.close();
+    }
+  }, 0);
 };
 
 const createLoginWindow = async () => {
@@ -98,6 +100,7 @@ const createMainWindow = async () => {
     height: 800,
     webPreferences: globalWebPreferences,
   });
+  mainWindow.toggleDevTools();
 
   let windowId = mainWindow.id;
   mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
@@ -123,6 +126,41 @@ const createMainWindow = async () => {
     console.log(openWindows, 'OW after main open');
   });
 };
+
+const createGameOutputWindow = async () => {
+  gameOutputWindow = new BrowserWindow({
+    width: 900,
+    height: 500,
+    show: false,
+    webPreferences: globalWebPreferences,
+  });
+  let windowId = gameOutputWindow.id;
+  gameOutputWindow.loadFile(path.join(__dirname, 'sites/game-output.html'));
+
+  gameOutputWindow.on('close', () => {
+    openWindows.splice(windowIndex(windowId, openWindows), 1);
+    console.log(openWindows, 'OW after login close');
+  });
+
+  gameOutputWindow.on('closed', function () {
+    gameOutputWindow = null;
+  });
+
+  gameOutputWindow.once('ready-to-show', () => {
+    discordRPC
+      .setPresence({
+        details: 'Starting game...',
+      })
+      .catch((err) => {
+        console.log(err, 'IN INDEX!!!');
+      });
+    gameOutputWindow.show();
+    openWindows.push(windowId);
+    console.log(openWindows, 'OW after login open');
+  });
+};
+
+//
 
 app.on('ready', () => {
   createLoadingWindow();
@@ -212,4 +250,13 @@ ipcMain.on('check_for_updates', (event) => {
     console.log('Already checked for updates.');
     event.sender.send('check_for_updates', 'Already checked for updates');
   }
+});
+
+ipcMain.on('open-game-output', (event) => {
+  createGameOutputWindow();
+});
+
+ipcMain.on('game-output-data', (event, args) => {
+  console.log(args, 'GAME OUTPUT!!!');
+  if (gameOutputWindow) gameOutputWindow.webContents.send('game-output-data', args);
 });
