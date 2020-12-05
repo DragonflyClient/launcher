@@ -1,7 +1,7 @@
 {
   "name": "dragonfly-launcher",
   "productName": "Dragonfly Launcher",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "The launcher for the Dragonfly minecraft client",
   "main": "src/index.js",
   "scripts": {
@@ -52,13 +52,15 @@
     }
   },
   "dependencies": {
+    "adm-zip": "^0.5.1",
     "axios": "^0.21.0",
     "crypto-js": "^4.0.0",
     "discord-rpc": "^3.1.4",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^4.3.5",
     "fswin": "^3.19.908",
-    "sweetalert2": "^10.11.0"
+    "sweetalert2": "^10.11.0",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
