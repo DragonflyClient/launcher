@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game output</title>
+</head>
+
+<body>
+    <div id="game-output"></div>
+</body>
+<script>
+    const { ipcRenderer } = require('electron')
+
+    ipcRenderer.on('game-output-data', (e, args) => {
+        console.log(args)
+        document.getElementById('game-output').innerHTML += args + "<br>"
+    })
+</script>
+
+</html>
