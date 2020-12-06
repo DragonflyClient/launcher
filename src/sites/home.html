@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>Landing page!</title>
     <link rel="stylesheet" href="../assets/css/home.css" />
     <link rel="stylesheet" href="../assets/css/partials/auto-udpate.css" />
@@ -15,7 +16,7 @@
 <body>
     <h1>Successfully landed boy!</h1>
     <div id="progress"></div>
-    <select name="game-version" onchange="setVersion(this)" id="game-version">
+    <select name="game-version" id="game-version">
         <option value="1.8.8" selected>1.8.8</option>
         <option value="1.14.4">1.14.4</option>
         <option value="1.16.4">1.16.4</option>
@@ -25,7 +26,7 @@
         <input type="checkbox" name="open-game-output" id="open-game-output">
         Open output log when minecraft starts
     </label>
-    <button onclick="executeJar()">Start game</button>
+    <button id="start-game">Start game</button>
 
     <!-- Show updater notification -->
     <div id="updater-notification" class="hidden">
