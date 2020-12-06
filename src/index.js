@@ -65,6 +65,7 @@ const createLoginWindow = async () => {
     height: 700,
     frame: false,
     show: false,
+    resizable: false,
     webPreferences: globalWebPreferences,
   });
   let windowId = loginWindow.id;
@@ -132,6 +133,7 @@ const createGameOutputWindow = async () => {
     width: 900,
     height: 500,
     show: false,
+    resizable: false,
     webPreferences: globalWebPreferences,
   });
   let windowId = gameOutputWindow.id;
@@ -147,13 +149,6 @@ const createGameOutputWindow = async () => {
   });
 
   gameOutputWindow.once('ready-to-show', () => {
-    discordRPC
-      .setPresence({
-        details: 'Starting game...',
-      })
-      .catch((err) => {
-        console.log(err, 'IN INDEX!!!');
-      });
     gameOutputWindow.show();
     openWindows.push(windowId);
     console.log(openWindows, 'OW after login open');
@@ -257,6 +252,39 @@ ipcMain.on('open-game-output', (event) => {
 });
 
 ipcMain.on('game-output-data', (event, args) => {
-  console.log(args, 'GAME OUTPUT!!!');
+  // console.log(args, 'GAME OUTPUT!!!');
   if (gameOutputWindow) gameOutputWindow.webContents.send('game-output-data', args);
+});
+
+ipcMain.on('open-game', (e, args) => {
+  const gameObject = args.gameObject;
+  discordRPC
+    .setPresence({
+      details: `Playing Minecraft ${gameObject.gameVersion}`,
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+ipcMain.on('game-closed', (e, args) => {
+  const openGames = args.openGames;
+  if (openGames.length == 0) {
+    discordRPC
+      .setPresence({
+        details: `Home`,
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    const last = openGames.pop();
+    discordRPC
+      .setPresence({
+        details: `Playing Minecraft ${last.gameVersion}`,
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 });
