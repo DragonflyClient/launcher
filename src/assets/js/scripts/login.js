@@ -132,9 +132,7 @@ pwToggle.addEventListener('click', () => {
 const externalLinks = document.querySelectorAll('a[href^="http"]');
 
 Array.from(externalLinks).forEach(function (link) {
-    console.log('LISTENING');
     link.addEventListener('click', (e) => {
-        console.log('CLICKED');
         e.preventDefault();
         shell.openExternal(link.getAttribute('href'));
     });
