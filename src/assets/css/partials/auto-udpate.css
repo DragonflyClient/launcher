@@ -1,67 +1,67 @@
 :root {
-  --clr-fg: #eff1f3;
-  --clr-bg: #37393a;
-  --clr-pdark: #de4f3f;
-  --clr-primary: #ef852e;
-  --clr-plight: #ffc247;
+    --clr-fg: #eff1f3;
+    --clr-bg: #37393a;
+    --clr-pdark: #de4f3f;
+    --clr-primary: #ef852e;
+    --clr-plight: #ffc247;
 }
 
 #updater-notification {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  width: 250px;
-  padding: 1.2rem;
-  border-radius: 5px;
-  background-color: white;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  background-color: var(--clr-bg);
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    width: 250px;
+    padding: 1.2rem;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: var(--clr-bg);
 }
 
 .updater__border {
-  position: absolute;
-  background: var(--clr-pdark);
-  left: 0px;
-  top: 0px;
-  height: 4px;
-  z-index: -100;
-  width: 100%;
-  transition: 0.4s ease;
-  border-radius: 5px;
+    position: absolute;
+    background: var(--clr-pdark);
+    left: 0px;
+    top: 0px;
+    height: 4px;
+    z-index: -100;
+    width: 100%;
+    transition: 0.4s ease;
+    border-radius: 5px;
 }
 
 #updater__message {
-  padding: 0;
-  margin: 0;
-  color: var(--clr-fg);
-  font-family: Rubik;
-  margin-bottom: 0.8rem;
-  font-size: 1rem;
+    padding: 0;
+    margin: 0;
+    color: var(--clr-fg);
+    font-family: Rubik;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
 }
 
 .updater__button {
-  all: unset;
-  padding: 0.4rem 1rem;
-  margin-top: 0.5rem;
-  color: var(--clr-fg);
-  font-size: 1rem;
-  cursor: pointer;
-  font-family: Rubik;
-  box-sizing: border-box;
-  height: 35px;
+    all: unset;
+    padding: 0.4rem 1rem;
+    margin-top: 0.5rem;
+    color: var(--clr-fg);
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: Rubik;
+    box-sizing: border-box;
+    height: 35px;
 }
 
 #updater__close-button {
-  background: var(--clr-bg);
-  margin-right: 0.4rem;
-  border: 2px solid var(--clr-fg);
+    background: var(--clr-bg);
+    margin-right: 0.4rem;
+    border: 2px solid var(--clr-fg);
 }
 
 #updater__restart-button {
-  background: var(--clr-pdark);
-  font-family: Rubik;
+    background: var(--clr-pdark);
+    font-family: Rubik;
 }
 
 .hidden {
-  display: none;
+    display: none;
 }

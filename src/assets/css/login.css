@@ -1,237 +1,237 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Rubik;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Rubik;
 }
 
 h3,
 p {
-  color: white;
+    color: white;
 }
 
 .user-none {
-  user-select: none;
-  pointer-events: none;
+    user-select: none;
+    pointer-events: none;
 }
 
 .titlebar {
-  height: 20px;
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
+    height: 20px;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
 
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .titlebar-button {
-  -webkit-app-region: no-drag;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 1rem 1.25rem;
+    -webkit-app-region: no-drag;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem 1.25rem;
 }
 
 #close-btn {
-  background-color: #f04747;
+    background-color: #f04747;
 }
 
 #close-btn .fa-times,
 #min-btn .fa-minus {
-  color: white;
+    color: white;
 }
 
 #bg-overlay {
-  background-color: rgba(0, 0, 0, 0.3);
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+    background-color: rgba(0, 0, 0, 0.3);
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 #bg-video {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -2;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -2;
 }
 
 main {
-  margin-top: 10vh;
-  text-align: center;
+    margin-top: 10vh;
+    text-align: center;
 }
 
 .dragonfly-lettering {
-  font-weight: 500 !important;
-  background: -webkit-linear-gradient(#f9b12d, #c42023);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    font-weight: 500 !important;
+    background: -webkit-linear-gradient(#f9b12d, #c42023);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 header img {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 header h3 {
-  font-weight: 300;
-  font-size: 20px;
-  margin: 15px 0;
+    font-weight: 300;
+    font-size: 20px;
+    margin: 15px 0;
 }
 
 #form-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 form {
-  width: 450px;
-  margin-top: 5px;
+    width: 450px;
+    margin-top: 5px;
 }
 
 .form-item {
-  margin: 30px 0;
+    margin: 30px 0;
 }
 
 input {
-  box-sizing: border-box;
-  border-radius: 2px 2px 0px 0px;
-  width: 100%;
-  position: relative;
-  outline: 0;
-  border: 0;
-  color: #37393a;
-  height: 55px;
-  padding: 20px;
-  font-size: 18px;
+    box-sizing: border-box;
+    border-radius: 2px 2px 0px 0px;
+    width: 100%;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: #37393a;
+    height: 55px;
+    padding: 20px;
+    font-size: 18px;
 }
 
 #toggle-pw {
-  position: absolute;
-  right: 10px;
-  font-size: 18px;
-  cursor: pointer;
-  top: 50%;
-  transform: translateY(-50%);
+    position: absolute;
+    right: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #toggle-pw .fa-eye,
 #toggle-pw .fa-eye-slash {
-  color: #37393a;
-  pointer-events: none;
+    color: #37393a;
+    pointer-events: none;
 }
 
 .form-item {
-  width: 100%;
-  position: relative;
+    width: 100%;
+    position: relative;
 }
 
 .input-border {
-  position: absolute;
-  width: 100%;
-  height: 4px;
-  left: 0;
-  bottom: 0;
-  background-color: #ef852e;
-  transition: 0.25s ease;
-  transform: scaleX(0);
-  transform-origin: left;
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    left: 0;
+    bottom: 0;
+    background-color: #ef852e;
+    transition: 0.25s ease;
+    transform: scaleX(0);
+    transform-origin: left;
 }
 
 input:focus + .input-border {
-  transform: scaleX(1);
+    transform: scaleX(1);
 }
 
 .btn {
-  all: unset;
-  cursor: pointer;
-  color: #fff;
-  width: 100%;
-  box-sizing: border-box;
-  height: 50px;
-  font-size: 20px;
-  font-weight: bolder;
+    all: unset;
+    cursor: pointer;
+    color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    height: 50px;
+    font-size: 20px;
+    font-weight: bolder;
 }
 
 .btn.btn-primary {
-  background-color: #ef852e;
+    background-color: #ef852e;
 }
 
 .btn.btn-primary:disabled:hover {
-  background-color: #ef852e;
+    background-color: #ef852e;
 }
 
 .btn.btn-primary:hover {
-  background-color: #f07d1e;
+    background-color: #f07d1e;
 }
 
 .mj-disclaimer {
-  margin-top: 25px;
+    margin-top: 25px;
 }
 
 /* Button loading */
 .spinner {
-  margin: 0 auto;
-  width: 50px;
-  height: 40px;
-  text-align: center;
-  font-size: 10px;
+    margin: 0 auto;
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    font-size: 10px;
 }
 
 .spinner > div {
-  background-color: #fff;
-  height: 100%;
-  width: 6px;
-  display: inline-block;
+    background-color: #fff;
+    height: 100%;
+    width: 6px;
+    display: inline-block;
 
-  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
-  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+    animation: sk-stretchdelay 1.2s infinite ease-in-out;
 }
 
 .spinner .rect2 {
-  -webkit-animation-delay: -1.1s;
-  animation-delay: -1.1s;
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
 }
 
 .spinner .rect3 {
-  -webkit-animation-delay: -1s;
-  animation-delay: -1s;
+    -webkit-animation-delay: -1s;
+    animation-delay: -1s;
 }
 
 .spinner .rect4 {
-  -webkit-animation-delay: -0.9s;
-  animation-delay: -0.9s;
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
 }
 
 .spinner .rect5 {
-  -webkit-animation-delay: -0.8s;
-  animation-delay: -0.8s;
+    -webkit-animation-delay: -0.8s;
+    animation-delay: -0.8s;
 }
 
 @-webkit-keyframes sk-stretchdelay {
-  0%,
-  40%,
-  100% {
-    -webkit-transform: scaleY(0.4);
-  }
-  20% {
-    -webkit-transform: scaleY(1);
-  }
+    0%,
+    40%,
+    100% {
+        -webkit-transform: scaleY(0.4);
+    }
+    20% {
+        -webkit-transform: scaleY(1);
+    }
 }
 
 @keyframes sk-stretchdelay {
-  0%,
-  40%,
-  100% {
-    transform: scaleY(0.4);
-    -webkit-transform: scaleY(0.4);
-  }
-  20% {
-    transform: scaleY(1);
-    -webkit-transform: scaleY(1);
-  }
+    0%,
+    40%,
+    100% {
+        transform: scaleY(0.4);
+        -webkit-transform: scaleY(0.4);
+    }
+    20% {
+        transform: scaleY(1);
+        -webkit-transform: scaleY(1);
+    }
 }
