@@ -16,12 +16,13 @@ p {
 }
 
 .titlebar {
-    height: 20px;
+    height: 30px;
     -webkit-user-select: none;
     -webkit-app-region: drag;
 
     display: flex;
     justify-content: flex-end;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .titlebar-button {
@@ -29,7 +30,7 @@ p {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 1rem 1.25rem;
+    padding: 0rem 1.25rem;
 }
 
 #close-btn {
