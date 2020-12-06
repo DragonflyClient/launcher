@@ -33,7 +33,7 @@ async function startGame(callback) {
         callback("Loading libraries")
         launcher.loadLibraries()
 
-        callback("Loading native libararies")
+        callback("Loading native libraries")
         launcher.loadNatives()
 
         callback("Loading assets")
@@ -42,7 +42,7 @@ async function startGame(callback) {
         callback("Loading log configuration")
         launcher.loadLogConfiguration()
 
-        callback("Launching game")
+        callback("Launching game");
         launcher.executeCommand()
 
         launcher.handleGameStart()
@@ -231,7 +231,7 @@ class Launcher {
     enableLogging() {
         const openWithGameOutput = this.openWithGameOutput
         const parser = new xml2js.Parser();
-        const parseMessage = (data, prefix) => {
+        const parseMessage = (data, defaultLevel, defaultLogger) => {
             if (!data || !data.toString()) return
             const xml = data.toString();
 
@@ -239,17 +239,30 @@ class Launcher {
                 let message;
                 if (result) {
                     const event = result['log4j:Event'];
-                    const level = event['$'].level;
-                    message = '[' + level + '] ' + event['log4j:Message'][0];
+                    const info = event['$']
+
+                    message = {
+                        level: info.level,
+                        logger: info.logger,
+                        thread: info.thread,
+                        timestamp: info.timestamp,
+                        message: event["log4j:Message"][0]
+                    }
                 } else {
-                    message = `[${prefix}] ${xml}`;
+                    message = {
+                        level: defaultLevel,
+                        logger: defaultLogger,
+                        thread: "",
+                        timestamp: new Date().getTime(),
+                        message: xml
+                    };
                 }
                 openWithGameOutput && ipcRenderer.send('game-output-data', message);
             });
         }
 
-        this.command.stdout.on('data', data => parseMessage(data, "STDOUT"));
-        this.command.stderr.on('data', data => parseMessage(data, "STDERR"));
+        this.command.stdout.on('data', data => parseMessage(data, "INFO", "STDOUT"));
+        this.command.stderr.on('data', data => parseMessage(data, "ERROR", "STDERR"));
     }
 
     handleGameClose() {
