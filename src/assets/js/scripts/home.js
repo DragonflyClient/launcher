@@ -168,7 +168,7 @@ async function executeJar() {
   }
 
   const command = exec(
-    `java ` +
+    `javaw ` +
       `-javaagent:dragonfly-agent.jar ` +
       `-Djava.library.path=dragonfly\\natives-${targetVersion} ` +
       `-Dlog4j.configurationFile=assets\\log_configs\\${logFile} ` +
