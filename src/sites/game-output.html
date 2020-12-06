@@ -39,9 +39,8 @@
 
     const gameOutputWrapper = document.getElementById('game-output')
     ipcRenderer.on('game-output-data', (e, args) => {
-        console.log(args)
-        gameOutputWrapper.innerHTML += args + "<br>"
-        console.log(gameOutputWrapper.scrollTop, 'SH', gameOutputWrapper.scrollHeight)
+        const cleanMessage = `[${args.level}] ${args.message}`
+        gameOutputWrapper.innerHTML += cleanMessage + "<br>"
         gameOutputWrapper.scrollTop = gameOutputWrapper.scrollHeight;
     })
 </script>
