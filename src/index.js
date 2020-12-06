@@ -133,8 +133,8 @@ const outputWindows = {};
 
 const createGameOutputWindow = async (pid) => {
     gameOutputWindow = new BrowserWindow({
-        width: 900,
-        height: 500,
+        width: 1000,
+        height: 600,
         show: false,
         resizable: false,
         webPreferences: globalWebPreferences,
