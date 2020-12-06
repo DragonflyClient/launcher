@@ -193,7 +193,7 @@ class Launcher {
     executeCommand() {
         const mainClass = "net.minecraft.client.main.Main"
         const jvmArgs = [
-            "-javaagent:dragonfly-agent.jar",
+            `-javaagent:dragonfly-agent.jar=${this.targetVersion}`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
             `-Dlog4j.configurationFile=assets\\log_configs\\${this.logFile}`,
             `-cp ${this.classPathArgument}`
