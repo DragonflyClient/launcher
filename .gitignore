@@ -95,3 +95,12 @@ secrets/
 
 # Deployment config
 electron-builder.yml
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/.gitignore
+/.idea/discord.xml
+/.idea/dragonfly-launcher.iml
+/.idea/git_toolbox_prj.xml
+/.idea/jsLibraryMappings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
