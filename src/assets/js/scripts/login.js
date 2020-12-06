@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
 const app = require('electron').remote.app;
 const shell = require('electron').shell;
 
@@ -140,10 +140,6 @@ Array.from(externalLinks).forEach(function (link) {
   });
 });
 
-function readToken() {
-  ipcRenderer.send('drgn-auth-read');
-}
-
 function changeButtonState(button = document.querySelector('#login-submit-btn')) {
   if (button.getAttribute('disabled') || button.getAttribute('disabled' == 'true')) {
     setTimeout(() => {
@@ -163,6 +159,17 @@ function changeButtonState(button = document.querySelector('#login-submit-btn'))
     `;
   }
 }
+
+document.getElementById('close-btn').addEventListener('click', function (e) {
+  console.log('CLOSE BTN CLICKED');
+  var window = remote.getCurrentWindow();
+  window.close();
+});
+
+document.getElementById('min-btn').addEventListener('click', function (e) {
+  var window = remote.getCurrentWindow();
+  window.minimize();
+});
 
 // Receive Dragonfly authentication replies
 ipcRenderer.on('drgn-auth-reply', (event, arg) => {
