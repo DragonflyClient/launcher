@@ -129,7 +129,9 @@ const createMainWindow = async () => {
     });
 };
 
-const createGameOutputWindow = async () => {
+const outputWindows = {};
+
+const createGameOutputWindow = async (pid) => {
     gameOutputWindow = new BrowserWindow({
         width: 900,
         height: 500,
@@ -137,6 +139,7 @@ const createGameOutputWindow = async () => {
         resizable: false,
         webPreferences: globalWebPreferences,
     });
+    outputWindows[pid] = gameOutputWindow;
     let windowId = gameOutputWindow.id;
     gameOutputWindow.loadFile(path.join(__dirname, 'sites/game-output.html'));
 
@@ -248,8 +251,8 @@ ipcMain.on('check_for_updates', (event) => {
     }
 });
 
-ipcMain.on('open-game-output', (event) => {
-    createGameOutputWindow();
+ipcMain.on('open-game-output', (event, args) => {
+    createGameOutputWindow(args.pid);
 });
 
 ipcMain.on('game-output-data', (event, args) => {
@@ -270,6 +273,11 @@ ipcMain.on('open-game', (e, args) => {
 
 ipcMain.on('game-closed', (e, args) => {
     const openGames = args.openGames;
+    const closeGameOutput = args.closeGameOutput;
+    const outputWindow = outputWindows[args.closedGameObject.pid];
+
+    outputWindow && closeGameOutput && outputWindow.close();
+
     if (openGames.length == 0) {
         discordRPC
             .setPresence({

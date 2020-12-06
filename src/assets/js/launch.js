@@ -13,58 +13,58 @@ let version = '1.8.8';
 let openGames = [];
 
 function setVersion(newVersion) {
-    console.log("* User changed version to " + newVersion)
-    version = newVersion
+    console.log('* User changed version to ' + newVersion);
+    version = newVersion;
 }
 
 async function startGame(callback) {
     try {
-        const launcher = new Launcher(version)
+        const launcher = new Launcher(version);
 
-        callback("Preparing version")
-        launcher.prepareVersion()
+        callback('Preparing version');
+        launcher.prepareVersion();
 
-        callback("Setting up account")
-        launcher.setupAccount()
+        callback('Setting up account');
+        launcher.setupAccount();
 
-        callback("Parsing JSON configuration")
-        launcher.parseJsonConfiguration()
+        callback('Parsing JSON configuration');
+        launcher.parseJsonConfiguration();
 
-        callback("Loading libraries")
-        launcher.loadLibraries()
+        callback('Loading libraries');
+        launcher.loadLibraries();
 
-        callback("Loading native libraries")
-        launcher.loadNatives()
+        callback('Loading native libraries');
+        launcher.loadNatives();
 
-        callback("Loading assets")
-        launcher.loadAssets()
+        callback('Loading assets');
+        launcher.loadAssets();
 
-        callback("Loading log configuration")
-        launcher.loadLogConfiguration()
+        callback('Loading log configuration');
+        launcher.loadLogConfiguration();
 
-        callback("Launching game");
-        launcher.executeCommand()
+        callback('Launching game');
+        launcher.executeCommand();
 
-        launcher.handleGameStart()
-        launcher.handleGameClose()
-        launcher.enableLogging()
+        launcher.handleGameStart();
+        launcher.handleGameClose();
+        launcher.enableLogging();
     } catch (err) {
-        console.log("! Caught error: " + err)
+        console.log('! Caught error: ' + err);
     }
 }
 
 class Launcher {
     constructor(version) {
-        this.targetVersion = version
+        this.targetVersion = version;
     }
 
     prepareVersion() {
         // select Minecraft directory
-        const targetVersion = this.targetVersion
+        const targetVersion = this.targetVersion;
         const appData = process.env.APPDATA;
         const minecraftDir = appData + '\\.minecraft';
 
-        this.minecraftDir = minecraftDir
+        this.minecraftDir = minecraftDir;
 
         console.log(`== Starting version ${targetVersion} ==`);
         console.log('> Minecraft home: ' + minecraftDir);
@@ -78,7 +78,7 @@ class Launcher {
                 icon: 'error',
                 confirmButtonText: 'Okay',
             });
-            throw "version_not_installed"
+            throw 'version_not_installed';
         }
 
         // select version directory + JAR/JSON files
@@ -92,7 +92,7 @@ class Launcher {
 
     setupAccount() {
         // take first account from launcher_accounts.json
-        const launcherAccounts = JSON.parse(fs.readFileSync(`${(this.minecraftDir)}\\launcher_accounts.json`));
+        const launcherAccounts = JSON.parse(fs.readFileSync(`${this.minecraftDir}\\launcher_accounts.json`));
         const firstAccountKey = Object.keys(launcherAccounts.accounts)[0];
         const firstAccount = launcherAccounts.accounts[firstAccountKey];
 
@@ -113,7 +113,7 @@ class Launcher {
     }
 
     parseJsonConfiguration() {
-        this.json = JSON.parse(fs.readFileSync(this.jsonFile))
+        this.json = JSON.parse(fs.readFileSync(this.jsonFile));
     }
 
     loadLibraries() {
@@ -124,19 +124,17 @@ class Launcher {
 
     loadNatives() {
         // parse natives from JSON
-        const nativesFromJson = this.json.libraries
-            .filter((e) => e.downloads.classifiers)
-            .map((e) => e.downloads.classifiers['natives-windows']);
-        const extractionDir = `${(this.minecraftDir)}\\dragonfly\\tmp\\natives_extract`;
-        const targetDir = `${(this.minecraftDir)}\\dragonfly\\natives-${(this.targetVersion)}`;
+        const nativesFromJson = this.json.libraries.filter((e) => e.downloads.classifiers).map((e) => e.downloads.classifiers['natives-windows']);
+        const extractionDir = `${this.minecraftDir}\\dragonfly\\tmp\\natives_extract`;
+        const targetDir = `${this.minecraftDir}\\dragonfly\\natives-${this.targetVersion}`;
 
-        this.recreateDirectory(extractionDir)
+        this.recreateDirectory(extractionDir);
 
         // extract natives
         nativesFromJson.forEach((native) => {
             if (!native) return;
 
-            const file = `${(this.minecraftDir)}\\libraries\\${native.path.replaceAll('/', '\\')}`;
+            const file = `${this.minecraftDir}\\libraries\\${native.path.replaceAll('/', '\\')}`;
             const simpleName = native.path.split('/')[native.path.split('/').length - 1];
 
             if (!fs.existsSync(file)) return console.log('> Unable to find native file ' + simpleName);
@@ -156,19 +154,19 @@ class Launcher {
             const upToDate = extractedContent.every((value, index) => targetContent[index] === value);
             if (upToDate) {
                 console.log('> Natives are up to date');
-                this.deleteDirectory(extractionDir)
-                return
+                this.deleteDirectory(extractionDir);
+                return;
             }
         }
 
         // move to target directory if not up to date
-        this.deleteDirectory(targetDir)
+        this.deleteDirectory(targetDir);
         fse.moveSync(extractionDir, targetDir, { overwrite: true });
-        this.deleteDirectory(extractionDir)
+        this.deleteDirectory(extractionDir);
     }
 
     recreateDirectory(dir) {
-        this.deleteDirectory(dir)
+        this.deleteDirectory(dir);
         fs.mkdirSync(dir, { recursive: true });
     }
 
@@ -191,13 +189,13 @@ class Launcher {
     }
 
     executeCommand() {
-        const mainClass = "net.minecraft.client.main.Main"
+        const mainClass = 'net.minecraft.client.main.Main';
         const jvmArgs = [
             `-javaagent:dragonfly-agent.jar=${this.targetVersion}`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
             `-Dlog4j.configurationFile=assets\\log_configs\\${this.logFile}`,
-            `-cp ${this.classPathArgument}`
-        ]
+            `-cp ${this.classPathArgument}`,
+        ];
         const programArgs = {
             version: this.targetVersion,
             assetsDir: this.assetsDir,
@@ -205,26 +203,26 @@ class Launcher {
             accessToken: this.accessToken,
             uuid: this.uuid,
             username: this.name,
-            userProperties: `"${JSON.stringify(this.propertiesObj).replaceAll('"', '\"')}"`,
-            userType: "mojang"
-        }
+            userProperties: `"${JSON.stringify(this.propertiesObj).replaceAll('"', '"')}"`,
+            userType: 'mojang',
+        };
 
-        const command = this.buildCommand(jvmArgs, programArgs, mainClass)
+        const command = this.buildCommand(jvmArgs, programArgs, mainClass);
 
-        this.gameProcess = exec(command, { cwd: this.minecraftDir, });
+        this.gameProcess = exec(command, { cwd: this.minecraftDir });
     }
 
     buildCommand(jvmArgs, programArgs, mainClass) {
-        let command = "javaw"
-        command += " "
-        command += jvmArgs.join(" ")
-        command += " "
-        command += mainClass
-        command += " "
+        let command = 'javaw';
+        command += ' ';
+        command += jvmArgs.join(' ');
+        command += ' ';
+        command += mainClass;
+        command += ' ';
         command += Object.keys(programArgs)
-            .map(key => `--${key} ${programArgs[key]}`)
-            .join(" ")
-        return command
+            .map((key) => `--${key} ${programArgs[key]}`)
+            .join(' ');
+        return command;
     }
 
     handleGameStart() {
@@ -237,60 +235,63 @@ class Launcher {
         };
 
         openGames.push(this.gameObject);
+        console.log('> Open games: ', openGames);
+        console.log('> Game object: ', this.gameObject);
         ipcRenderer.send('open-game', { openGames: openGames, gameObject: this.gameObject });
-        if (this.openWithGameOutput) ipcRenderer.send('open-game-output');
+        if (this.openWithGameOutput) ipcRenderer.send('open-game-output', this.gameObject);
 
         console.log(`> Game startup (${openGames.length} running)`);
     }
 
     enableLogging() {
-        const openWithGameOutput = this.openWithGameOutput
+        const openWithGameOutput = this.openWithGameOutput;
         const parser = new xml2js.Parser();
         const parseMessage = (data, defaultLevel, defaultLogger) => {
-            if (!data || !data.toString()) return
+            if (!data || !data.toString()) return;
             const xml = data.toString();
 
             parser.parseString(xml, function (err, result) {
                 let message;
                 if (result) {
                     const event = result['log4j:Event'];
-                    const info = event['$']
+                    const info = event['$'];
 
                     message = {
                         level: info.level,
                         logger: info.logger,
                         thread: info.thread,
                         timestamp: info.timestamp,
-                        message: event["log4j:Message"][0]
-                    }
+                        message: event['log4j:Message'][0],
+                    };
                 } else {
                     message = {
                         level: defaultLevel,
                         logger: defaultLogger,
-                        thread: "",
+                        thread: '',
                         timestamp: new Date().getTime(),
-                        message: xml
+                        message: xml,
                     };
                 }
                 openWithGameOutput && ipcRenderer.send('game-output-data', message);
             });
-        }
+        };
 
-        this.gameProcess.stdout.on('data', data => parseMessage(data, "INFO", "STDOUT"));
-        this.gameProcess.stderr.on('data', data => parseMessage(data, "ERROR", "STDERR"));
+        this.gameProcess.stdout.on('data', (data) => parseMessage(data, 'INFO', 'STDOUT'));
+        this.gameProcess.stderr.on('data', (data) => parseMessage(data, 'ERROR', 'STDERR'));
     }
 
     handleGameClose() {
-        const command = this.gameProcess
+        this.closeGameOutput = document.getElementById('close-game-output').checked;
+        const command = this.gameProcess;
         command.on('close', () => {
             const closedGameObject = openGames.find((game) => game.pid === command.pid);
             openGames = openGames.filter((game) => game.pid !== command.pid);
-            ipcRenderer.send('game-closed', { openGames: openGames, closedGameObject: closedGameObject });
+            ipcRenderer.send('game-closed', { openGames: openGames, closedGameObject: closedGameObject, closeGameOutput: this.closeGameOutput });
 
             console.log(`> Game closed (${openGames.length} running)`);
         });
     }
 }
 
-module.exports.setVersion = setVersion
-module.exports.startGame = startGame
+module.exports.setVersion = setVersion;
+module.exports.startGame = startGame;
