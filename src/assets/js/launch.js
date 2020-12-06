@@ -17,18 +17,32 @@ function setVersion(newVersion) {
     version = newVersion
 }
 
-async function startGame() {
+async function startGame(callback) {
     try {
         const launcher = new Launcher(version)
 
+        callback("Preparing version")
         launcher.prepareVersion()
+
+        callback("Setting up account")
         launcher.setupAccount()
+
+        callback("Parsing JSON configuration")
         launcher.parseJsonConfiguration()
+
+        callback("Loading libraries")
         launcher.loadLibraries()
+
+        callback("Loading native libararies")
         launcher.loadNatives()
+
+        callback("Loading assets")
         launcher.loadAssets()
+
+        callback("Loading log configuration")
         launcher.loadLogConfiguration()
 
+        callback("Launching game")
         launcher.executeCommand()
 
         launcher.handleGameStart()
