@@ -118,7 +118,7 @@ class Launcher {
 
     loadLibraries() {
         const libraries = this.json.libraries.filter((e) => e.downloads.artifact);
-        this.classPathCmd = libraries.map((e) => `libraries/${e.downloads.artifact.path}`).join(';') + ';' + this.jarFile;
+        this.classPathArgument = libraries.map((e) => `libraries/${e.downloads.artifact.path}`).join(';') + ';' + this.jarFile;
         console.log(`> Including ${libraries.length} libraries`);
     }
 
@@ -191,25 +191,40 @@ class Launcher {
     }
 
     executeCommand() {
-        this.command = exec(
-            `javaw ` +
-            `-javaagent:dragonfly-agent.jar ` +
-            `-Djava.library.path=dragonfly\\natives-${this.targetVersion} ` +
-            `-Dlog4j.configurationFile=assets\\log_configs\\${this.logFile} ` +
-            `-cp ${this.classPathCmd} ` +
-            `net.minecraft.client.main.Main ` +
-            `--version ${this.targetVersion} ` +
-            `--assetsDir ${this.assetsDir} ` +
-            `--assetIndex ${this.assetsIndex} ` +
-            `--accessToken ${this.accessToken} ` +
-            `--uuid ${this.uuid} ` +
-            `--username ${name} ` +
-            `--userProperties "${JSON.stringify(this.propertiesObj).replaceAll('"', '\\"')}" ` +
-            `--userType mojang`,
-            {
-                cwd: this.minecraftDir,
-            }
-        );
+        const mainClass = "net.minecraft.client.main.Main"
+        const jvmArgs = [
+            "-javaagent:dragonfly-agent.jar",
+            `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
+            `-Dlog4j.configurationFile=assets\\log_configs\\${this.logFile}`,
+            `-cp ${this.classPathArgument}`
+        ]
+        const programArgs = {
+            version: this.targetVersion,
+            assetsDir: this.assetsDir,
+            assetIndex: this.assetsIndex,
+            accessToken: this.accessToken,
+            uuid: this.uuid,
+            username: this.name,
+            userProperties: `"${JSON.stringify(this.propertiesObj).replaceAll('"', '\"')}"`,
+            userType: "mojang"
+        }
+
+        const command = this.buildCommand(jvmArgs, programArgs, mainClass)
+
+        this.gameProcess = exec(command, { cwd: this.minecraftDir, });
+    }
+
+    buildCommand(jvmArgs, programArgs, mainClass) {
+        let command = "javaw"
+        command += " "
+        command += jvmArgs.join(" ")
+        command += " "
+        command += mainClass
+        command += " "
+        command += Object.keys(programArgs)
+            .map(key => `--${key} ${programArgs[key]}`)
+            .join(" ")
+        return command
     }
 
     handleGameStart() {
@@ -218,7 +233,7 @@ class Launcher {
         this.gameObject = {
             gameVersion: this.targetVersion,
             playerUUID: this.uuid,
-            pid: this.command.pid,
+            pid: this.gameProcess.pid,
         };
 
         openGames.push(this.gameObject);
@@ -261,12 +276,12 @@ class Launcher {
             });
         }
 
-        this.command.stdout.on('data', data => parseMessage(data, "INFO", "STDOUT"));
-        this.command.stderr.on('data', data => parseMessage(data, "ERROR", "STDERR"));
+        this.gameProcess.stdout.on('data', data => parseMessage(data, "INFO", "STDOUT"));
+        this.gameProcess.stderr.on('data', data => parseMessage(data, "ERROR", "STDERR"));
     }
 
     handleGameClose() {
-        const command = this.command
+        const command = this.gameProcess
         command.on('close', () => {
             const closedGameObject = openGames.find((game) => game.pid === command.pid);
             openGames = openGames.filter((game) => game.pid !== command.pid);
