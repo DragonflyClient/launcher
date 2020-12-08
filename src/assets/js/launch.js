@@ -193,15 +193,14 @@ class Launcher {
 
     compileMappings() {
         console.log('> Compiling mappings');
-        execSync(`javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
+        console.log(execSync(`javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
             `--version ${this.targetVersion} ` +
             `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
             `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
             {
-                cwd: this.minecraftDir,
-                stdio: "inherit"
+                cwd: this.minecraftDir
             }
-        );
+        ).toString());
     }
 
     executeCommand() {
