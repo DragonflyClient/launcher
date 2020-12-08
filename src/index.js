@@ -102,7 +102,6 @@ const createMainWindow = async () => {
         height: 800,
         webPreferences: globalWebPreferences,
     });
-    mainWindow.toggleDevTools();
 
     let windowId = mainWindow.id;
     await mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
@@ -133,11 +132,14 @@ const outputWindows = {};
 
 const createGameOutputWindow = async (pid) => {
     gameOutputWindow = new BrowserWindow({
-        width: 1000,
-        height: 600,
+        width: 1400,
+        height: 800,
         show: false,
-        resizable: false,
+        resizable: true,
         webPreferences: globalWebPreferences,
+        x: 100,
+        y: 100,
+        autoHideMenuBar: true
     });
     outputWindows[pid] = gameOutputWindow;
     let windowId = gameOutputWindow.id;
