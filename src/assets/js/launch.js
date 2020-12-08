@@ -193,7 +193,7 @@ class Launcher {
         const jvmArgs = [
             `-javaagent:dragonfly-agent.jar=${this.targetVersion}`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
-            `-Dlog4j.configurationFile=assets\\log_configs\\${this.logFile}`,
+            `-Dlog4j.configurationFile=dragonfly\\log-configs\\${this.logFile}`,
             `-cp ${this.classPathArgument}`,
         ];
         const programArgs = {
@@ -276,7 +276,7 @@ class Launcher {
             });
         };
 
-        this.gameProcess.stdout.on('data', (data) => parseMessage(data, 'INFO', 'STDOUT'));
+        this.gameProcess.stdout.on('data', (data) => parseMessage(data, 'DEBUG', 'STDOUT'));
         this.gameProcess.stderr.on('data', (data) => parseMessage(data, 'ERROR', 'STDERR'));
     }
 
