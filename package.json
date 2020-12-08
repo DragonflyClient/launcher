@@ -14,6 +14,33 @@
         "build-win": "electron-builder build --win --publish never",
         "publish": "electron-builder build --win --publish always"
     },
+    "build": {
+        "extraResources": [
+            "./extraResources"
+        ],
+        "productName": "Dragonfly Launcher",
+        "appId": "net.playdragonfly.Launcher",
+        "win": {
+            "icon": "src/assets/media/Logo.png",
+            "target": [
+                "nsis"
+            ]
+        },
+        "nsis": {
+            "installerIcon": "src/assets/media/Logo.ico",
+            "uninstallerIcon": "src/assets/media/Logo.ico",
+            "uninstallDisplayName": "Dragonfly Launcher",
+            "license": "license.txt",
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
+        },
+        "directories": {
+            "output": "dist"
+        },
+        "publish": {
+            "provider": "github"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/DragonflyClient/launcher-releases.git"
