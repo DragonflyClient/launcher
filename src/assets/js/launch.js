@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const { ensureDirectoryExistence } = require('../../utilities/path.js');
 const fs = require('fs');
 const fse = require('fs-extra');
@@ -17,7 +17,7 @@ function setVersion(newVersion) {
     version = newVersion;
 }
 
-async function startGame(callback) {
+function startGame(callback) {
     try {
         const launcher = new Launcher(version);
 
@@ -41,6 +41,9 @@ async function startGame(callback) {
 
         callback('Loading log configuration');
         launcher.loadLogConfiguration();
+
+        callback('Compiling mapping indices');
+        launcher.compileMappings();
 
         callback('Launching game');
         launcher.executeCommand();
@@ -186,6 +189,18 @@ class Launcher {
     loadLogConfiguration() {
         this.logFile = this.json.logging.client.file.id;
         console.log('> Log configuration: ' + this.logFile);
+    }
+
+    compileMappings() {
+        console.log('> Compiling mappings');
+        console.log(execSync(`javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
+            `--version ${this.targetVersion} ` +
+            `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
+            `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
+            {
+                cwd: this.minecraftDir
+            }
+        ).toString());
     }
 
     executeCommand() {
