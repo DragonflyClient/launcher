@@ -120,8 +120,12 @@ class Launcher {
     }
 
     loadLibraries() {
-        const libraries = this.json.libraries.filter((e) => e.downloads.artifact);
-        this.classPathArgument = libraries.map((e) => `libraries/${e.downloads.artifact.path}`).join(';') + ';' + this.jarFile;
+        const libraries = this.json.libraries.filter(e => e.downloads && e.downloads.artifact)
+            .map(e => `libraries/${e.downloads.artifact.path}`);
+        libraries.push(this.jarFile)
+        libraries.push("dragonfly/injection/injection-hook-shared.jar")
+        libraries.push(`dragonfly/injection/injection-hook-${this.targetVersion}.jar`)
+        this.classPathArgument = libraries.join(';');
         console.log(`> Including ${libraries.length} libraries`);
     }
 
@@ -205,8 +209,14 @@ class Launcher {
 
     executeCommand() {
         const mainClass = 'net.minecraft.client.main.Main';
+        const versionId = this.targetVersion.replaceAll(".", "")
+        const agentArgs = [
+            `-v ${this.targetVersion}`,
+            `-i net.dragonfly.injection.shared.SharedInjectionHook`,
+            `-i net.dragonfly.injection${versionId}.InjectionHook${versionId}`
+        ]
         const jvmArgs = [
-            `-javaagent:dragonfly-agent.jar=${this.targetVersion}`,
+            `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
             `-Dlog4j.configurationFile=dragonfly\\log-configs\\${this.logFile}`,
             `-cp ${this.classPathArgument}`,
