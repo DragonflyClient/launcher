@@ -5,6 +5,7 @@ const fse = require('fs-extra');
 const Swal = require('sweetalert2');
 const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
+const axios = require('axios');
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -17,7 +18,7 @@ function setVersion(newVersion) {
     version = newVersion;
 }
 
-function startGame(callback) {
+async function startGame(callback) {
     try {
         const launcher = new Launcher(version);
 
@@ -25,7 +26,7 @@ function startGame(callback) {
         launcher.prepareVersion();
 
         callback('Setting up account');
-        launcher.setupAccount();
+        await launcher.setupAccount();
 
         callback('Parsing JSON configuration');
         launcher.parseJsonConfiguration();
@@ -52,7 +53,7 @@ function startGame(callback) {
         launcher.handleGameClose();
         launcher.enableLogging();
     } catch (err) {
-        console.log('! Caught error: ' + err);
+        console.trace('! Caught error: ' + err);
     }
 }
 
@@ -93,15 +94,38 @@ class Launcher {
         console.log(`> Configuring with JSON file ${this.jsonFile}`);
     }
 
-    setupAccount() {
+    async setupAccount() {
         // take first account from launcher_accounts.json
-        const launcherAccounts = JSON.parse(fs.readFileSync(`${this.minecraftDir}\\launcher_accounts.json`));
+        const file = `${this.minecraftDir}\\launcher_accounts.json`;
+        const launcherAccounts = JSON.parse(fs.readFileSync(file));
         const firstAccountKey = Object.keys(launcherAccounts.accounts)[0];
         const firstAccount = launcherAccounts.accounts[firstAccountKey];
 
-        this.accessToken = firstAccount.accessToken;
+        try {
+            console.log('=== Pre refresh ===');
+            console.log('Access token: ', firstAccount.accessToken);
+            console.log('Client token: ', launcherAccounts.mojangClientToken);
+            console.log('====================================');
+            const response = await axios.post('https://authserver.mojang.com/refresh', {
+                accessToken: firstAccount.accessToken,
+                clientToken: launcherAccounts.mojangClientToken,
+            });
+            const { accessToken } = response.data;
+            console.log('Mojang refresh request response: ', response.data);
+
+            this.accessToken = accessToken;
+
+            firstAccount.accessToken = accessToken;
+            launcherAccounts[firstAccountKey] = firstAccount;
+
+            fs.writeFileSync(file, JSON.stringify(launcherAccounts));
+        } catch (error) {
+            this.accessToken = firstAccount.accessToken;
+        }
+
         this.uuid = firstAccount.minecraftProfile.id;
         this.name = firstAccount.minecraftProfile.name;
+        this.mojangClientToken = launcherAccounts.mojangClientToken;
 
         // parse user properties
         const properties = firstAccount.userProperites || firstAccount.userProperties;
@@ -120,11 +144,10 @@ class Launcher {
     }
 
     loadLibraries() {
-        const libraries = this.json.libraries.filter(e => e.downloads && e.downloads.artifact)
-            .map(e => `libraries/${e.downloads.artifact.path}`);
-        libraries.push(this.jarFile)
-        libraries.push("dragonfly/injection/injection-hook-shared.jar")
-        libraries.push(`dragonfly/injection/injection-hook-${this.targetVersion}.jar`)
+        const libraries = this.json.libraries.filter((e) => e.downloads && e.downloads.artifact).map((e) => `libraries/${e.downloads.artifact.path}`);
+        libraries.push(this.jarFile);
+        libraries.push('dragonfly/injection/injection-hook-shared.jar');
+        libraries.push(`dragonfly/injection/injection-hook-${this.targetVersion}.jar`);
         this.classPathArgument = libraries.join(';');
         console.log(`> Including ${libraries.length} libraries`);
     }
@@ -197,24 +220,29 @@ class Launcher {
 
     compileMappings() {
         console.log('> Compiling mappings');
-        console.log(execSync(`javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
-            `--version ${this.targetVersion} ` +
-            `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
-            `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
-            {
-                cwd: this.minecraftDir
-            }
-        ).toString());
+        console.log(
+            execSync(
+                `javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
+                    `--version ${this.targetVersion} ` +
+                    `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
+                    `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
+                {
+                    cwd: this.minecraftDir,
+                }
+            ).toString()
+        );
     }
 
     executeCommand() {
+        console.log('Target version: ', this.targetVersion);
+        console.log('Properties object: ', this.propertiesObj);
         const mainClass = 'net.minecraft.client.main.Main';
-        const versionId = this.targetVersion.replaceAll(".", "")
+        const versionId = this.targetVersion.replaceAll('.', '');
         const agentArgs = [
             `-v ${this.targetVersion}`,
             `-i net.dragonfly.injection.shared.SharedInjectionHook`,
-            `-i net.dragonfly.injection${versionId}.InjectionHook${versionId}`
-        ]
+            `-i net.dragonfly.injection${versionId}.InjectionHook${versionId}`,
+        ];
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
