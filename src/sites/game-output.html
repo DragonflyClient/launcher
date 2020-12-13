@@ -1,148 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game output</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        @font-face {
-            font-family: "JetBrains Mono";
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: local("../assets/fonts/JetBrainsMono-Regular.woff2");
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Game output</title>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <style>
+            @font-face {
+                font-family: "JetBrains Mono";
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+                src: local("../assets/fonts/JetBrainsMono-Regular.woff2");
+            }
 
-        @font-face {
-            font-family: "JetBrains Mono";
-            font-style: normal;
-            font-weight: 500;
-            font-display: swap;
-            src: local("../assets/fonts/JetBrainsMono-Medium.woff2");
-        }
+            @font-face {
+                font-family: "JetBrains Mono";
+                font-style: normal;
+                font-weight: 500;
+                font-display: swap;
+                src: local("../assets/fonts/JetBrainsMono-Medium.woff2");
+            }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "JetBrains Mono", monospace;
-            font-weight: 400;
-            font-size: .9rem;
-            color: #D0D2D2;
-        }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "JetBrains Mono", monospace;
+                font-weight: 400;
+                font-size: .9rem;
+                color: #D0D2D2;
+            }
 
-        html, body {
-            height: 100vh;
-            overflow: hidden;
-            background: #37393a;
-        }
+            html, body {
+                height: 100vh;
+                overflow: hidden;
+                background: #37393a;
+            }
 
-        .level-trace span {
-            color: #8D8F8D;
-        }
+            .level-trace span {
+                color: #8D8F8D;
+            }
 
-        .level-debug span {
-            color: #C4EACF;
-        }
+            .level-debug span {
+                color: #C4EACF;
+            }
 
-        .level-warn span {
-            color: #CD9F7F;
-        }
+            .level-warn span {
+                color: #CD9F7F;
+            }
 
-        .level-error span {
-            color: #D69796;
-            font-weight: 500;
-        }
+            .level-error span {
+                color: #D69796;
+                font-weight: 500;
+            }
 
-        .level-fatal span {
-            color: #d92024;
-            font-weight: 500;
-        }
+            .level-fatal span {
+                color: #d92024;
+                font-weight: 500;
+            }
 
-        .logger-stdout span {
-            color: #BCE2F4;
-        }
+            .logger-stdout {
+                color: #D0D2D2;
+            }
 
-        #game-output {
-            max-height: 100%;
-            overflow: auto;
-            padding: 10px 0;
-        }
+            .logger-dragonfly-injector span {
+                color: #C4B3D3;
+                font-weight: 500;
+            }
 
-        .output__overview-wrapper {
-            display: flex;
-            align-items: center;
-        }
+            #game-output {
+                max-height: 100%;
+                overflow: auto;
+                padding: 10px 0;
+            }
 
-        .output__overview-wrapper span {
-            margin: 5px 20px;
-            max-width: 140px;
-            width: 100%;
-            word-break: break-word;
-        }
+            .output__overview-wrapper {
+                display: flex;
+                align-items: center;
+            }
 
-        .output__overview-timestamp {
-            max-width: 75px !important;
-            width: 100%;
-        }
+            .output__overview-wrapper span {
+                margin: 5px 20px;
+                max-width: 140px;
+                width: 100%;
+                word-break: break-word;
+            }
 
-        .output__overview-logger {
-            max-width: 145px !important;
-            width: 100%;
-        }
+            .output__overview-timestamp {
+                max-width: 75px !important;
+                width: 100%;
+            }
 
-        .output__overview-thread {
-            max-width: 145px !important;
-            width: 100%;
-        }
+            .output__overview-logger {
+                max-width: 145px !important;
+                width: 100%;
+            }
 
-        .output__overview-message {
-            max-width: 100% !important;
-            width: 100%;
-        }
+            .output__overview-thread {
+                max-width: 145px !important;
+                width: 100%;
+            }
 
-        .output__icon {
-            display: inline-block;
-            height: 20px !important;
-            max-width: 20px !important;
-            background-color: transparent;
-            margin: 0 -6px 0 12px !important;
-        }
+            .output__overview-message {
+                max-width: 100% !important;
+                width: 100%;
+            }
 
-        .logger-dragonfly-injector .output__icon {
-            background-image: url("../assets/media/injector.png");
-            background-size: cover;
-        }
+            .output__icon {
+                display: inline-block;
+                height: 20px !important;
+                max-width: 20px !important;
+                background-color: transparent;
+                margin: 0 -6px 0 12px !important;
+            }
 
-        #game-output .output__overview-wrapper {
-            border-top: 1px solid #424345;
-        }
+            .logger-dragonfly-injector .output__icon {
+                background-image: url("../assets/media/injector.png");
+                background-size: cover;
+            }
 
-        #game-output .output__overview-wrapper:nth-child(1) {
-            border-top: none;
-        }
+            #game-output .output__overview-wrapper {
+                border-top: 1px solid #424345;
+            }
 
-    </style>
-</head>
+            #game-output .output__overview-wrapper:nth-child(1) {
+                border-top: none;
+            }
 
-<body>
-    <div id="game-output">
-    </div>
-</body>
-<script>
-    const { ipcRenderer } = require('electron')
+        </style>
+    </head>
 
-    const div = document.getElementById('game-output')
-    ipcRenderer.on('game-output-data', (e, args) => {
-        const gameOutput = args
-        const timestamp = new Date(parseInt(gameOutput.timestamp)).toLocaleTimeString();
-        const shouldScroll = div.scrollTop === div.scrollHeight - div.offsetHeight ||
-              div.scrollTop === 0
+    <body>
+        <div id="game-output">
+        </div>
+    </body>
+    <script>
+        const { ipcRenderer } = require('electron')
+        const div = document.getElementById('game-output')
+        let autoScrollHappened = false;
 
-        const fullMessage = `
+        ipcRenderer.on('game-output-data', (e, args) => {
+            const gameOutput = args
+            const timestamp = new Date(parseInt(gameOutput.timestamp)).toLocaleTimeString();
+            const shouldScroll = div.scrollTop === div.scrollHeight - div.offsetHeight ||
+                  (div.scrollTop === 0 && !autoScrollHappened)
+
+            const fullMessage = `
             <div class="output__overview-wrapper level-${gameOutput.level.toLowerCase()} logger-${gameOutput.logger.toLowerCase().replaceAll(" ", "_")}">
                <span class="output__icon"></span>
                <span class="output__overview-timestamp">${timestamp}</span>
@@ -151,12 +157,14 @@
                <span class="output__overview-message">${gameOutput.message}</span>
             </div>
         `
-        div.innerHTML += fullMessage
+            div.innerHTML += fullMessage
 
-        if (shouldScroll) {
-            div.scrollTop = div.scrollHeight;
-        }
-    })
-</script>
+            if (shouldScroll) {
+                if (div.scrollHeight - div.offsetHeight !== 0)
+                    autoScrollHappened = true
+                div.scrollTop = div.scrollHeight;
+            }
+        })
+    </script>
 
 </html>
