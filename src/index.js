@@ -23,8 +23,6 @@ let loadingWindow;
 let loginWindow;
 let mainWindow;
 
-let gameOutputWindow;
-
 const globalWebPreferences = {
     nodeIntegration: true,
     enableRemoteModule: true,
@@ -131,7 +129,7 @@ const createMainWindow = async () => {
 const outputWindows = {};
 
 const createGameOutputWindow = async (pid) => {
-    gameOutputWindow = new BrowserWindow({
+    const gameOutputWindow = new BrowserWindow({
         width: 1400,
         height: 800,
         show: false,
@@ -139,25 +137,24 @@ const createGameOutputWindow = async (pid) => {
         webPreferences: globalWebPreferences,
         x: 100,
         y: 100,
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
     });
+    const windowId = gameOutputWindow.id;
+
     outputWindows[pid] = gameOutputWindow;
-    let windowId = gameOutputWindow.id;
     gameOutputWindow.loadFile(path.join(__dirname, 'sites/game-output.html'));
 
     gameOutputWindow.on('close', () => {
         openWindows.splice(windowIndex(windowId, openWindows), 1);
-        console.log(openWindows, 'OW after login close');
     });
 
     gameOutputWindow.on('closed', function () {
-        gameOutputWindow = null;
+        outputWindows[pid] = null;
     });
 
     gameOutputWindow.once('ready-to-show', () => {
         gameOutputWindow.show();
         openWindows.push(windowId);
-        console.log(openWindows, 'OW after login open');
     });
 };
 
@@ -258,8 +255,8 @@ ipcMain.on('open-game-output', (event, args) => {
 });
 
 ipcMain.on('game-output-data', (event, args) => {
-    // console.log(args, 'GAME OUTPUT!!!');
-    if (gameOutputWindow) gameOutputWindow.webContents.send('game-output-data', args);
+    const pid = args.pid;
+    if (outputWindows[pid]) outputWindows[pid].webContents.send('game-output-data', args.message);
 });
 
 ipcMain.on('open-game', (e, args) => {
