@@ -116,7 +116,7 @@ class Launcher {
             this.accessToken = accessToken;
 
             firstAccount.accessToken = accessToken;
-            launcherAccounts[firstAccountKey] = firstAccount;
+            launcherAccounts.accounts[firstAccountKey] = firstAccount;
 
             fs.writeFileSync(file, JSON.stringify(launcherAccounts));
         } catch (error) {
@@ -299,6 +299,7 @@ class Launcher {
     enableLogging() {
         const openWithGameOutput = this.openWithGameOutput;
         const parser = new xml2js.Parser();
+        const gameObject = this.gameObject;
         const parseMessage = (data, defaultLevel, defaultLogger) => {
             if (!data || !data.toString()) return;
             const xml = data.toString();
@@ -325,7 +326,7 @@ class Launcher {
                         message: xml,
                     };
                 }
-                openWithGameOutput && ipcRenderer.send('game-output-data', message);
+                openWithGameOutput && ipcRenderer.send('game-output-data', { message, pid: gameObject.pid });
             });
         };
 
@@ -335,11 +336,12 @@ class Launcher {
 
     handleGameClose() {
         this.closeGameOutput = document.getElementById('close-game-output').checked;
+        const closeGameOutput = this.closeGameOutput;
         const command = this.gameProcess;
         command.on('close', () => {
             const closedGameObject = openGames.find((game) => game.pid === command.pid);
             openGames = openGames.filter((game) => game.pid !== command.pid);
-            ipcRenderer.send('game-closed', { openGames: openGames, closedGameObject: closedGameObject, closeGameOutput: this.closeGameOutput });
+            ipcRenderer.send('game-closed', { openGames: openGames, closedGameObject: closedGameObject, closeGameOutput: closeGameOutput });
 
             console.log(`> Game closed (${openGames.length} running)`);
         });
