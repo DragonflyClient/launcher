@@ -1,0 +1,145 @@
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../../fonts/JetBrainsMono-Regular.woff2');
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../../fonts/JetBrainsMono-Medium.woff2');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: #d0d2d2;
+}
+
+html,
+body {
+    height: 100vh;
+    overflow: hidden;
+    background: #37393a;
+}
+
+.logger-dragonfly-injector span {
+    color: #c4b3d3;
+    font-weight: 500;
+}
+
+.level-trace span {
+    color: #8d8f8d;
+}
+
+.level-debug span {
+    color: #c4eacf;
+}
+
+.level-warn span {
+    color: #cd9f7f;
+}
+
+.level-error span {
+    color: #d69796;
+    font-weight: 500;
+}
+
+.level-fatal span {
+    color: #d92024;
+    font-weight: 500;
+}
+
+.logger-stdout {
+    color: #d0d2d2;
+}
+
+#game-output {
+    max-height: 100%;
+    overflow: auto;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 50px;
+}
+
+.output__overview-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.output__overview-wrapper span {
+    margin: 5px 20px;
+    max-width: 140px;
+    width: 100%;
+    word-break: break-word;
+}
+
+.output__overview-timestamp {
+    max-width: 75px !important;
+    width: 100%;
+}
+
+.output__overview-logger {
+    max-width: 145px !important;
+    width: 100%;
+}
+
+.output__overview-thread {
+    max-width: 145px !important;
+    width: 100%;
+}
+
+.output__overview-message {
+    max-width: 100% !important;
+    width: 100%;
+}
+
+.output__icon {
+    display: inline-block;
+    height: 20px !important;
+    max-width: 20px !important;
+    background-color: transparent;
+    margin: 0 -6px 0 12px !important;
+}
+
+.logger-dragonfly-injector .output__icon {
+    background-image: url('../assets/media/injector.png');
+    background-size: cover;
+}
+
+#game-output .output__overview-wrapper {
+    border-top: 1px solid #424345;
+}
+
+#game-output .output__overview-wrapper:nth-child(1) {
+    border-top: none;
+}
+
+#logger-controls {
+    position: fixed;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #424345;
+    padding: 20px;
+}
+
+.logger-control-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 160px;
+    border-right: 2px solid #333333;
+    padding: 0 20px;
+}
