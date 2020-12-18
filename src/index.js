@@ -72,7 +72,6 @@ const createLoginWindow = async () => {
 
     loginWindow.on('close', () => {
         openWindows.splice(windowIndex(windowId, openWindows), 1);
-        console.log(openWindows, 'OW after login close');
     });
 
     loginWindow.on('closed', function () {
@@ -89,7 +88,6 @@ const createLoginWindow = async () => {
             });
         loginWindow.show();
         openWindows.push(windowId);
-        console.log(openWindows, 'OW after login open');
     });
 };
 
@@ -106,7 +104,6 @@ const createMainWindow = async () => {
 
     mainWindow.on('close', () => {
         openWindows.splice(windowIndex(windowId, openWindows.length), 1);
-        console.log(openWindows, 'OW after main close');
     });
 
     mainWindow.on('closed', function () {
@@ -122,7 +119,6 @@ const createMainWindow = async () => {
                 console.log(err);
             });
         openWindows.push(windowId);
-        console.log(openWindows, 'OW after main open');
     });
 };
 
