@@ -2,7 +2,6 @@ const axios = require('axios').default;
 const validateAuthURL = 'https://api.playdragonfly.net/v1/authentication/token';
 
 module.exports.validateDragonflyAccount = (token) => {
-    console.log(token, 'TOKEN');
     return axios
         .post(
             validateAuthURL,
