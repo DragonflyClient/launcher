@@ -8,6 +8,8 @@ const xml2js = require('xml2js');
 const axios = require('axios');
 const request = require('request');
 const crypto = require('crypto');
+const mkdirp = require('mkdirp')
+const getDirectoryName = require('path').dirname
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -25,7 +27,7 @@ async function startGame(callback) {
         const launcher = new Launcher(version);
 
         callback('Preparing version');
-        launcher.prepareVersion();
+        await launcher.prepareVersion();
 
         callback('Setting up account');
         await launcher.setupAccount();
@@ -34,25 +36,25 @@ async function startGame(callback) {
         await launcher.downloadDragonfly();
 
         callback('Parsing JSON configuration');
-        launcher.parseJsonConfiguration();
+        await launcher.parseJsonConfiguration();
 
         callback('Loading libraries');
-        launcher.loadLibraries();
+        await launcher.loadLibraries();
 
         callback('Loading native libraries');
-        launcher.loadNatives();
+        await launcher.loadNatives();
 
         callback('Loading assets');
-        launcher.loadAssets();
+        await launcher.loadAssets();
 
         callback('Loading log configuration');
-        launcher.loadLogConfiguration();
+        await launcher.loadLogConfiguration();
 
         callback('Compiling mapping indices');
-        launcher.compileMappings();
+        await launcher.compileMappings();
 
         callback('Launching game');
-        launcher.executeCommand();
+        await launcher.executeCommand();
 
         launcher.handleGameStart();
         launcher.handleGameClose();
@@ -67,7 +69,7 @@ class Launcher {
         this.targetVersion = version;
     }
 
-    prepareVersion() {
+    async prepareVersion() {
         // select Minecraft directory
         const targetVersion = this.targetVersion;
         const appData = process.env.APPDATA;
@@ -100,11 +102,11 @@ class Launcher {
     }
 
     async downloadDragonfly() {
-        // https://api.playdragonfly.net/v1/launcher/files
         const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
+        console.log("> Downloading Dragonfly files (" + files.length + ")")
 
         for (let file of files) {
-            console.log('+ ' + file);
+            console.log('  + ' + file);
 
             const local = this.minecraftDir + '\\dragonfly\\' + file.replaceAll('/', '\\');
             const url = 'https://cdn.icnet.dev/dragonfly/client/' + file;
@@ -120,10 +122,12 @@ class Launcher {
                 }
             } catch (e) {}
 
-            console.log("Checksums don't match, have to download " + file);
+            console.log("    Downloading from " + url + "...");
 
-            ensureDirectoryExistence(local, true, 'dir');
+            mkdirp.sync(getDirectoryName(local))
             await this.downloadFile(local, url);
+
+            console.log("    Finished")
         }
     }
 
@@ -181,11 +185,11 @@ class Launcher {
         console.log(`> Setting up user ${this.name} (UUID: ${this.uuid})`);
     }
 
-    parseJsonConfiguration() {
+    async parseJsonConfiguration() {
         this.json = JSON.parse(fs.readFileSync(this.jsonFile));
     }
 
-    loadLibraries() {
+    async loadLibraries() {
         const libraries = this.json.libraries.filter((e) => e.downloads && e.downloads.artifact).map((e) => `libraries/${e.downloads.artifact.path}`);
         libraries.push(this.jarFile);
         libraries.push('dragonfly/injection/injection-hook-shared.jar');
@@ -194,7 +198,7 @@ class Launcher {
         console.log(`> Including ${libraries.length} libraries`);
     }
 
-    loadNatives() {
+    async loadNatives() {
         // parse natives from JSON
         const nativesFromJson = this.json.libraries.filter((e) => e.downloads.classifiers).map((e) => e.downloads.classifiers['natives-windows']);
         const extractionDir = `${this.minecraftDir}\\dragonfly\\tmp\\natives_extract`;
@@ -248,19 +252,19 @@ class Launcher {
         }
     }
 
-    loadAssets() {
+    async loadAssets() {
         this.assetsIndex = this.json.assets;
         this.assetsDir = this.assetsIndex !== 'legacy' ? `${this.minecraftDir}\\assets` : `${this.minecraftDir}\\assets\\virtual\\legacy`;
         console.log(`> Assets index: ${this.assetsIndex}`);
         console.log(`> Assets directory: ${this.assetsDir}`);
     }
 
-    loadLogConfiguration() {
+    async loadLogConfiguration() {
         this.logFile = this.json.logging.client.file.id;
         console.log('> Log configuration: ' + this.logFile);
     }
 
-    compileMappings() {
+    async compileMappings() {
         console.log('> Compiling mappings');
         console.log(
             execSync(
@@ -275,7 +279,7 @@ class Launcher {
         );
     }
 
-    executeCommand() {
+    async executeCommand() {
         console.log('Target version: ', this.targetVersion);
         console.log('Properties object: ', this.propertiesObj);
         const mainClass = 'net.minecraft.client.main.Main';
