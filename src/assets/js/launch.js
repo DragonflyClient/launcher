@@ -6,6 +6,8 @@ const Swal = require('sweetalert2');
 const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
 const axios = require('axios');
+const request = require('request');
+const crypto = require('crypto');
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -27,6 +29,9 @@ async function startGame(callback) {
 
         callback('Setting up account');
         await launcher.setupAccount();
+
+        callback('Downloading Dragonfly');
+        await launcher.downloadDragonfly();
 
         callback('Parsing JSON configuration');
         launcher.parseJsonConfiguration();
@@ -92,6 +97,43 @@ class Launcher {
 
         console.log(`> Launching JAR file ${this.jarFile}`);
         console.log(`> Configuring with JSON file ${this.jsonFile}`);
+    }
+
+    async downloadDragonfly() {
+        // https://api.playdragonfly.net/v1/launcher/files
+        const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
+
+        for (let file of files) {
+            console.log('+ ' + file);
+
+            const local = this.minecraftDir + '\\dragonfly\\' + file.replaceAll('/', '\\');
+            const url = 'https://cdn.icnet.dev/dragonfly/client/' + file;
+            const checksumUrl = url + '.sha1';
+
+            try {
+                const content = fs.readFileSync(local);
+                const localHash = crypto.createHash('sha1').update(content).digest('hex');
+                const checksum = await (await axios.get(checksumUrl)).data.split(' ')[0];
+
+                if (localHash === checksum) {
+                    continue;
+                }
+            } catch (e) {}
+
+            console.log("Checksums don't match, have to download " + file);
+
+            ensureDirectoryExistence(local, true, 'dir');
+            await this.downloadFile(local, url);
+        }
+    }
+
+    downloadFile(local, url) {
+        return new Promise((resolve, reject) => {
+            const writer = fs.createWriteStream(local);
+            request(url).pipe(writer);
+            writer.on('finish', () => resolve());
+            writer.on('error', (err) => reject(err));
+        });
     }
 
     async setupAccount() {

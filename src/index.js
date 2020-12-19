@@ -54,7 +54,7 @@ const createLoadingWindow = async () => {
             createLoginWindow();
             loadingWindow.close();
         }
-    }, 0);
+    }, 1000);
 };
 
 const createLoginWindow = async () => {
