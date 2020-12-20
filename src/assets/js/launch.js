@@ -1,5 +1,6 @@
 const { exec, execSync } = require('child_process');
-const { ensureDirectoryExistence } = require('../../utilities/path.js');
+const { ensureDirectoryExistence, rootPath } = require('../../utilities/path.js');
+const app = require('electron').remote.app;
 const fs = require('fs');
 const fse = require('fs-extra');
 const Swal = require('sweetalert2');
@@ -8,8 +9,9 @@ const xml2js = require('xml2js');
 const axios = require('axios');
 const request = require('request');
 const crypto = require('crypto');
-const mkdirp = require('mkdirp')
-const getDirectoryName = require('path').dirname
+const mkdirp = require('mkdirp');
+const getDirectoryName = require('path').dirname;
+const os = require('os');
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -25,6 +27,9 @@ function setVersion(newVersion) {
 async function startGame(callback) {
     try {
         const launcher = new Launcher(version);
+
+        callback('Downloading Java');
+        await launcher.downloadJava();
 
         callback('Preparing version');
         await launcher.prepareVersion();
@@ -69,6 +74,45 @@ class Launcher {
         this.targetVersion = version;
     }
 
+    async downloadJava() {
+        const installationDirectory = rootPath(app.getAppPath());
+        const localDirectory = installationDirectory + '\\jre';
+
+        const githubRelease = 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1%2B1';
+        const versionX64 = 'OpenJDK11U-jre_x64_windows_hotspot_11.0.9.1_1.zip';
+        const versionX32 = 'OpenJDK11U-jre_x86-32_windows_hotspot_11.0.9.1_1.zip';
+
+        const arch = os.arch();
+        let targetVersion;
+
+        if (arch === 'x64') {
+            targetVersion = versionX64;
+        } else if (arch === 'x32') {
+            targetVersion = versionX32;
+        } else throw 'CPU architecture is not supported!';
+
+        const url = githubRelease + '/' + targetVersion;
+        const localZip = localDirectory + '\\' + targetVersion;
+
+        this.javaRuntime = localDirectory + '\\jdk-11.0.9.1+1-jre';
+        this.javaExe = this.javaRuntime + '\\bin\\javaw.exe';
+
+        try {
+            if (fs.existsSync(this.javaExe)) {
+                return console.log('> Java is installed');
+            }
+        } catch (e) {}
+
+        console.log('> Download Java from: ' + url);
+
+        mkdirp.sync(localDirectory);
+        await this.downloadFile(localZip, url);
+
+        new AdmZip(localZip).extractAllTo(localDirectory);
+
+        console.log('> Java has been downloaded!');
+    }
+
     async prepareVersion() {
         // select Minecraft directory
         const targetVersion = this.targetVersion;
@@ -103,7 +147,7 @@ class Launcher {
 
     async downloadDragonfly() {
         const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
-        console.log("> Downloading Dragonfly files (" + files.length + ")")
+        console.log('> Downloading Dragonfly files (' + files.length + ')');
 
         for (let file of files) {
             console.log('  + ' + file);
@@ -122,12 +166,12 @@ class Launcher {
                 }
             } catch (e) {}
 
-            console.log("    Downloading from " + url + "...");
+            console.log('    Downloading from ' + url + '...');
 
-            mkdirp.sync(getDirectoryName(local))
+            mkdirp.sync(getDirectoryName(local));
             await this.downloadFile(local, url);
 
-            console.log("    Finished")
+            console.log('    Finished');
         }
     }
 
@@ -268,7 +312,7 @@ class Launcher {
         console.log('> Compiling mappings');
         console.log(
             execSync(
-                `javaw -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
+                `${this.javaExe} -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
                     `--version ${this.targetVersion} ` +
                     `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
                     `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
@@ -312,7 +356,7 @@ class Launcher {
     }
 
     buildCommand(jvmArgs, programArgs, mainClass) {
-        let command = 'javaw';
+        let command = this.javaExe;
         command += ' ';
         command += jvmArgs.join(' ');
         command += ' ';

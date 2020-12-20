@@ -107,3 +107,6 @@ electron-builder.yml
 /.idea/workspace.xml
 /.idea/deployment.xml
 /.idea/libraries/file_txt.xml
+
+# jre
+jre
