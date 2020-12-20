@@ -11,7 +11,6 @@ ipcRenderer.on('game-output-data', (e, args) => {
     const level = gameOutput.level.toLowerCase();
     const style = (disabledLevels.includes(level)) ? "display: none" : ""
 
-    console.log("style", style)
     const fullMessage = `
             <div class="output__overview-wrapper level-${level} logger-${logger}" style="${style}">
                <span class="output__icon"></span>
@@ -40,7 +39,6 @@ for (let i = 0; i < logOptions.length; i++) {
         const others = Array.from(logOptions);
         others.splice(i, 1);
         const allOthersDisabled = !others.some((element) => element.firstElementChild.checked);
-        console.log(allOthersDisabled);
         if (allOthersDisabled && !e.target.checked) {
             e.target.checked = true;
             e.stopImmediatePropagation();
@@ -58,7 +56,6 @@ for (let i = 0; i < logOptions.length; i++) {
             disabledLevels.push(e.target.name)
         }
 
-        console.log(disabledLevels)
         for (let n = 0; n < levelItems.length; n++) {
             levelItems[n].style.display = display;
         }
