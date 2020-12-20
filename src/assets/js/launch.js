@@ -236,8 +236,8 @@ class Launcher {
     async loadLibraries() {
         const libraries = this.json.libraries.filter((e) => e.downloads && e.downloads.artifact).map((e) => `libraries/${e.downloads.artifact.path}`);
         libraries.push(this.jarFile);
-        libraries.push('dragonfly/injection/injection-hook-shared.jar');
-        libraries.push(`dragonfly/injection/injection-hook-${this.targetVersion}.jar`);
+        libraries.push('dragonfly\\injection\\dragonfly-core.jar');
+        libraries.push(`dragonfly\\injection\\injection-hook-${this.targetVersion}.jar`);
         this.classPathArgument = libraries.join(';');
         console.log(`> Including ${libraries.length} libraries`);
     }
@@ -312,7 +312,7 @@ class Launcher {
         console.log('> Compiling mappings');
         console.log(
             execSync(
-                `${this.javaExe} -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
+                `"${this.javaExe}" -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
                     `--version ${this.targetVersion} ` +
                     `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
                     `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
@@ -324,14 +324,11 @@ class Launcher {
     }
 
     async executeCommand() {
-        console.log('Target version: ', this.targetVersion);
-        console.log('Properties object: ', this.propertiesObj);
         const mainClass = 'net.minecraft.client.main.Main';
-        const versionId = this.targetVersion.replaceAll('.', '');
         const agentArgs = [
             `-v ${this.targetVersion}`,
-            `-i net.dragonfly.injection.shared.SharedInjectionHook`,
-            `-i net.dragonfly.injection${versionId}.InjectionHook${versionId}`,
+            `-i net.dragonfly.core.SharedInjectionHook`,
+            `-i net.dragonfly.octane.DragonflyOctane`,
         ];
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
@@ -356,7 +353,7 @@ class Launcher {
     }
 
     buildCommand(jvmArgs, programArgs, mainClass) {
-        let command = this.javaExe;
+        let command = '"' + this.javaExe + '"';
         command += ' ';
         command += jvmArgs.join(' ');
         command += ' ';
@@ -416,6 +413,7 @@ class Launcher {
                         message: xml,
                     };
                 }
+                console.log(message.message)
                 openWithGameOutput && ipcRenderer.send('game-output-data', { message, pid: gameObject.pid });
             });
         };
