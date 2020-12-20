@@ -7,10 +7,13 @@ ipcRenderer.on('game-output-data', (e, args) => {
     const timestamp = new Date(parseInt(gameOutput.timestamp)).toLocaleTimeString();
     const shouldScroll = div.scrollTop === div.scrollHeight - div.offsetHeight || (div.scrollTop === 0 && !autoScrollHappened);
 
+    const logger = gameOutput.logger.toLowerCase().replaceAll(' ', '_');
+    const level = gameOutput.level.toLowerCase();
+    const style = (disabledLevels.includes(level)) ? "display: none" : ""
+
+    console.log("style", style)
     const fullMessage = `
-            <div class="output__overview-wrapper level-${gameOutput.level.toLowerCase()} logger-${gameOutput.logger
-        .toLowerCase()
-        .replaceAll(' ', '_')}">
+            <div class="output__overview-wrapper level-${level} logger-${logger}" style="${style}">
                <span class="output__icon"></span>
                <span class="output__overview-timestamp">${timestamp}</span>
                <span class="output__overview-logger">${gameOutput.logger}</span>
@@ -26,6 +29,7 @@ ipcRenderer.on('game-output-data', (e, args) => {
     }
 });
 
+const disabledLevels = []
 const logOptions = document.querySelectorAll('.logger-control-label');
 
 for (let i = 0; i < logOptions.length; i++) {
@@ -47,6 +51,14 @@ for (let i = 0; i < logOptions.length; i++) {
         const checked = e.target.checked;
         const levelItems = document.querySelectorAll(`.level-${e.target.name}`);
         const display = checked ? 'flex' : 'none';
+
+        if (checked) {
+            disabledLevels.splice(disabledLevels.indexOf(e.target.name), 1)
+        } else {
+            disabledLevels.push(e.target.name)
+        }
+
+        console.log(disabledLevels)
         for (let n = 0; n < levelItems.length; n++) {
             levelItems[n].style.display = display;
         }
