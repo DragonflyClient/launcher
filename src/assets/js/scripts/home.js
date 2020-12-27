@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, shell } = require('electron');
 const { setVersion, startGame } = require('../assets/js/launch');
 
 require('../assets/js/devtools');
@@ -68,4 +68,13 @@ versionDropdownToggle.addEventListener('click', (e) => {
     console.log('CLICKED', e.target);
     versionDropdownMenu.classList.toggle('active');
     versionDropdownToggle.classList.toggle('active');
+});
+
+const externalLinks = document.querySelectorAll('a[href^="http"]');
+
+Array.from(externalLinks).forEach(function (link) {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        shell.openExternal(link.getAttribute('href'));
+    });
 });
