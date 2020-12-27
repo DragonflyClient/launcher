@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const getDirectoryName = require('path').dirname;
 const os = require('os');
-const { developerMode } = require('../../utilities/developer.js')
+const { developerMode } = require('../../utilities/developer.js');
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -26,44 +26,44 @@ function setVersion(newVersion) {
 }
 
 async function startGame(callback) {
-        const launcher = new Launcher(version);
+    const launcher = new Launcher(version);
 
-        callback('Downloading Java');
-        await launcher.downloadJava();
+    callback('Downloading Java');
+    await launcher.downloadJava();
 
-        callback('Preparing version');
-        await launcher.prepareVersion();
+    callback('Preparing version');
+    await launcher.prepareVersion();
 
-        callback('Setting up account');
-        await launcher.setupAccount();
+    callback('Setting up account');
+    await launcher.setupAccount();
 
-        callback('Downloading Dragonfly');
-        await launcher.downloadDragonfly();
+    callback('Downloading Dragonfly');
+    await launcher.downloadDragonfly();
 
-        callback('Parsing JSON configuration');
-        await launcher.parseJsonConfiguration();
+    callback('Parsing JSON configuration');
+    await launcher.parseJsonConfiguration();
 
-        callback('Loading libraries');
-        await launcher.loadLibraries();
+    callback('Loading libraries');
+    await launcher.loadLibraries();
 
-        callback('Loading native libraries');
-        await launcher.loadNatives();
+    callback('Loading native libraries');
+    await launcher.loadNatives();
 
-        callback('Loading assets');
-        await launcher.loadAssets();
+    callback('Loading assets');
+    await launcher.loadAssets();
 
-        callback('Loading log configuration');
-        await launcher.loadLogConfiguration();
+    callback('Loading log configuration');
+    await launcher.loadLogConfiguration();
 
-        callback('Compiling mapping indices');
-        await launcher.compileMappings();
+    callback('Compiling mapping indices');
+    await launcher.compileMappings();
 
-        callback('Launching game');
-        await launcher.executeCommand();
+    callback('Launching game');
+    await launcher.executeCommand();
 
-        launcher.handleGameStart();
-        launcher.handleGameClose();
-        launcher.enableLogging();
+    launcher.handleGameStart();
+    launcher.handleGameClose();
+    launcher.enableLogging();
 }
 
 class Launcher {
@@ -144,7 +144,7 @@ class Launcher {
 
     async downloadDragonfly() {
         if (developerMode) {
-            return console.log("> Skipping Dragonfly download due to developer mode being enabled")
+            return console.log('> Skipping Dragonfly download due to developer mode being enabled');
         }
 
         const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
@@ -326,11 +326,7 @@ class Launcher {
 
     async executeCommand() {
         const mainClass = 'net.minecraft.client.main.Main';
-        const agentArgs = [
-            `-v ${this.targetVersion}`,
-            `-i net.dragonfly.core.SharedInjectionHook`,
-            `-i net.dragonfly.vortex.DragonflyVortex`,
-        ];
+        const agentArgs = [`-v ${this.targetVersion}`, `-i net.dragonfly.core.SharedInjectionHook`, `-i net.dragonfly.vortex.DragonflyVortex`];
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
@@ -414,7 +410,7 @@ class Launcher {
                         message: xml,
                     };
                 }
-                console.log(message.message)
+                console.log(message.message);
                 openWithGameOutput && ipcRenderer.send('game-output-data', { message, pid: gameObject.pid });
             });
         };
