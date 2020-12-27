@@ -11,6 +11,8 @@ ipcRenderer.on('game-output-data', (e, args) => {
     const level = gameOutput.level.toLowerCase();
     const style = (disabledLevels.includes(level)) ? "display: none" : ""
 
+    escapeMessage(gameOutput)
+
     const fullMessage = `
             <div class="output__overview-wrapper level-${level} logger-${logger}" style="${style}">
                <span class="output__icon"></span>
@@ -60,4 +62,9 @@ for (let i = 0; i < logOptions.length; i++) {
             levelItems[n].style.display = display;
         }
     });
+}
+
+function escapeMessage(gameOutput) {
+    const msg = gameOutput.message
+    gameOutput.message = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
 }
