@@ -274,7 +274,7 @@ a {
 }
 
 #launch .buttons .minecraft-version__toggle:hover {
-    background: #DADBDD;
+    background: #dadbdd;
 }
 
 #launch .buttons .minecraft-version__toggle .selected-mc-version {
@@ -283,7 +283,7 @@ a {
 
 #launch .buttons .minecraft-version__toggle img {
     margin-left: 25px;
-    transition: all .2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     width: 20px;
 }
 
@@ -312,27 +312,27 @@ a {
 @keyframes reveal {
     0% {
         opacity: 0;
-        transform: scaleY(0.0) translateY(105px);
+        transform: scaleY(0) translateY(105px);
     }
     100% {
         opacity: 1;
-        transform: scaleY(1.0) translateY(0px);
+        transform: scaleY(1) translateY(0px);
     }
 }
 
 .minecraft-version__dropdown p {
-    background: #EBECEE;
+    background: #ebecee;
     padding: 10px 20px;
     font-size: 20px;
-    color: #37393A;
+    color: #37393a;
     text-align: center;
     margin: 0 auto 0 auto;
     width: 300px;
-    transition: background-color .2s;
+    transition: background-color 0.2s;
 }
 
 .minecraft-version__dropdown p:hover {
-    background: #DADBDD;
+    background: #dadbdd;
 }
 
 .minecraft-version__dropdown p:first-child {
@@ -340,7 +340,7 @@ a {
     border-top-right-radius: 8px;
 }
 .minecraft-version__dropdown p:last-child {
-    border-top: 2px solid #CFCFCF;
+    border-top: 2px solid #cfcfcf;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
@@ -355,9 +355,17 @@ a {
     text-align: center;
     margin: 12px auto 0 auto;
     width: 300px;
-    transition: background-color .2s ease;
+    transition: background-color 0.2s ease;
 }
 
 #launch .buttons .launch-game:hover {
     background: rgba(239, 133, 46, 0.35);
+}
+
+@media (max-height: 720px) {
+    #launch .buttons {
+        width: 100% !important;
+        margin: 50px auto 0 auto !important;
+        position: static !important;
+    }
 }
