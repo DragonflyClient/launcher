@@ -1,5 +1,5 @@
 const { ipcRenderer } = require('electron');
-const { setVersion, startGame } = require('../assets/js/launch')
+const { setVersion, startGame } = require('../assets/js/launch');
 
 require('../assets/js/devtools');
 
@@ -50,12 +50,21 @@ function restartApp() {
 }
 /* #endregion */
 
-document.getElementById("game-version").addEventListener('change', event => {
-    setVersion(event.target.value)
-});
+// document.getElementById('game-version').addEventListener('change', (event) => {
+//     setVersion(event.target.value);
+// });
 
-document.getElementById("start-game").addEventListener('click', () => {
-    startGame((e) => {
-        document.getElementById('progress').innerText = e
-    })
+// document.getElementById('start-game').addEventListener('click', () => {
+//     startGame((e) => {
+//         document.getElementById('progress').innerText = e;
+//     });
+// });
+
+const versionDropdownToggle = document.querySelector('.minecraft-version__toggle');
+const versionDropdownMenu = document.querySelector('.minecraft-version__dropdown');
+console.log(versionDropdownToggle, versionDropdownMenu);
+
+versionDropdownToggle.addEventListener('click', (e) => {
+    console.log('CLICKED', e.target);
+    versionDropdownMenu.classList.toggle('active');
 });
