@@ -94,8 +94,9 @@ const createLoginWindow = async () => {
 const createMainWindow = async () => {
     console.log('Starting "main" window');
     mainWindow = new BrowserWindow({
-        width: 1200,
+        width: 1500,
         height: 800,
+        minWidth: 850,
         webPreferences: globalWebPreferences,
     });
 
