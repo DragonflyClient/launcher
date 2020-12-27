@@ -83,6 +83,7 @@
         "axios": "^0.21.0",
         "crypto-js": "^4.0.0",
         "discord-rpc": "^3.1.4",
+        "dotenv": "^8.2.0",
         "electron-squirrel-startup": "^1.0.0",
         "electron-updater": "^4.3.5",
         "fswin": "^3.19.908",

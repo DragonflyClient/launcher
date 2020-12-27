@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const getDirectoryName = require('path').dirname;
 const os = require('os');
+const { developerMode } = require('../../utilities/developer.js')
 
 // the version that is selected by the user
 let version = '1.8.8';
@@ -25,7 +26,6 @@ function setVersion(newVersion) {
 }
 
 async function startGame(callback) {
-    try {
         const launcher = new Launcher(version);
 
         callback('Downloading Java');
@@ -64,9 +64,6 @@ async function startGame(callback) {
         launcher.handleGameStart();
         launcher.handleGameClose();
         launcher.enableLogging();
-    } catch (err) {
-        console.trace('! Caught error: ' + err);
-    }
 }
 
 class Launcher {
@@ -146,6 +143,10 @@ class Launcher {
     }
 
     async downloadDragonfly() {
+        if (developerMode) {
+            return console.log("> Skipping Dragonfly download due to developer mode being enabled")
+        }
+
         const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
         console.log('> Downloading Dragonfly files (' + files.length + ')');
 
@@ -328,7 +329,7 @@ class Launcher {
         const agentArgs = [
             `-v ${this.targetVersion}`,
             `-i net.dragonfly.core.SharedInjectionHook`,
-            `-i net.dragonfly.octane.DragonflyOctane`,
+            `-i net.dragonfly.vortex.DragonflyVortex`,
         ];
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
