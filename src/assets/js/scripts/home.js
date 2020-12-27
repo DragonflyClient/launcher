@@ -67,4 +67,5 @@ console.log(versionDropdownToggle, versionDropdownMenu);
 versionDropdownToggle.addEventListener('click', (e) => {
     console.log('CLICKED', e.target);
     versionDropdownMenu.classList.toggle('active');
+    versionDropdownToggle.classList.toggle('active');
 });

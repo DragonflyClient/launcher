@@ -180,14 +180,19 @@ a {
     margin-right: 10px;
     cursor: pointer;
 }
+#launch .header .settings img {
+    width: 25px;
+}
 #launch .header .status {
     margin-left: 10px;
+    margin-right: 20px;
+    width: 80%;
 }
 #launch .header .status .container {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
-    border-radius: 7px;
+    padding: 8px 12px;
+    border-radius: 6px;
     font-size: 18px;
 }
 
@@ -239,14 +244,18 @@ a {
     font-size: 14px;
     text-align: center;
     color: #3867d6;
-    padding: 10px 20px;
-    margin: 7px;
+    padding: 6px 10px;
+    margin: 3px;
     background: rgba(56, 103, 214, 0.15);
     border-radius: 4px;
 }
 
 #launch .buttons {
-    margin-top: 10%;
+    position: absolute;
+    height: auto;
+    width: calc(30% - 20px);
+    bottom: 50px;
+    box-sizing: content-box;
 }
 
 #launch .buttons > div {
@@ -256,12 +265,16 @@ a {
 #launch .buttons .minecraft-version__toggle {
     background: #dcdee0;
     border-radius: 8px;
-    padding: 12px 20px;
-    font-size: 23px;
+    padding: 10px 20px;
+    font-size: 20px;
     color: #37393a;
     text-align: right;
     margin: 10px auto 0 auto;
     width: 300px;
+}
+
+#launch .buttons .minecraft-version__toggle:hover {
+    background: #DADBDD;
 }
 
 #launch .buttons .minecraft-version__toggle .selected-mc-version {
@@ -269,7 +282,13 @@ a {
 }
 
 #launch .buttons .minecraft-version__toggle img {
-    margin-left: 20px;
+    margin-left: 25px;
+    transition: all .2s ease-in-out;
+    width: 20px;
+}
+
+#launch .buttons .minecraft-version__toggle.active img {
+    transform: rotate(-180deg);
 }
 
 .minecraft-version {
@@ -280,7 +299,7 @@ a {
 
 .minecraft-version__dropdown {
     position: absolute;
-    top: -115px;
+    top: -105px;
     display: none;
     opacity: 1;
     animation: reveal 0.2s ease;
@@ -293,30 +312,37 @@ a {
 @keyframes reveal {
     0% {
         opacity: 0;
+        transform: scaleY(0.0) translateY(105px);
     }
     100% {
         opacity: 1;
+        transform: scaleY(1.0) translateY(0px);
     }
 }
 
 .minecraft-version__dropdown p {
-    background: #dcdee0;
-    padding: 12px 20px;
-    font-size: 23px;
-    color: #37393a;
+    background: #EBECEE;
+    padding: 10px 20px;
+    font-size: 20px;
+    color: #37393A;
     text-align: center;
-    margin: 0px auto 0 auto;
+    margin: 0 auto 0 auto;
     width: 300px;
+    transition: background-color .2s;
+}
+
+.minecraft-version__dropdown p:hover {
+    background: #DADBDD;
 }
 
 .minecraft-version__dropdown p:first-child {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 .minecraft-version__dropdown p:last-child {
-    border-top: 2px solid #37393a2a;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top: 2px solid #CFCFCF;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 #launch .buttons .launch-game {
@@ -327,6 +353,11 @@ a {
     color: #ef852e;
     font-weight: 500;
     text-align: center;
-    margin: 20px auto 0 auto;
+    margin: 12px auto 0 auto;
     width: 300px;
+    transition: background-color .2s ease;
+}
+
+#launch .buttons .launch-game:hover {
+    background: rgba(239, 133, 46, 0.35);
 }
