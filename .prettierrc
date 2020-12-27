@@ -1,0 +1,9 @@
+{
+    "arrowParens": "avoid",
+    "printWidth": 90,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "htmlWhitespaceSensitivity": "css",
+    "trailingComma": "es5",
+    "bracketSpacing": true
+}
