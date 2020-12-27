@@ -43,7 +43,7 @@ const createLoadingWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
-    discordRPC.login('777509861780226069').catch((err) => console.log(err));
+    await discordRPC.login('777509861780226069').catch((err) => console.log(err));
     const accessToken = await readToken(currentAppPath);
 
     setTimeout(async () => {
@@ -97,11 +97,17 @@ const createMainWindow = async () => {
         width: 1500,
         height: 800,
         minWidth: 850,
+        autoHideMenuBar: true,
+        show: false,
+        frame: false,
         webPreferences: globalWebPreferences,
     });
 
     let windowId = mainWindow.id;
-    await mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
+
+    mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.show();
+    });
 
     mainWindow.on('close', () => {
         openWindows.splice(windowIndex(windowId, openWindows.length), 1);
@@ -121,6 +127,8 @@ const createMainWindow = async () => {
             });
         openWindows.push(windowId);
     });
+
+    await mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
 };
 
 const outputWindows = {};
