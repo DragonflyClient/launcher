@@ -8,6 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const { rootPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
 const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
 const { windowIndex } = require('./utilities/browser-window');
+const { downloadEditions } = require('./utilities/downloader.js');
 
 const currentAppPath = rootPath(app.getAppPath());
 
@@ -43,7 +44,9 @@ const createLoadingWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
-    await discordRPC.login('777509861780226069').catch((err) => console.log(err));
+    downloadEditions();
+
+    await discordRPC.login('777509861780226069').catch(err => console.log(err));
     const accessToken = await readToken(currentAppPath);
 
     setTimeout(async () => {
@@ -83,7 +86,7 @@ const createLoginWindow = async () => {
             .setPresence({
                 details: 'Login',
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err, 'IN INDEX!!!');
             });
         loginWindow.show();
@@ -122,7 +125,7 @@ const createMainWindow = async () => {
             .setPresence({
                 details: 'Home',
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err);
             });
         openWindows.push(windowId);
@@ -133,7 +136,7 @@ const createMainWindow = async () => {
 
 const outputWindows = {};
 
-const createGameOutputWindow = async (pid) => {
+const createGameOutputWindow = async pid => {
     const gameOutputWindow = new BrowserWindow({
         width: 1400,
         height: 800,
@@ -189,7 +192,7 @@ ipcMain.on('drgn-auth', async (event, data) => {
     const accessPath = path.join(currentAppPath, '.secrets/access.txt');
     await ensureDirectoryExistence(accessPath, true, 'dir');
 
-    fs.writeFile(accessPath, accessToken, (err) => {
+    fs.writeFile(accessPath, accessToken, err => {
         if (err) return console.log(err);
     });
     fswin.setAttributesSync(path.join(currentAppPath, '.secrets'), { IS_HIDDEN: true });
@@ -198,7 +201,7 @@ ipcMain.on('drgn-auth', async (event, data) => {
         .setPresence({
             details: 'Home',
         })
-        .catch((err) => {
+        .catch(err => {
             console.log(err);
         });
     loginWindow.hide();
@@ -217,19 +220,19 @@ ipcMain.on('drgn-auth-read', async (event, data) => {
     }
 });
 // Respond app version
-ipcMain.on('app_version', (event) => {
+ipcMain.on('app_version', event => {
     event.sender.send('app_version', { version: app.getVersion() });
 });
 
 // Auto updater
-autoUpdater.on('update-available', (e) => {
+autoUpdater.on('update-available', e => {
     BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_available');
 });
 autoUpdater.on('update-downloaded', () => {
     BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_downloaded');
 });
 
-autoUpdater.on('download-progress', (progressObj) => {
+autoUpdater.on('download-progress', progressObj => {
     let log_message = progressObj.percent + '%';
     BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_progress', log_message);
 });
@@ -238,14 +241,14 @@ ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall();
 });
 
-ipcMain.on('check_for_updates', (event) => {
+ipcMain.on('check_for_updates', event => {
     if (!checkedForUpdates) {
         autoUpdater
             .checkForUpdatesAndNotify()
             .then(() => {
                 event.sender.send('check_for_updates', 'Checked for updates');
             })
-            .catch((err) => {
+            .catch(err => {
                 event.sender.send('check_for_updates', `Check for updates failed: ${err}`);
             });
         checkedForUpdates = true;
@@ -270,7 +273,7 @@ ipcMain.on('open-game', (e, args) => {
         .setPresence({
             details: `Playing Minecraft ${gameObject.gameVersion}`,
         })
-        .catch((err) => {
+        .catch(err => {
             console.log(err);
         });
 });
@@ -287,7 +290,7 @@ ipcMain.on('game-closed', (e, args) => {
             .setPresence({
                 details: `Home`,
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err);
             });
     } else {
@@ -296,7 +299,7 @@ ipcMain.on('game-closed', (e, args) => {
             .setPresence({
                 details: `Playing Minecraft ${last.gameVersion}`,
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err);
             });
     }
