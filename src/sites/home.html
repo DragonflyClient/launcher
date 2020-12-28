@@ -146,31 +146,27 @@
                 </div>
             </div>
             <div class="main">
-                <img src="../assets/media/Logo.svg" alt="Logo">
-                <h1>Vortex</h1>
-                <p class="dragonfly-version">v1.2</p>
-                <p class="description">Want to always stay up to date? Play the latest state-of-the-art version of
-                    Minecraft upgraded by Dragonfly to make it
-                    even more modern.</p>
-                <div class="tags">
-                    <p>Minecraft Realms</p>
-                    <p>Updated Nether</p>
-                    <p>Latest blocks, items and mobs</p>
-                </div>
-            </div>
-            <div class="buttons">
-                <div class="minecraft-version">
-                    <div class="minecraft-version__dropdown">
-                        <p>Minecraft 1.12.2</p>
-                        <p>Minecraft 1.8.8</p>
-                    </div>
-                    <div class="minecraft-version__toggle">
-                        <span class="selected-mc-version">Minecraft 1.16.4</span>
-                        <img src="../assets/media/dropdown-angle.svg" alt="Dropdown">
+                <div id="edition-details">
+                    <img src="../assets/media/Logo.svg" alt="Logo">
+                    <h1 class="edition-title"></h1>
+                    <p class="dragonfly-version edition-version"></p>
+                    <p class="description edition-description"></p>
+                    <div class="tags edition-tags">
                     </div>
                 </div>
-                <div class="launch-game">
-                    <span>Launch</span>
+                <div class="buttons">
+                    <div class="minecraft-version">
+                        <div class="minecraft-version__dropdown">
+                        </div>
+                        <div class="button minecraft-version__toggle">
+                            <span class="selected-mc-version"></span>
+                            <img src="../assets/media/dropdown-angle.svg" alt="Dropdown">
+                        </div>
+                    </div>
+                    <div class="button launch-game" id="launch-game-button">
+                        <span>Launch</span>
+                    </div>
+                    <div id="progress" style="opacity: 0">🐲🔥</div>
                 </div>
             </div>
         </section>

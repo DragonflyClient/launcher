@@ -1,4 +1,4 @@
-const { exec, execSync } = require('child_process');
+const { exec } = require('child_process');
 const { ensureDirectoryExistence, rootPath } = require('../../utilities/path.js');
 const app = require('electron').remote.app;
 const fs = require('fs');
@@ -12,27 +12,27 @@ const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const getDirectoryName = require('path').dirname;
 const os = require('os');
-const { developerMode } = require('../../utilities/developer.js');
+const { isDeveloperMode } = require('../../utilities/developer.js');
 
-// the version that is selected by the user
-let version = '1.8.8';
+// the edition that is selected by the user
+let edition;
 
 // array of running games
 let openGames = [];
 
-function setVersion(newVersion) {
-    console.log('* User changed version to ' + newVersion);
-    version = newVersion;
+function setEdition(editionIn) {
+    edition = editionIn;
+    console.log('* User changed to edition ' + edition.title + ' for Minecraft ' + edition.minecraftVersion);
 }
 
-async function startGame(callback) {
-    const launcher = new Launcher(version);
+async function startGame(callback, finishCallback) {
+    const launcher = new Launcher(edition, finishCallback);
 
     callback('Downloading Java');
     await launcher.downloadJava();
 
     callback('Preparing version');
-    await launcher.prepareVersion();
+    launcher.prepareVersion();
 
     callback('Setting up account');
     await launcher.setupAccount();
@@ -41,25 +41,25 @@ async function startGame(callback) {
     await launcher.downloadDragonfly();
 
     callback('Parsing JSON configuration');
-    await launcher.parseJsonConfiguration();
+    launcher.parseJsonConfiguration();
 
     callback('Loading libraries');
-    await launcher.loadLibraries();
+    launcher.loadLibraries();
 
     callback('Loading native libraries');
-    await launcher.loadNatives();
+    launcher.loadNatives();
 
     callback('Loading assets');
-    await launcher.loadAssets();
+    launcher.loadAssets();
 
     callback('Loading log configuration');
-    await launcher.loadLogConfiguration();
+    launcher.loadLogConfiguration();
 
     callback('Compiling mapping indices');
     await launcher.compileMappings();
 
     callback('Launching game');
-    await launcher.executeCommand();
+    launcher.executeCommand();
 
     launcher.handleGameStart();
     launcher.handleGameClose();
@@ -67,8 +67,10 @@ async function startGame(callback) {
 }
 
 class Launcher {
-    constructor(version) {
-        this.targetVersion = version;
+    constructor(edition, finishCallback) {
+        this.targetVersion = edition.minecraftVersion;
+        this.edition = edition;
+        this.finishCallback = finishCallback;
     }
 
     async downloadJava() {
@@ -110,7 +112,7 @@ class Launcher {
         console.log('> Java has been downloaded!');
     }
 
-    async prepareVersion() {
+    prepareVersion() {
         // select Minecraft directory
         const targetVersion = this.targetVersion;
         const appData = process.env.APPDATA;
@@ -121,8 +123,17 @@ class Launcher {
         console.log(`== Starting version ${targetVersion} ==`);
         console.log('> Minecraft home: ' + minecraftDir);
 
+        // select version directory + JAR/JSON files
+        this.versionDir = minecraftDir + `\\versions\\${targetVersion}`;
+        this.jsonFile = this.versionDir + `\\${targetVersion}.json`;
+        this.jarFile = this.versionDir + `\\${targetVersion}.jar`;
+
         // check if version is downloaded
-        if (!ensureDirectoryExistence(minecraftDir + `\\versions\\${targetVersion}`, false, 'file')) {
+        if (
+            !ensureDirectoryExistence(this.versionDir, false, 'file') ||
+            !fs.existsSync(this.jsonFile) ||
+            !fs.existsSync(this.jarFile)
+        ) {
             console.log('! Version not installed, abandoning...');
             Swal.fire({
                 title: `Cannot launch ${targetVersion}!`,
@@ -133,46 +144,45 @@ class Launcher {
             throw 'version_not_installed';
         }
 
-        // select version directory + JAR/JSON files
-        this.versionDir = minecraftDir + `\\versions\\${targetVersion}`;
-        this.jsonFile = this.versionDir + `\\${targetVersion}.json`;
-        this.jarFile = this.versionDir + `\\${targetVersion}.jar`;
-
         console.log(`> Launching JAR file ${this.jarFile}`);
         console.log(`> Configuring with JSON file ${this.jsonFile}`);
     }
 
     async downloadDragonfly() {
-        if (developerMode) {
+        if (isDeveloperMode()) {
             return console.log('> Skipping Dragonfly download due to developer mode being enabled');
         }
 
-        const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
-        console.log('> Downloading Dragonfly files (' + files.length + ')');
+        try {
+            const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
+            console.log('> Downloading Dragonfly files (' + files.length + ')');
 
-        for (let file of files) {
-            console.log('  + ' + file);
+            for (let file of files) {
+                console.log('  + ' + file);
 
-            const local = this.minecraftDir + '\\dragonfly\\' + file.replaceAll('/', '\\');
-            const url = 'https://cdn.icnet.dev/dragonfly/client/' + file;
-            const checksumUrl = url + '.sha1';
+                const local = this.minecraftDir + '\\dragonfly\\' + file.replaceAll('/', '\\');
+                const url = 'https://cdn.icnet.dev/dragonfly/client/' + file;
+                const checksumUrl = url + '.sha1';
 
-            try {
-                const content = fs.readFileSync(local);
-                const localHash = crypto.createHash('sha1').update(content).digest('hex');
-                const checksum = await (await axios.get(checksumUrl)).data.split(' ')[0];
+                try {
+                    const content = fs.readFileSync(local);
+                    const localHash = crypto.createHash('sha1').update(content).digest('hex');
+                    const checksum = await (await axios.get(checksumUrl)).data.split(' ')[0];
 
-                if (localHash === checksum) {
-                    continue;
-                }
-            } catch (e) {}
+                    if (localHash === checksum) {
+                        continue;
+                    }
+                } catch (e) {}
 
-            console.log('    Downloading from ' + url + '...');
+                console.log('    Downloading from ' + url + '...');
 
-            mkdirp.sync(getDirectoryName(local));
-            await this.downloadFile(local, url);
+                mkdirp.sync(getDirectoryName(local));
+                await this.downloadFile(local, url);
 
-            console.log('    Finished');
+                console.log('    Finished');
+            }
+        } catch (e) {
+            console.log("> Couldn't download Dragonfly files");
         }
     }
 
@@ -181,7 +191,7 @@ class Launcher {
             const writer = fs.createWriteStream(local);
             request(url).pipe(writer);
             writer.on('finish', () => resolve());
-            writer.on('error', (err) => reject(err));
+            writer.on('error', err => reject(err));
         });
     }
 
@@ -222,20 +232,23 @@ class Launcher {
         const properties = firstAccount.userProperites || firstAccount.userProperties;
         this.propertiesObj = {};
         if (properties) {
-            properties.forEach((prop) => {
+            properties.forEach(prop => {
                 this.propertiesObj[prop.name] = [prop.value];
             });
         }
 
         console.log(`> Setting up user ${this.name} (UUID: ${this.uuid})`);
+        console.log(`> Properties: "${JSON.stringify(this.propertiesObj).replaceAll('"', '"')}"`);
     }
 
-    async parseJsonConfiguration() {
+    parseJsonConfiguration() {
         this.json = JSON.parse(fs.readFileSync(this.jsonFile));
     }
 
-    async loadLibraries() {
-        const libraries = this.json.libraries.filter((e) => e.downloads && e.downloads.artifact).map((e) => `libraries/${e.downloads.artifact.path}`);
+    loadLibraries() {
+        const libraries = this.json.libraries
+            .filter(e => e.downloads && e.downloads.artifact)
+            .map(e => `libraries/${e.downloads.artifact.path}`);
         libraries.push(this.jarFile);
         libraries.push('dragonfly\\injection\\dragonfly-core.jar');
         libraries.push(`dragonfly\\injection\\injection-hook-${this.targetVersion}.jar`);
@@ -243,16 +256,18 @@ class Launcher {
         console.log(`> Including ${libraries.length} libraries`);
     }
 
-    async loadNatives() {
+    loadNatives() {
         // parse natives from JSON
-        const nativesFromJson = this.json.libraries.filter((e) => e.downloads.classifiers).map((e) => e.downloads.classifiers['natives-windows']);
+        const nativesFromJson = this.json.libraries
+            .filter(e => e.downloads.classifiers)
+            .map(e => e.downloads.classifiers['natives-windows']);
         const extractionDir = `${this.minecraftDir}\\dragonfly\\tmp\\natives_extract`;
         const targetDir = `${this.minecraftDir}\\dragonfly\\natives-${this.targetVersion}`;
 
         this.recreateDirectory(extractionDir);
 
         // extract natives
-        nativesFromJson.forEach((native) => {
+        nativesFromJson.forEach(native => {
             if (!native) return;
 
             const file = `${this.minecraftDir}\\libraries\\${native.path.replaceAll('/', '\\')}`;
@@ -297,22 +312,25 @@ class Launcher {
         }
     }
 
-    async loadAssets() {
+    loadAssets() {
         this.assetsIndex = this.json.assets;
-        this.assetsDir = this.assetsIndex !== 'legacy' ? `${this.minecraftDir}\\assets` : `${this.minecraftDir}\\assets\\virtual\\legacy`;
+        this.assetsDir =
+            this.assetsIndex !== 'legacy'
+                ? `${this.minecraftDir}\\assets`
+                : `${this.minecraftDir}\\assets\\virtual\\legacy`;
         console.log(`> Assets index: ${this.assetsIndex}`);
         console.log(`> Assets directory: ${this.assetsDir}`);
     }
 
-    async loadLogConfiguration() {
+    loadLogConfiguration() {
         this.logFile = this.json.logging.client.file.id;
         console.log('> Log configuration: ' + this.logFile);
     }
 
-    async compileMappings() {
+    compileMappings() {
         console.log('> Compiling mappings');
-        console.log(
-            execSync(
+        return new Promise((resolve, reject) => {
+            const process = exec(
                 `"${this.javaExe}" -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
                     `--version ${this.targetVersion} ` +
                     `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
@@ -320,13 +338,21 @@ class Launcher {
                 {
                     cwd: this.minecraftDir,
                 }
-            ).toString()
-        );
+            );
+
+            process.stdout.on('data', data => console.log(data));
+            process.stderr.on('data', data => console.error(data));
+            process.on('close', () => resolve());
+        });
     }
 
-    async executeCommand() {
+    executeCommand() {
         const mainClass = 'net.minecraft.client.main.Main';
-        const agentArgs = [`-v ${this.targetVersion}`, `-i net.dragonfly.core.SharedInjectionHook`, `-i net.dragonfly.vortex.DragonflyVortex`];
+        const agentArgs = [
+            `-v ${this.targetVersion}`,
+            `-i net.dragonfly.core.SharedInjectionHook`,
+            `-i ${this.edition.injectionHook}`,
+        ];
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(' ')}"`,
             `-Djava.library.path=dragonfly\\natives-${this.targetVersion}`,
@@ -340,12 +366,13 @@ class Launcher {
             accessToken: this.accessToken,
             uuid: this.uuid,
             username: this.name,
-            userProperties: `"${JSON.stringify(this.propertiesObj).replaceAll('"', '"')}"`,
+            //userProperties: `"${JSON.stringify(this.propertiesObj).replaceAll('"', '"')}"`,
             userType: 'mojang',
         };
 
         const command = this.buildCommand(jvmArgs, programArgs, mainClass);
 
+        console.log('* Command: ' + command);
         this.gameProcess = exec(command, { cwd: this.minecraftDir });
     }
 
@@ -357,13 +384,13 @@ class Launcher {
         command += mainClass;
         command += ' ';
         command += Object.keys(programArgs)
-            .map((key) => `--${key} ${programArgs[key]}`)
+            .map(key => `--${key} ${programArgs[key]}`)
             .join(' ');
         return command;
     }
 
     handleGameStart() {
-        this.openWithGameOutput = document.getElementById('open-game-output').checked;
+        this.openWithGameOutput = document.getElementById('open-game-output')?.checked ?? false;
 
         this.gameObject = {
             gameVersion: this.targetVersion,
@@ -378,6 +405,7 @@ class Launcher {
         if (this.openWithGameOutput) ipcRenderer.send('open-game-output', this.gameObject);
 
         console.log(`> Game startup (${openGames.length} running)`);
+        setTimeout(this.finishCallback, 4000);
     }
 
     enableLogging() {
@@ -415,23 +443,27 @@ class Launcher {
             });
         };
 
-        this.gameProcess.stdout.on('data', (data) => parseMessage(data, 'DEBUG', 'STDOUT'));
-        this.gameProcess.stderr.on('data', (data) => parseMessage(data, 'ERROR', 'STDERR'));
+        this.gameProcess.stdout.on('data', data => parseMessage(data, 'DEBUG', 'STDOUT'));
+        this.gameProcess.stderr.on('data', data => parseMessage(data, 'ERROR', 'STDERR'));
     }
 
     handleGameClose() {
-        this.closeGameOutput = document.getElementById('close-game-output').checked;
+        this.closeGameOutput = document.getElementById('close-game-output')?.checked ?? false;
         const closeGameOutput = this.closeGameOutput;
         const command = this.gameProcess;
         command.on('close', () => {
-            const closedGameObject = openGames.find((game) => game.pid === command.pid);
-            openGames = openGames.filter((game) => game.pid !== command.pid);
-            ipcRenderer.send('game-closed', { openGames: openGames, closedGameObject: closedGameObject, closeGameOutput: closeGameOutput });
+            const closedGameObject = openGames.find(game => game.pid === command.pid);
+            openGames = openGames.filter(game => game.pid !== command.pid);
+            ipcRenderer.send('game-closed', {
+                openGames: openGames,
+                closedGameObject: closedGameObject,
+                closeGameOutput: closeGameOutput,
+            });
 
             console.log(`> Game closed (${openGames.length} running)`);
         });
     }
 }
 
-module.exports.setVersion = setVersion;
+module.exports.setEdition = setEdition;
 module.exports.startGame = startGame;
