@@ -350,7 +350,7 @@ class Launcher {
         const mainClass = 'net.minecraft.client.main.Main';
         const agentArgs = [
             `-v ${this.targetVersion}`,
-            `-i net.dragonfly.core.SharedInjectionHook`,
+            `-i net.dragonfly.core.DragonflyCore`,
             `-i ${this.edition.injectionHook}`,
         ];
         const jvmArgs = [
