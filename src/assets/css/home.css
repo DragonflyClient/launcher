@@ -121,11 +121,9 @@ a {
     flex-wrap: nowrap;
     border-radius: 5px;
     margin: 0 auto 30px auto;
-    /* max-height: 250px; */
     min-width: 500px;
     max-width: 850px;
     display: flex;
-    justify-content: space-between;
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.2);
     width: 100%;
@@ -152,6 +150,7 @@ a {
 
 #news .article .media {
     width: 250px;
+    border-radius: 5px 0 0 5px;
 }
 /* 
 @media (max-width: 820px) {
