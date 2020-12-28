@@ -8,6 +8,8 @@ const Swal = require('sweetalert2');
 const { rootPath } = require('../utilities/path');
 
 const currentAppPath = rootPath(app.getAppPath());
+const { dragonflyAccountLogin } = require('../utilities/dragonflyAccount.js');
+
 console.log('Root folder path: ', currentAppPath);
 
 console.log(app.getAppPath(), 'APP PATH');
@@ -69,6 +71,8 @@ ipcRenderer.on('restart_app', (event, args) => {
 const loginForm = document.getElementById('login-form');
 const loginSubmitButton = document.getElementById('login-submit-btn');
 
+let dragonflyToken;
+
 // Request verification
 loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -84,37 +88,26 @@ loginForm.addEventListener('submit', async function (e) {
         password,
     };
 
-    console.log(loginBody);
-    fetch(`https://api.playdragonfly.net/v1/authentication/login`, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(loginBody),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            changeButtonState();
-            if (data.success) {
-                return ipcRenderer.send('drgn-auth', data);
-            } else if (!data.success) {
-                return Swal.fire({
-                    title: 'Error!',
-                    text: data.error,
-                    icon: 'error',
-                    confirmButtonText: 'Okay',
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An internal error occurred please try again later.',
-                    icon: 'error',
-                    confirmButtonText: 'Okay',
-                });
-            }
-        })
-        .catch((err) => console.log(err));
+    const result = await dragonflyAccountLogin(loginBody);
+
+    changeButtonState();
+    if (result.success) {
+        return ipcRenderer.send('drgn-auth', result);
+    } else if (!result.success) {
+        return Swal.fire({
+            title: 'Error!',
+            text: result.error,
+            icon: 'error',
+            confirmButtonText: 'Okay',
+        });
+    } else {
+        Swal.fire({
+            title: 'Error!',
+            text: 'An internal error occurred please try again later.',
+            icon: 'error',
+            confirmButtonText: 'Okay',
+        });
+    }
 });
 
 const pwToggle = document.getElementById('toggle-pw');
@@ -133,7 +126,7 @@ pwToggle.addEventListener('click', () => {
 const externalLinks = document.querySelectorAll('a[href^="http"]');
 
 Array.from(externalLinks).forEach(function (link) {
-    link.addEventListener('click', (e) => {
+    link.addEventListener('click', e => {
         e.preventDefault();
         shell.openExternal(link.getAttribute('href'));
     });
@@ -162,8 +155,9 @@ function changeButtonState(button = document.querySelector('#login-submit-btn'))
 // Receive Dragonfly authentication replies
 ipcRenderer.on('drgn-auth-reply', (event, arg) => {
     console.log('Reply incoming...');
+    dragonflyToken = arg;
+    localStorage.setItem('dragonflyToken', arg);
     console.log(arg);
-    console.log(`Type: ${arg.type}\n Value: ${arg.value}`);
 });
 
 ipcRenderer.on('discord-info', (event, arg) => {
