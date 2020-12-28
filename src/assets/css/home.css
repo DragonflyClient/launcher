@@ -137,11 +137,16 @@ a {
     padding: 20px;
 }
 
+#news .article .publish-date {
+    color: #dcdee0;
+    margin-bottom: 20px;
+}
+
 #news .article .text-wrapper .line {
-    width: 60px;
+    width: 40px;
     height: 3px;
-    background: gray;
-    margin: 15px 0;
+    background: rgb(211, 211, 211);
+    margin: 10px 0;
 }
 
 #news .article .text-wrapper p {

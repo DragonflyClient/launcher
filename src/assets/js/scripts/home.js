@@ -242,12 +242,16 @@ const announcementContainer = document.getElementById('news');
 
 function innerAnnouncements() {
     announcements.forEach(announcement => {
+        console.log(announcement.publishedOn);
         announcementContainer.innerHTML += `
                     <div class="article">
                         ${announcement.image ? `<img class="media" src="${announcement.image}" />` : ''}
                         <div class="text-wrapper">
-                            <h1>${announcement.title}</h1>
                             <div class="line"></div>
+                            <h1>${announcement.title}</h1>
+                            <p class="publish-date">${new Date(
+                                announcement.publishedOn * 1000
+                            ).toLocaleDateString()}</p>
                             <p>${announcement.content}</p>
                         </div>
                     </div>
