@@ -1,7 +1,7 @@
 const { ipcRenderer, shell } = require('electron');
+const app = require('electron').remote.app;
 const { setEdition, startGame } = require('../assets/js/launch');
-
-const { ensureDirectoryExistence } = require('../utilities/path');
+const { ensureDirectoryExistence, rootPath } = require('../utilities/path');
 
 const fs = require('fs');
 
@@ -81,7 +81,8 @@ const editionDetails = readEditionDetails();
 
 function readEditionDetails() {
     try {
-        return JSON.parse(fs.readFileSync('tmp/editions.json'));
+        const workingDir = rootPath(app.getAppPath());
+        return JSON.parse(fs.readFileSync(workingDir + '\\tmp\\editions.json'));
     } catch (error) {
         const main = document.querySelector('.main');
         main.innerHTML = `
