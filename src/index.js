@@ -5,8 +5,8 @@ const fswin = require('fswin');
 const CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
-const { rootPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
-const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
+const { rootPath, ensureDirectoryExistence } = require('./utilities/path.js');
+const { validateDragonflyAccount, getDragonflyToken } = require('./utilities/dragonflyAccount');
 const { windowIndex } = require('./utilities/browser-window');
 const { downloadEditions, downloadAnnouncements } = require('./utilities/downloader.js');
 
@@ -42,13 +42,16 @@ const createLoadingWindow = async () => {
         webPreferences: globalWebPreferences,
     });
 
+    console.log('Loading page...');
     loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
+    console.log('Downloading Editions...');
     await downloadEditions();
+    console.log('Downloading Announcements...');
     await downloadAnnouncements();
 
     await discordRPC.login('777509861780226069').catch(err => console.log(err));
-    const accessToken = await readToken(currentAppPath);
+    const accessToken = await getDragonflyToken(currentAppPath);
 
     setTimeout(async () => {
         if (await validateDragonflyAccount(accessToken)) {
