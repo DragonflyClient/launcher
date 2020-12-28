@@ -8,7 +8,7 @@ async function downloadEditions() {
         const workingDir = rootPath(app.getAppPath());
         const localFile = workingDir + '\\tmp\\editions.json';
 
-        const url = 'https://api.playdragonfly.net/v1/launcher/editions';
+        const url = 'https://api.playdragonfly.net/v1/client/editions';
         const text = JSON.stringify((await axios.get(url)).data);
 
         ensureDirectoryExistence(localFile, true, 'dir');

@@ -154,7 +154,7 @@ class Launcher {
         }
 
         try {
-            const files = (await axios.get('https://api.playdragonfly.net/v1/launcher/files')).data;
+            const files = (await axios.get('https://api.playdragonfly.net/v1/client/files')).data;
             console.log('> Downloading Dragonfly files (' + files.length + ')');
 
             for (let file of files) {
