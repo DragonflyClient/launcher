@@ -8,7 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const { rootPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
 const { validateDragonflyAccount } = require('./utilities/dragonflyAccount');
 const { windowIndex } = require('./utilities/browser-window');
-const { downloadEditions } = require('./utilities/downloader.js');
+const { downloadEditions, downloadAnnouncements } = require('./utilities/downloader.js');
 
 const currentAppPath = rootPath(app.getAppPath());
 
@@ -44,7 +44,8 @@ const createLoadingWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
-    downloadEditions();
+    await downloadEditions();
+    await downloadAnnouncements()
 
     await discordRPC.login('777509861780226069').catch(err => console.log(err));
     const accessToken = await readToken(currentAppPath);
