@@ -1,0 +1,32 @@
+[
+    {
+        "title": "Mega Update!",
+        "content": "We recently released a huge update with new features such as keystrokes, hotkeys and cosmetics for the Early Access channel. Release notes for this update will appear as soon as the version is available for the stable channel. If you find a bug, we ask you to report it to https://icnet.dev/bug ."
+    },
+    {
+        "title": "Dragonfly Twitter",
+        "content": "Check out the Dragonfly Twitter account for future giveaways and all information about the client! Via https://icnet.dev/d/twitter or https://twitter.com/dragonflyclient"
+    },
+    {
+        "title": "Maintenance",
+        "content": "Due to work on the Dragonfly authentication system, it is not possible to register for a Dragonfly account for an undefined amount of time. There can also be problems with cosmetics, diagnostics, alpha key requests and update checking. We'll get back to you as soon as the maintenance work is over."
+    },
+    {
+        "title": "Email Verification & Password Reset",
+        "content": "In the last days, we have been working on an email verification & password reset system. With this system being released now, the creation of new Dragonfly accounts will require a verificated (confirmed) email address. Existing Dragonfly accounts that have not been registered with an email address will have the opportunity to do this in the near future."
+    },
+    {
+        "title": "You may be the one!",
+        "content": "Note: The following announcement is only aimed at our German community. Inception Cloud  entwickelt die Minecraft Modifikation „Dragonfly“. Zur Erweiterung des Dragonfly Developer Teams suchen wir ab sofort einen Client Developer. Die notwendigen Fähigkeiten und vieles mehr findest du hier: https://inceptioncloud.net/de/apply/developer"
+    },
+    {
+        "title": "Cosmetics Update",
+        "content": "We are back with a large update. You can now not only customize your cosmetics in-game, but also manage them in the dashboard and assign them to individual accounts. Note: These functions are currently only available for the Early Access Channel.",
+        "image": "https://i.imgur.com/ztX5CDT.png"
+    },
+    {
+        "title": "Introducing: Dragonfly Notifications",
+        "content": "Today, we are officially releasing our Dragonfly notifications system. Find out immediately when someone has given you their best cosmetic! Go check it out on the Dragonfly Dashboard!",
+        "image": "https://pbs.twimg.com/media/Elwvu4iUYAAUe1s?format=jpg&name=small"
+    }
+]

@@ -205,3 +205,46 @@ process.addEventListener('click', () => {
 });
 
 setDefaults();
+
+/* announcements */
+const announcements = readAnnouncementDetails();
+
+function readAnnouncementDetails() {
+    try {
+        const workingDir = rootPath(app.getAppPath());
+        return JSON.parse(fs.readFileSync(workingDir + '\\tmp\\announcements.json'));
+    } catch (error) {
+        const main = document.querySelector('.main');
+        main.innerHTML = `
+            <div class="error-container">
+                <img src="../assets/media/error.svg" />
+                <h1>Whoops...</h1>
+                <p>An error occurred while trying to download necessary details!</p><br />
+                <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>
+                <p class="support-notice">For more information and possible help, please contact our support.
+            </div>
+        `;
+        return null;
+    }
+}
+
+const announcementContainer = document.getElementById('news');
+
+function innerAnnouncements() {
+    announcements.forEach(announcement => {
+        announcementContainer.innerHTML += `
+                    <div class="article">
+                        ${announcement.image ? `<img class="media" src="${announcement.image}" />` : ''}
+                        <div class="text-wrapper">
+                            <h1>${announcement.title}</h1>
+                            <div class="line"></div>
+                            <p>${announcement.content}</p>
+                        </div>
+                    </div>
+        `;
+    });
+}
+
+innerAnnouncements();
+
+console.log(announcements, 'ANNOUNCEMENTS!');
