@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const fswin = require('fswin');
-var CryptoJS = require('crypto-js');
+const CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
 const { rootPath, ensureDirectoryExistence, readToken } = require('./utilities/path.js');
@@ -45,7 +45,7 @@ const createLoadingWindow = async () => {
     loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
     await downloadEditions();
-    await downloadAnnouncements()
+    await downloadAnnouncements();
 
     await discordRPC.login('777509861780226069').catch(err => console.log(err));
     const accessToken = await readToken(currentAppPath);
@@ -197,7 +197,7 @@ ipcMain.on('drgn-auth', async (event, data) => {
         if (err) return console.log(err);
     });
     fswin.setAttributesSync(path.join(currentAppPath, '.secrets'), { IS_HIDDEN: true });
-    event.reply('drgn-auth-reply', currentAppPath);
+    event.reply('drgn-auth-reply', data.token);
     discordRPC
         .setPresence({
             details: 'Home',
