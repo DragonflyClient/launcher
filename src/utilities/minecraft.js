@@ -7,6 +7,8 @@ module.exports.getMinecraftLauncherProfiles = async () => {
     const file = `${minecraftDir}\\launcher_accounts.json`;
     const launcherAccounts = JSON.parse(fs.readFileSync(file));
 
+    if (!launcherAccounts.accounts) return false;
+
     const mojangClientToken = launcherAccounts.mojangClientToken;
     const minecraftAccounts = [];
 
