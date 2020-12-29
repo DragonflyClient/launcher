@@ -89,7 +89,7 @@ a {
 
 #info .account {
     display: flex;
-    width: 300px;
+    /* width: 300px; */
     padding: 10px 25px;
     align-items: center;
 }
