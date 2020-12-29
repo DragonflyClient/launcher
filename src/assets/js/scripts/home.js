@@ -136,16 +136,23 @@ function innerEditionDetails(version, update = false) {
     const edition = getEditionByVersion(version);
     if (!edition) return;
     const action = () => {
+        editionDetailsEl.style.transition = "none";
+        editionDetailsEl.style.transform = "translateX(-100%)";
+
         editionTitleEl.innerHTML = edition.title;
         editionVersionEl.innerHTML = edition.version;
         editionDescriptionEl.innerHTML = edition.description;
         editionTagsWrapper.innerHTML = '';
         edition.tags.forEach(tag => (editionTagsWrapper.innerHTML += `<p>${tag}</p>`));
-        editionDetailsEl.style.opacity = 1;
+        
+        setTimeout(() => {
+            editionDetailsEl.style.transition = "0.2s ease";
+            editionDetailsEl.style.transform = "translateX(0)";
+        }, 20)
     };
 
     if (update) {
-        editionDetailsEl.style.opacity = 0;
+        editionDetailsEl.style.transform = "translateX(100%)";
         setTimeout(action, 200);
     } else action();
 }
@@ -189,7 +196,7 @@ const launchButton = document.getElementById('launch-game-button');
 
 const process = document.getElementById('progress');
 launchButton.addEventListener('click', async () => {
-    if (launchButton.getAttribute('disabled') == true) return;
+    if (launchButton.getAttribute('disabled') == 'true') return;
 
     process.dataset.progress = 'running';
 
