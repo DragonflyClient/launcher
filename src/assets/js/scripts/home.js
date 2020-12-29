@@ -186,7 +186,7 @@ const launchButton = document.getElementById('launch-game-button');
 
 const process = document.getElementById('progress');
 launchButton.addEventListener('click', async () => {
-    if (launchButton.getAttribute('disabled') == true) return;
+    if (launchButton.getAttribute('disabled') == 'true') return;
 
     process.dataset.progress = 'running';
 
