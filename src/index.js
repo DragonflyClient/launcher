@@ -54,12 +54,10 @@ const createLoadingWindow = async () => {
     const accessToken = await getDragonflyToken(currentAppPath);
 
     setTimeout(async () => {
-        if (await getDragonflyAccount(accessToken, true)) {
-            createMainWindow();
-            loadingWindow.close();
+        if (await validateDragonflyAccount(accessToken)) {
+            await createMainWindow();
         } else {
-            createLoginWindow();
-            loadingWindow.close();
+            await createLoginWindow();
         }
     }, 1000);
 };
@@ -94,6 +92,7 @@ const createLoginWindow = async () => {
                 console.log(err, 'IN INDEX!!!');
             });
         loginWindow.show();
+        loadingWindow.close();
         openWindows.push(windowId);
     });
 };
@@ -114,6 +113,7 @@ const createMainWindow = async () => {
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
+        loadingWindow.close();
     });
 
     mainWindow.on('close', () => {
