@@ -198,6 +198,7 @@ a {
     width: 25px;
 }
 #launch .header .status {
+    text-decoration: none;
     margin-left: 10px;
     margin-right: 20px;
     width: 80%;
