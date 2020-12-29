@@ -8,7 +8,7 @@ let failedConnectionCount = 1;
 const pjson = require('../../../package.json');
 console.log(pjson.version);
 
-rpc.on('error', (err) => {
+rpc.on('error', err => {
     console.error('DISCORD: An error occurred', err);
 });
 
@@ -29,7 +29,7 @@ module.exports.isReady = function () {
  */
 module.exports.login = function (clientId) {
     console.log('DISCORD: Logging in...');
-    if (failedConnectionCount <= 5) {
+    if (failedConnectionCount <= 3) {
         return new Promise((resolve, reject) => {
             rpc.login({
                 clientId: clientId,
@@ -39,8 +39,8 @@ module.exports.login = function (clientId) {
                     loggedIn = true;
                     resolve({ success: true });
                 })
-                .catch((err) => {
-                    console.log('DISCORD: An error occurred while while logging in', err);
+                .catch(err => {
+                    console.log('DISCORD: An error occurred while while logging in');
                     failedConnectionCount += 1;
                     console.log(`DISCORD: Failed ${failedConnectionCount} times to connect to Discord`);
                     reject({ success: false, error: 'An error occurred while while logging in' });
@@ -48,6 +48,7 @@ module.exports.login = function (clientId) {
         });
     } else {
         console.log('DISCORD: No more tries to connect');
+        return false;
     }
 };
 
@@ -56,13 +57,15 @@ module.exports.login = function (clientId) {
  * @param  {String} Test
  *
  */
-module.exports.setPresence = async (options) => {
+module.exports.setPresence = async options => {
+    let currentLogin;
     if (!loggedIn) {
-        await this.login('777509861780226069');
+        currentLogin = await this.login('777509861780226069');
     } else {
         console.log('DISCORD: Actually setting rpc');
     }
-    console.log(options);
+
+    if (!currentLogin) return;
 
     if (!options) {
         rpc.setActivity({
