@@ -17,13 +17,23 @@ const dragonflyToken = getDragonflyToken(cwd);
 
 if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in');
 
-getDragonflyAccount(dragonflyToken).then(res => {
+getDragonflyAccount(dragonflyToken).then(async res => {
     console.log('Dragonfly Account..', res);
     const dragonflyNameEl = document.querySelector('.name__dragonfly');
+    const minecraftNameEl = document.querySelector('.name__minecraft');
     const minecraftSkullImg = document.querySelector('.minecraft-skull');
 
-    dragonflyNameEl.innerHTML = res.username;
-    minecraftSkullImg.src = 'https://mineskin.de/avatar/' + res.linkedMinecraftAccounts[1];
+    const minecraftProfiles = await getMinecraftLauncherProfiles();
+
+    if (!minecraftProfiles) {
+        dragonflyNameEl.innerHTML = res.username;
+        minecraftSkullImg.src = 'https://mineskin.de/avatar/MHF_Exclamation';
+        minecraftNameEl.innerHTML = 'Unauthenticated with minecraft!';
+    } else {
+        dragonflyNameEl.innerHTML = res.username;
+        minecraftNameEl.innerHTML = minecraftProfiles[0].name;
+        minecraftSkullImg.src = 'https://mineskin.de/avatar/' + minecraftProfiles[0].uuid;
+    }
 });
 
 /* #region Handle auto-updating */
@@ -216,16 +226,23 @@ launchButton.addEventListener('click', async () => {
         );
     } catch (error) {
         console.log(error);
+        launchButton.setAttribute('disabled', 'false');
+        launchButton.innerHTML = `Launch`;
+        resetProgress();
     }
 });
 
 process.addEventListener('click', () => {
     if (process.dataset.progress === 'finished') {
-        process.style.opacity = 0;
-        process.style.cursor = 'default';
-        setTimeout(() => (process.innerText = '🐲🔥'), 300);
+        resetProgress();
     }
 });
+
+function resetProgress() {
+    process.style.opacity = 0;
+    process.style.cursor = 'default';
+    setTimeout(() => (process.innerText = '🐲🔥'), 300);
+}
 
 setDefaults();
 
