@@ -54,7 +54,7 @@ const createLoadingWindow = async () => {
     const accessToken = await getDragonflyToken(currentAppPath);
 
     setTimeout(async () => {
-        if (await validateDragonflyAccount(accessToken)) {
+        if (await getDragonflyAccount(accessToken)) {
             await createMainWindow();
         } else {
             await createLoginWindow();
