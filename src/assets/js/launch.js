@@ -390,7 +390,7 @@ class Launcher {
     }
 
     handleGameStart() {
-        this.openWithGameOutput = document.getElementById('open-game-output')?.checked ?? false;
+        this.openWithGameOutput = document.getElementById('open-game-output')?.checked ?? true;
 
         this.gameObject = {
             gameVersion: this.targetVersion,
