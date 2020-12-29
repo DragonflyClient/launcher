@@ -6,7 +6,7 @@ const CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
 const { rootPath, ensureDirectoryExistence } = require('./utilities/path.js');
-const { validateDragonflyAccount, getDragonflyToken } = require('./utilities/dragonflyAccount');
+const { getDragonflyAccount, getDragonflyToken } = require('./utilities/dragonflyAccount');
 const { windowIndex } = require('./utilities/browser-window');
 const { downloadEditions, downloadAnnouncements } = require('./utilities/downloader.js');
 
@@ -54,7 +54,7 @@ const createLoadingWindow = async () => {
     const accessToken = await getDragonflyToken(currentAppPath);
 
     setTimeout(async () => {
-        if (await validateDragonflyAccount(accessToken)) {
+        if (await getDragonflyAccount(accessToken, true)) {
             createMainWindow();
             loadingWindow.close();
         } else {

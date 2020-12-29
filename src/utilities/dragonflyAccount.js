@@ -6,7 +6,7 @@ const path = require('path');
 
 const CryptoJS = require('crypto-js');
 
-module.exports.validateDragonflyAccount = token => {
+module.exports.getDragonflyAccount = (token, validate = false) => {
     return axios
         .post(
             baseAuthUrl + '/token',
@@ -19,9 +19,11 @@ module.exports.validateDragonflyAccount = token => {
         )
         .then(res => {
             if (res.data.success) {
-                return true;
+                if (validate) return true;
+                return res.data;
             } else {
-                return false;
+                if (validate) return false;
+                return res.data;
             }
         })
         .catch(err => {
