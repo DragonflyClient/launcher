@@ -3,7 +3,7 @@ const app = require('electron').remote.app;
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
 
-const { getDragonflyToken } = require('../utilities/dragonflyAccount.js');
+const { getDragonflyToken, getDragonflyAccount } = require('../utilities/dragonflyAccount.js');
 
 const fs = require('fs');
 
@@ -16,6 +16,12 @@ const dragonflyToken = getDragonflyToken(cwd);
 console.log(dragonflyToken);
 
 if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in');
+
+getDragonflyAccount(dragonflyToken).then(res => {
+    console.log('Dragonfly Account..', res);
+    const dragonflyNameEl = document.querySelector('.name__dragonfly');
+    dragonflyNameEl.innerHTML = res.username;
+});
 
 /* #region Handle auto-updating */
 const updaterNotification = document.getElementById('updater-notification');
