@@ -3,6 +3,8 @@ const app = require('electron').remote.app;
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
 
+const { getMinecraftLauncherProfiles } = require('../utilities/minecraft.js');
+
 const { getDragonflyToken, getDragonflyAccount } = require('../utilities/dragonflyAccount.js');
 
 const fs = require('fs');
@@ -12,8 +14,6 @@ require('../assets/js/devtools');
 const cwd = rootPath(app.getAppPath());
 
 const dragonflyToken = getDragonflyToken(cwd);
-
-console.log(dragonflyToken);
 
 if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in');
 
@@ -126,7 +126,6 @@ function innerEditionDetails(version, update = false) {
     const edition = getEditionByVersion(version);
     if (!edition) return;
     const action = () => {
-        console.log(edition);
         editionTitleEl.innerHTML = edition.title;
         editionVersionEl.innerHTML = edition.version;
         editionDescriptionEl.innerHTML = edition.description;
