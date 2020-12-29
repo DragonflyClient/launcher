@@ -3,7 +3,7 @@ const rpc = new RPC.Client({
     transport: 'ipc',
 });
 let loggedIn = false;
-let failedConnectionCount = 1;
+let failedConnectionCount = 0;
 
 const pjson = require('../../../package.json');
 console.log(pjson.version);
@@ -29,7 +29,7 @@ module.exports.isReady = function () {
  */
 module.exports.login = function (clientId) {
     console.log('DISCORD: Logging in...');
-    if (failedConnectionCount <= 3) {
+    if (failedConnectionCount < 3) {
         return new Promise((resolve, reject) => {
             rpc.login({
                 clientId: clientId,
@@ -41,7 +41,7 @@ module.exports.login = function (clientId) {
                 })
                 .catch(err => {
                     console.log('DISCORD: An error occurred while while logging in');
-                    failedConnectionCount += 1;
+                    failedConnectionCount++;
                     console.log(`DISCORD: Failed ${failedConnectionCount} times to connect to Discord`);
                     reject({ success: false, error: 'An error occurred while while logging in' });
                 });
