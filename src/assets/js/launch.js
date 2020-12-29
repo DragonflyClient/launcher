@@ -199,7 +199,18 @@ class Launcher {
         // take first account from launcher_accounts.json
         const file = `${this.minecraftDir}\\launcher_accounts.json`;
         const launcherAccounts = JSON.parse(fs.readFileSync(file));
-        const firstAccountKey = Object.keys(launcherAccounts.accounts)[0];
+        let firstAccountKey;
+        try {
+            firstAccountKey = Object.keys(launcherAccounts.accounts)[0];
+        } catch (error) {
+            Swal.fire({
+                title: `Unauthenticated`,
+                text: `Please make sure to login with an minecraft account before starting the game.`,
+                icon: 'error',
+                confirmButtonText: 'Okay',
+            });
+            throw 'missing_mojang_auth';
+        }
         const firstAccount = launcherAccounts.accounts[firstAccountKey];
 
         try {
