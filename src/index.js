@@ -34,7 +34,7 @@ let checkedForUpdates = false;
 const openWindows = [];
 
 const createLoadingWindow = async () => {
-    console.log('Starting "loading" window');
+    console.log('== Launching loading screen ==');
     loadingWindow = new BrowserWindow({
         width: 320,
         height: 400,
@@ -42,12 +42,12 @@ const createLoadingWindow = async () => {
         webPreferences: globalWebPreferences,
     });
 
-    console.log('Loading page...');
-    loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
+    console.log('> Loading page...');
+    await loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
 
-    console.log('Downloading Editions...');
+    console.log('> Downloading Editions...');
     await downloadEditions();
-    console.log('Downloading Announcements...');
+    console.log('> Downloading Announcements...');
     await downloadAnnouncements();
 
     loadingWindow.on('closed', e => {
@@ -67,6 +67,7 @@ const createLoadingWindow = async () => {
 };
 
 const createLoginWindow = async () => {
+    console.log("== Launching login window ==")
     loginWindow = new BrowserWindow({
         width: 800,
         height: 700,
@@ -93,7 +94,6 @@ const createLoginWindow = async () => {
                 details: 'Login',
             })
             .catch(err => {
-                console.log(err, 'IN INDEX!!!');
             });
         loginWindow.show();
         loadingWindow.close();
@@ -102,7 +102,7 @@ const createLoginWindow = async () => {
 };
 
 const createMainWindow = async () => {
-    console.log('Starting "main" window');
+    console.log("== Launching main window ==")
     mainWindow = new BrowserWindow({
         width: 1500,
         height: 800,
@@ -133,9 +133,7 @@ const createMainWindow = async () => {
             .setPresence({
                 details: 'Home',
             })
-            .catch(err => {
-                console.log(err);
-            });
+            .catch(err => {});
         openWindows.push(windowId);
     });
 
@@ -220,8 +218,6 @@ ipcMain.on('drgn-auth', async (event, data) => {
 // read access token
 ipcMain.on('drgn-auth-read', async (event, data) => {
     try {
-        console.log(BrowserWindow.fromId(openWindows[0]));
-
         event.reply('drgn-auth-reply', 'Worked');
     } catch (error) {
         event.reply('drgn-auth-reply', `Some kinda error: ${error}`);

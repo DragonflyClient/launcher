@@ -27,7 +27,6 @@ module.exports.getDragonflyAccount = (token, validate = false) => {
             }
         })
         .catch(err => {
-            console.log(err.response.status);
             return false;
         });
 };
@@ -36,9 +35,7 @@ module.exports.dragonflyAccountLogin = loginBody => {
     return axios
         .post(baseAuthUrl + '/login', loginBody)
         .then(res => {
-            console.log(res.data);
             if (res.data.success) {
-                console.log(res.data.token, 'DRAGONFLY TOKEN LOGIN!');
                 return res.data;
             } else {
                 console.log('No success logging into dragonfly account!');
