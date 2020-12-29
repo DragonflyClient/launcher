@@ -50,6 +50,10 @@ const createLoadingWindow = async () => {
     console.log('Downloading Announcements...');
     await downloadAnnouncements();
 
+    loadingWindow.on('closed', e => {
+        loadingWindow = null;
+    });
+
     await discordRPC.login('777509861780226069').catch(err => console.log(err));
     const accessToken = await getDragonflyToken(currentAppPath);
 
@@ -113,7 +117,7 @@ const createMainWindow = async () => {
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
-        loadingWindow.close();
+        if (loadingWindow) loadingWindow.close();
     });
 
     mainWindow.on('close', () => {
