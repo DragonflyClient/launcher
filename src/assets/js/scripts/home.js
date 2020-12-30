@@ -43,7 +43,7 @@ const updaterRestartButton = document.getElementById('updater__restart-button');
 
 // handle update available
 ipcRenderer.on('update_available', () => {
-    console.log('UPDATE AVAILABLE');
+    console.log('> An update for the Dragonfly Launcher is available');
     ipcRenderer.removeAllListeners('update_available');
     updaterMessage.innerText = 'A new update is available. Downloading now...';
     updaterNotification.classList.remove('hidden');
@@ -51,7 +51,7 @@ ipcRenderer.on('update_available', () => {
 
 // handle update download
 ipcRenderer.on('update_downloaded', () => {
-    console.log('UPDATE DOWNLOADED');
+    console.log('> The update for the Dragonfly Launcher has been downloaded');
     ipcRenderer.removeAllListeners('update_downloaded');
     updaterMessage.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
     updaterRestartButton.classList.remove('hidden');
@@ -88,7 +88,6 @@ const versionDropdownMenu = document.querySelector('.minecraft-version__dropdown
 console.log(versionDropdownToggle, versionDropdownMenu);
 
 versionDropdownToggle.addEventListener('click', e => {
-    console.log('CLICKED', e.target);
     versionDropdownMenu.classList.toggle('active');
     versionDropdownToggle.classList.toggle('active');
 });
@@ -214,7 +213,6 @@ launchButton.addEventListener('click', async () => {
     try {
         await startGame(
             message => {
-                console.log('progress: ' + message);
                 process.innerText = message;
                 process.style.opacity = 1;
             },

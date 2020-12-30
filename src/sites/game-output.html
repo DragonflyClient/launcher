@@ -11,14 +11,16 @@
 </head>
 
 <body>
-    <div id="game-output"></div>
-    <div id="logger-controls">
-        <label class="logger-control-label logger-info">Info <input type="checkbox" name="info" id="ll-info"></label>
-        <label class="logger-control-label logger-trace">Trace <input type="checkbox" name="trace" id="ll-info"></label>
-        <label class="logger-control-label logger-debug">Debug <input type="checkbox" name="debug" id="ll-info"></label>
-        <label class="logger-control-label logger-warn">Warn <input type="checkbox" name="warn" id="ll-info"></label>
-        <label class="logger-control-label logger-error">Error <input type="checkbox" name="error" id="ll-info"></label>
-        <label class="logger-control-label logger-fatal">Fatal <input type="checkbox" name="fatal" id="ll-info"></label>
+    <div id="container">
+        <div id="game-output"></div>
+        <div id="logger-controls">
+            <label class="logger-control-label logger-info">Info <input type="checkbox" name="info"></label>
+            <label class="logger-control-label logger-trace">Trace <input type="checkbox" name="trace"></label>
+            <label class="logger-control-label logger-debug">Debug <input type="checkbox" name="debug"></label>
+            <label class="logger-control-label logger-warn">Warn <input type="checkbox" name="warn"></label>
+            <label class="logger-control-label logger-error">Error <input type="checkbox" name="error"></label>
+            <label class="logger-control-label logger-fatal">Fatal <input type="checkbox" name="fatal"></label>
+        </div>
     </div>
 </body>
 <script src="../assets/js/partials/game-output.js">

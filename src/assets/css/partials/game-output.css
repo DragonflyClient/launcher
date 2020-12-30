@@ -62,12 +62,27 @@ body {
     color: #d0d2d2;
 }
 
+#container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 #game-output {
     max-height: 100%;
+    width: 100%;
     overflow: auto;
     padding: 10px 0;
-    position: absolute;
-    bottom: 50px;
+    height: calc(100% - 50px)
+}
+
+#logger-controls {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    background-color: #424345;
+    padding: 20px;
 }
 
 .output__overview-wrapper {
@@ -122,17 +137,6 @@ body {
 
 #game-output .output__overview-wrapper:nth-child(1) {
     border-top: none;
-}
-
-#logger-controls {
-    position: fixed;
-    display: flex;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background-color: #424345;
-    padding: 20px;
 }
 
 .logger-control-label {

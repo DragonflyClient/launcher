@@ -383,7 +383,6 @@ class Launcher {
 
         const command = this.buildCommand(jvmArgs, programArgs, mainClass);
 
-        console.log('* Command: ' + command);
         this.gameProcess = exec(command, { cwd: this.minecraftDir });
     }
 
