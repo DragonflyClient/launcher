@@ -1,7 +1,10 @@
 const path = require('path');
 const app = require('electron').remote.app;
 
+const { isDeveloperMode } = require('../../utilities/developer');
+
 document.onkeydown = function (evt) {
+    if (isDeveloperMode()) return;
     if (!evt) evt = event;
     if (evt.ctrlKey && evt.shiftKey && evt.keyCode === 73) {
         console.log(
