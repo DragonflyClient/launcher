@@ -30,12 +30,12 @@ ipcRenderer.on('game-output-data', (e, args) => {
     }
 });
 
-const disabledLevels = []
+const disabledLevels = ["debug"]
 const logOptions = document.querySelectorAll('.logger-control-label');
 
 for (let i = 0; i < logOptions.length; i++) {
     const label = logOptions[i];
-    label.firstElementChild.checked = true;
+    label.firstElementChild.checked = label.firstElementChild.name !== "debug";
 
     label.addEventListener('change', (e) => {
         const others = Array.from(logOptions);
