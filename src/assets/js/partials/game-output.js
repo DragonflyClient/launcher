@@ -11,13 +11,16 @@ ipcRenderer.on('game-output-data', (e, args) => {
     const level = gameOutput.level.toLowerCase();
     const style = (disabledLevels.includes(level)) ? "display: none" : ""
 
+    const isDragonfly = gameOutput.logger.startsWith("dragonfly-")
+    const cleanLoggerName = gameOutput.logger.replace("dragonfly-", "")
+
     escapeMessage(gameOutput)
 
     const fullMessage = `
             <div class="output__overview-wrapper level-${level} logger-${logger}" style="${style}">
-               <span class="output__icon"></span>
+               <span class="output__level-tag">${level}</span>
                <span class="output__overview-timestamp">${timestamp}</span>
-               <span class="output__overview-logger">${gameOutput.logger}</span>
+               <span class="output__overview-logger ${isDragonfly ? "dragonfly-logger" : ""}">${cleanLoggerName}</span>
                <span class="output__overview-thread">${gameOutput.thread}</span>
                <span class="output__overview-message">${gameOutput.message}</span>
             </div>

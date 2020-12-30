@@ -21,41 +21,61 @@
     font-family: 'JetBrains Mono', monospace;
     font-weight: 400;
     font-size: 0.9rem;
-    color: #d0d2d2;
+    letter-spacing: -0.1px;
+    color: #E5E5E5;
 }
 
 html,
 body {
     height: 100vh;
     overflow: hidden;
-    background: #37393a;
+    background: #323434;
 }
 
-.logger-dragonfly-injector span {
-    color: #c4b3d3;
-    font-weight: 500;
+.level-trace .output__level-tag {
+    background-color: #E1C876;
+    color: #6E643B;
 }
 
-.level-trace span {
-    color: #8d8f8d;
+.level-trace .output__overview-message {
+    color: #AFAFAF;
 }
 
-.level-debug span {
-    color: #c4eacf;
+.level-debug .output__level-tag {
+    background-color: #66C166;
+    color: #2A512A;
 }
 
-.level-warn span {
-    color: #cd9f7f;
+.level-info .output__level-tag {
+    background-color: #7693E8;
+    color: #2F3655;
 }
 
-.level-error span {
-    color: #d69796;
-    font-weight: 500;
+.level-warn .output__level-tag {
+    background-color: #E8B276;
+    color: #775E3E;
 }
 
-.level-fatal span {
-    color: #d92024;
-    font-weight: 500;
+.level-warn .output__overview-message {
+    color: #E8B276;
+}
+
+.level-error .output__level-tag {
+    background-color: #E87676;
+    color: #7C4040;
+}
+
+.level-error .output__overview-message {
+    color: #E87676;
+}
+
+.level-fatal .output__level-tag {
+    background-color: #E64F4F;
+    color: #581E1E;
+}
+
+.level-fatal .output__overview-message {
+    color: #E64F4F;
 }
 
 .logger-stdout {
@@ -83,68 +103,102 @@ body {
     height: 50px;
     background-color: #424345;
     padding: 20px;
+    box-shadow: -10px 0 10px #00000061;
 }
 
 .output__overview-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .output__overview-wrapper span {
-    margin: 5px 20px;
+    margin: 5px 10px;
     max-width: 140px;
     width: 100%;
     word-break: break-word;
     white-space: pre-wrap;
 }
 
-.output__overview-timestamp {
-    max-width: 75px !important;
-    width: 100%;
-}
-
-.output__overview-logger {
-    max-width: 145px !important;
-    width: 100%;
-}
-
-.output__overview-thread {
-    max-width: 145px !important;
-    width: 100%;
-}
-
-.output__overview-message {
-    max-width: 100% !important;
-    width: 100%;
-}
-
-.output__icon {
+span.output__level-tag {
     display: inline-block;
-    height: 20px !important;
-    max-width: 20px !important;
-    background-color: transparent;
-    margin: 0 -6px 0 12px !important;
+    max-width: 80px;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin: 3px 10px 3px 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
 }
 
-.logger-dragonfly-injector .output__icon {
-    background-image: url('../assets/media/injector.png');
-    background-size: cover;
+span.output__overview-timestamp {
+    max-width: 70px;
+    width: 100%;
+    font-weight: bold;
+}
+
+span.output__overview-logger.dragonfly-logger {
+    color: #D48748;
+}
+
+span.output__overview-logger {
+    max-width: 150px;
+    width: 100%;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+}
+
+span.output__overview-thread {
+    max-width: 150px;
+    width: 100%;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+}
+
+span.output__overview-message {
+    max-width: 100%;
+    width: 100%;
 }
 
 #game-output .output__overview-wrapper {
-    border-top: 1px solid #424345;
+    margin-top: 7px;
 }
 
 #game-output .output__overview-wrapper:nth-child(1) {
-    border-top: none;
+    margin-top: 0px;
+}
+
+#game-output::-webkit-scrollbar {
+    width: 6px; /* width of the entire scrollbar */
+}
+
+#game-output::-webkit-scrollbar-track {
+    background: #3e3e3e;
+}
+
+#game-output::-webkit-scrollbar-thumb {
+    background-color: #808080; /* color of the scroll thumb */
+    border-radius: 5px;
 }
 
 .logger-control-label {
+    user-select: none;
+    font-family: Rubik, sans-serif;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     height: 100%;
-    width: 160px;
-    border-right: 2px solid #333333;
-    padding: 0 20px;
+    padding: 5px 5px;
+    margin: 0 15px;
+}
+
+.logger-control-label input {
+    margin-right: 6px;
+    width: 15px;
+    height: 15px;
 }
