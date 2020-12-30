@@ -78,6 +78,11 @@ const createLoginWindow = async () => {
     });
     let windowId = loginWindow.id;
 
+    loginWindow.webContents.on('did-finish-load', () => {
+        loginWindow.show();
+        if (loadingWindow) loadingWindow.close();
+    });
+
     loginWindow.loadFile(path.join(__dirname, 'sites/login.html'));
 
     loginWindow.on('close', () => {
@@ -95,8 +100,6 @@ const createLoginWindow = async () => {
             })
             .catch(err => {
             });
-        loginWindow.show();
-        loadingWindow.close();
         openWindows.push(windowId);
     });
 };
@@ -118,6 +121,7 @@ const createMainWindow = async () => {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
         if (loadingWindow) loadingWindow.close();
+        if (loginWindow) loginWindow.close();
     });
 
     mainWindow.on('close', () => {
@@ -202,7 +206,6 @@ ipcMain.on('drgn-auth', async (event, data) => {
         if (err) return console.log(err);
     });
     fswin.setAttributesSync(path.join(currentAppPath, '.secrets'), { IS_HIDDEN: true });
-    event.reply('drgn-auth-reply', data.token);
     discordRPC
         .setPresence({
             details: 'Home',
@@ -210,9 +213,8 @@ ipcMain.on('drgn-auth', async (event, data) => {
         .catch(err => {
             console.log(err);
         });
-    loginWindow.hide();
-    createMainWindow();
-    loginWindow.close();
+    await createMainWindow();
+    event.reply('drgn-auth-reply', data.token);
 });
 
 // read access token

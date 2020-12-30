@@ -83,10 +83,10 @@ loginForm.addEventListener('submit', async function (e) {
 
     const result = await dragonflyAccountLogin(loginBody);
 
-    changeButtonState();
     if (result.success) {
         return ipcRenderer.send('drgn-auth', result);
     } else if (!result.success) {
+        changeButtonState();
         return Swal.fire({
             title: 'Error!',
             text: result.error,
@@ -94,6 +94,7 @@ loginForm.addEventListener('submit', async function (e) {
             confirmButtonText: 'Okay',
         });
     } else {
+        changeButtonState();
         Swal.fire({
             title: 'Error!',
             text: 'An internal error occurred please try again later.',
@@ -150,6 +151,7 @@ ipcRenderer.on('drgn-auth-reply', (event, arg) => {
     console.log('Reply incoming...');
     dragonflyToken = arg;
     localStorage.setItem('dragonflyToken', arg);
+    changeButtonState();
     console.log(arg);
 });
 
