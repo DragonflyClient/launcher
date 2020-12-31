@@ -21,7 +21,7 @@
         "productName": "Dragonfly Launcher",
         "appId": "net.playdragonfly.Launcher",
         "win": {
-            "icon": "src/assets/media/Logo.png",
+            "icon": "src/assets/media/png/Logo.png",
             "target": [
                 "nsis"
             ]
