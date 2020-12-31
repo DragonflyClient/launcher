@@ -6,6 +6,8 @@ const path = require('path');
 
 const CryptoJS = require('crypto-js');
 
+const defaultDragonflyConfig = { editionMinecraftVersion: '1.8.8' };
+
 module.exports.getDragonflyAccount = (token, validate = false) => {
     return axios
         .post(
@@ -60,9 +62,16 @@ module.exports.getDragonflyToken = appPath => {
 
 /* Configuration regarding dragonfly */
 module.exports.currentEditionVersion = appPath => {
-    const content = JSON.parse(fs.readFileSync(path.join(appPath, 'tmp', 'config.json')));
-    console.log(content, 'CONTENT CDE');
-    return content.editionMinecraftVersion;
+    try {
+        if (!fs.existsSync(path.join(appPath, 'tmp', 'config.json'))) {
+            fs.writeFileSync(path.join(appPath, 'tmp', 'config.json'), JSON.stringify(defaultDragonflyConfig));
+        }
+        const content = JSON.parse(fs.readFileSync(path.join(appPath, 'tmp', 'config.json')));
+        return content.editionMinecraftVersion;
+    } catch (error) {
+        console.log('> [Dragonfly] Error while reading edition version from config');
+        return null;
+    }
 };
 
 module.exports.writeEditionVersion = (appPath, version) => {
