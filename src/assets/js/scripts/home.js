@@ -3,8 +3,7 @@ const app = require('electron').remote.app;
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
 
-const { getMinecraftLauncherProfiles } = require('../utilities/minecraft.js');
-
+const { getMinecraftLauncherProfiles, minecraftLogin } = require('../utilities/minecraft.js');
 const { getDragonflyToken, getDragonflyAccount } = require('../utilities/dragonflyAccount.js');
 
 const fs = require('fs');
@@ -135,23 +134,23 @@ function innerEditionDetails(version, update = false) {
     const edition = getEditionByVersion(version);
     if (!edition) return;
     const action = () => {
-        editionDetailsEl.style.transition = "none";
-        editionDetailsEl.style.transform = "translateX(-100%)";
+        editionDetailsEl.style.transition = 'none';
+        editionDetailsEl.style.transform = 'translateX(-100%)';
 
         editionTitleEl.innerHTML = edition.title;
         editionVersionEl.innerHTML = edition.version;
         editionDescriptionEl.innerHTML = edition.description;
         editionTagsWrapper.innerHTML = '';
         edition.tags.forEach(tag => (editionTagsWrapper.innerHTML += `<p>${tag}</p>`));
-        
+
         setTimeout(() => {
-            editionDetailsEl.style.transition = "0.2s ease";
-            editionDetailsEl.style.transform = "translateX(0)";
-        }, 20)
+            editionDetailsEl.style.transition = '0.2s ease';
+            editionDetailsEl.style.transform = 'translateX(0)';
+        }, 20);
     };
 
     if (update) {
-        editionDetailsEl.style.transform = "translateX(100%)";
+        editionDetailsEl.style.transform = 'translateX(100%)';
         setTimeout(action, 200);
     } else action();
 }
