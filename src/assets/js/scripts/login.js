@@ -8,7 +8,7 @@ const Swal = require('sweetalert2');
 const { rootPath } = require('../utilities/path');
 
 const currentAppPath = rootPath(app.getAppPath());
-const { dragonflyAccountLogin } = require('../utilities/dragonflyAccount.js');
+const { dragonflyAccountLogin } = require('../utilities/dragonfly.js');
 
 /* #region Handle update */
 const updaterNotification = document.getElementById('updater-notification');
@@ -41,8 +41,7 @@ ipcRenderer.on('app_version', (event, arg) => {
 
 // check for updates
 ipcRenderer.send('check_for_updates');
-ipcRenderer.on('check_for_updates', (event, arg) => {
-});
+ipcRenderer.on('check_for_updates', (event, arg) => {});
 
 ipcRenderer.on('update_progress', (event, arg) => {
     document.querySelector('.updater__border').style.width = arg;

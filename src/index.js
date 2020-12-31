@@ -6,7 +6,7 @@ const CryptoJS = require('crypto-js');
 const { autoUpdater } = require('electron-updater');
 
 const { rootPath, ensureDirectoryExistence } = require('./utilities/path.js');
-const { getDragonflyAccount, getDragonflyToken } = require('./utilities/dragonflyAccount');
+const { getDragonflyAccount, getDragonflyToken } = require('./utilities/dragonfly');
 const { windowIndex } = require('./utilities/browser-window');
 const { downloadEditions, downloadAnnouncements } = require('./utilities/downloader.js');
 
@@ -67,7 +67,7 @@ const createLoadingWindow = async () => {
 };
 
 const createLoginWindow = async () => {
-    console.log("== Launching login window ==")
+    console.log('== Launching login window ==');
     loginWindow = new BrowserWindow({
         width: 800,
         height: 700,
@@ -98,14 +98,13 @@ const createLoginWindow = async () => {
             .setPresence({
                 details: 'Login',
             })
-            .catch(err => {
-            });
+            .catch(err => {});
         openWindows.push(windowId);
     });
 };
 
 const createMainWindow = async () => {
-    console.log("== Launching main window ==")
+    console.log('== Launching main window ==');
     mainWindow = new BrowserWindow({
         width: 1500,
         height: 800,
