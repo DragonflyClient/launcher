@@ -27,8 +27,8 @@
             ]
         },
         "nsis": {
-            "installerIcon": "src/assets/media/Logo.ico",
-            "uninstallerIcon": "src/assets/media/Logo.ico",
+            "installerIcon": "src/assets/media/ico/Logo.ico",
+            "uninstallerIcon": "src/assets/media/ico/Logo.ico",
             "uninstallDisplayName": "Dragonfly Launcher",
             "license": "license.txt",
             "oneClick": false,

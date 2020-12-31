@@ -23,7 +23,7 @@ document.onkeydown = function (evt) {
             'color: #333; font-size: 1rem; font-weight: 800; -webkit-text-stroke: 1px #999;'
         );
         const notification = new Notification('Wait a minute...', {
-            icon: path.join(app.getAppPath(), 'src/assets/media/Logo.ico'),
+            icon: path.join(app.getAppPath(), 'src/assets/media/ico/Logo.ico'),
             body: 'Unless you know exactly what you are doing here, close this window immediately!',
         });
     }
