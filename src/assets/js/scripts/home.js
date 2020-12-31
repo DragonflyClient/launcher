@@ -4,7 +4,12 @@ const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
 
 const { getMinecraftLauncherProfiles, minecraftLogin } = require('../utilities/minecraft.js');
-const { getDragonflyToken, getDragonflyAccount } = require('../utilities/dragonflyAccount.js');
+const {
+    getDragonflyToken,
+    getDragonflyAccount,
+    currentEditionVersion,
+    writeEditionVersion,
+} = require('../utilities/dragonfly.js');
 
 const fs = require('fs');
 
@@ -176,10 +181,11 @@ function switchVersion(event) {
     setEdition(edition);
     innerEditionDetails(version, true);
     configureDropdown(version);
+    writeEditionVersion(cwd, version);
 }
 
 function setDefaults() {
-    const edition = getEditionByVersion('1.8.8');
+    const edition = getEditionByVersion(currentEditionVersion(cwd));
     if (!edition) return;
     innerEditionDetails(edition.minecraftVersion);
     configureDropdown(edition.minecraftVersion);
