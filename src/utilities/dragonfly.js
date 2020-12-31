@@ -38,7 +38,7 @@ module.exports.dragonflyAccountLogin = loginBody => {
             if (res.data.success) {
                 return res.data;
             } else {
-                console.log('No success logging into dragonfly account!');
+                console.log('> [Dragonfly] No success logging into account');
                 return false;
             }
         })
@@ -53,5 +53,26 @@ module.exports.getDragonflyToken = appPath => {
         const bytes = CryptoJS.AES.decrypt(cipherText, 'secretKey');
         const token = bytes.toString(CryptoJS.enc.Utf8);
         return token;
-    } catch (error) {}
+    } catch (error) {
+        console.log('> [Dragonfly] Error while reading dragonfly token');
+    }
+};
+
+/* Configuration regarding dragonfly */
+module.exports.currentEditionVersion = appPath => {
+    const content = JSON.parse(fs.readFileSync(path.join(appPath, 'tmp', 'config.json')));
+    console.log(content, 'CONTENT CDE');
+    return content.editionMinecraftVersion;
+};
+
+module.exports.writeEditionVersion = (appPath, version) => {
+    try {
+        const content = JSON.parse(fs.readFileSync(path.join(appPath, 'tmp', 'config.json')));
+        content.editionMinecraftVersion = version;
+        fs.writeFileSync(path.join(appPath, 'tmp', 'config.json'), JSON.stringify(content));
+        return true;
+    } catch (error) {
+        console.log('> [Dragonfly] Error while writing edition version to config');
+        return false;
+    }
 };
