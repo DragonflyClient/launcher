@@ -36,7 +36,7 @@ module.exports.getMinecraftLauncherProfiles = async () => {
 };
 
 module.exports.minecraftLogin = async (credentials, clientToken) => {
-    axios
+    return axios
         .post('https://authserver.mojang.com/authenticate', {
             agent: {
                 name: 'Minecraft',
@@ -47,7 +47,9 @@ module.exports.minecraftLogin = async (credentials, clientToken) => {
             clientToken: clientToken,
         })
         .then(res => {
-            console.log(res.data, 'MINECRAFT LOGIN');
+            return res.data;
         })
-        .catch(err => console.log('Error while logging into minecraft account: ', err));
+        .catch(err => {
+            return err;
+        });
 };
