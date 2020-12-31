@@ -6,7 +6,7 @@ let loggedIn = false;
 let failedConnectionCount = 0;
 
 const pjson = require('../../../package.json');
-console.log("=== Dragonfly Launcher v" + pjson.version + " ===");
+console.log('=== Dragonfly Launcher v' + pjson.version + ' ===');
 
 rpc.on('error', err => {
     console.error('> [Discord] An error occurred', err);
@@ -52,7 +52,7 @@ module.exports.login = function (clientId) {
 
 /**
  *
- * @param  {String} Test
+ * @param  {String} Options
  *
  */
 module.exports.setPresence = async options => {
@@ -61,14 +61,14 @@ module.exports.setPresence = async options => {
         currentLogin = await this.login('777509861780226069');
     }
 
-    if (!currentLogin) return;
+    if (!loggedIn && !currentLogin) return;
 
     if (!options) {
         rpc.setActivity({
             state: 'Loading...',
             largeImageKey: 'dragonfly-1',
             largeImageText: `Dragonfly Launcher v${pjson.version}`,
-        })
+        });
     } else {
         rpc.setActivity({
             state: options.state,
@@ -76,6 +76,7 @@ module.exports.setPresence = async options => {
             largeImageKey: options.largeImgKey || 'dragonfly-1',
             largeImageText: options.largeImgText || `Dragonfly Launcher v${pjson.version}`,
             startTimestamp: new Date().getTime(),
-        })
+        });
     }
+    console.log('> [Discord] Set Discord presence');
 };
