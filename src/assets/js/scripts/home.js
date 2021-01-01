@@ -1,25 +1,22 @@
 const { ipcRenderer, shell } = require('electron');
 const app = require('electron').remote.app;
+const fs = require('fs');
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
 
-const { getMinecraftLauncherProfiles, minecraftLogin } = require('../utilities/minecraft.js');
+const { getMinecraftLauncherProfiles, minecraftLogin, validateMinecraftToken } = require('../utilities/minecraft.js');
 const {
     getDragonflyToken,
     getDragonflyAccount,
     currentEditionVersion,
     writeEditionVersion,
 } = require('../utilities/dragonfly.js');
-
-const fs = require('fs');
-
 require('../assets/js/devtools');
 
 const cwd = rootPath(app.getAppPath());
-
 const dragonflyToken = getDragonflyToken(cwd);
 
-if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in');
+if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in'); // TODO: Handle stuff if user isn't logged into dragonfly account
 
 getDragonflyAccount(dragonflyToken).then(async res => {
     console.log('Dragonfly Account..', res);
@@ -27,9 +24,10 @@ getDragonflyAccount(dragonflyToken).then(async res => {
     const minecraftNameEl = document.querySelector('.account-name__minecraft');
     const minecraftSkullImg = document.querySelector('.minecraft-skull');
 
-    const minecraftProfiles = await getMinecraftLauncherProfiles();
+    const minecraftProfiles = await getMinecraftLauncherProfiles(true);
 
-    if (!minecraftProfiles) {
+    // Show parts of default minecraft account
+    if (!minecraftProfiles || !minecraftProfiles[0].uuid) {
         dragonflyNameEl.innerHTML = res.username;
         minecraftSkullImg.src = 'https://mineskin.de/avatar/MHF_Exclamation';
         minecraftNameEl.innerHTML = 'Unauthenticated with minecraft!';
@@ -38,6 +36,15 @@ getDragonflyAccount(dragonflyToken).then(async res => {
         minecraftNameEl.innerHTML = minecraftProfiles[0].name;
         minecraftSkullImg.src = 'https://mineskin.de/avatar/' + minecraftProfiles[0].uuid;
     }
+
+    const validMinecraftAccounts = [];
+
+    await minecraftProfiles.forEach(async profile => {
+        console.log(await validateMinecraftToken(profile.accessToken, profile.clientToken));
+        if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
+            validMinecraftAccounts.push(profile);
+        }
+    });
 });
 
 /* #region Handle auto-updating */
