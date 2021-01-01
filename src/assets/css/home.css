@@ -101,6 +101,10 @@ a {
     margin-right: 15px;
 }
 
+.account .names {
+    position: relative;
+}
+
 .account .names .account-name__dragonfly {
     font-size: 22px;
     font-weight: 500;
@@ -116,6 +120,28 @@ a {
     color: white;
     width: 15px;
     height: 11px;
+}
+
+/* minecraft account dropdown */
+
+.account-name__minecraft-dropdown-wrapper {
+    position: absolute;
+}
+
+.account-name__minecraft-dropdown-item {
+    position: fixed;
+    display: flex;
+    align-items: center;
+}
+
+.minecraft-skull.small {
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 0 !important;
+}
+
+.account-name__minecraft-dropdown-item span {
+    margin-left: 5px;
 }
 
 #news {
