@@ -18,21 +18,23 @@ const dragonflyToken = getDragonflyToken(cwd);
 
 if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in'); // TODO: Handle stuff if user isn't logged into dragonfly account
 
-getDragonflyAccount(dragonflyToken).then(async res => {
-    console.log('Dragonfly Account..', res);
+(async () => {
+    const dragonflyAccount = await getDragonflyAccount(dragonflyToken);
+
+    console.log('Dragonfly Account..', dragonflyAccount);
     const dragonflyNameEl = document.querySelector('.account-name__dragonfly');
     const minecraftNameEl = document.querySelector('.account-name__minecraft');
     const minecraftSkullImg = document.querySelector('.minecraft-skull');
 
     const minecraftProfiles = await getMinecraftLauncherProfiles(true);
 
-    // Show parts of default minecraft account
     if (!minecraftProfiles || !minecraftProfiles[0].uuid) {
-        dragonflyNameEl.innerHTML = res.username;
+        dragonflyNameEl.innerHTML = dragonflyAccount.username;
         minecraftSkullImg.src = 'https://mineskin.de/avatar/MHF_Exclamation';
         minecraftNameEl.innerHTML = 'Unauthenticated with minecraft!';
     } else {
-        dragonflyNameEl.innerHTML = res.username;
+        // Show username and avatar of default minecraft account
+        dragonflyNameEl.innerHTML = dragonflyAccount.username;
         minecraftNameEl.innerHTML = minecraftProfiles[0].name;
         minecraftSkullImg.src = 'https://mineskin.de/avatar/' + minecraftProfiles[0].uuid;
     }
@@ -40,12 +42,11 @@ getDragonflyAccount(dragonflyToken).then(async res => {
     const validMinecraftAccounts = [];
 
     await minecraftProfiles.forEach(async profile => {
-        console.log(await validateMinecraftToken(profile.accessToken, profile.clientToken));
         if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
             validMinecraftAccounts.push(profile);
         }
     });
-});
+})();
 
 /* #region Handle auto-updating */
 const updaterNotification = document.getElementById('updater-notification');
