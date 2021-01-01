@@ -109,5 +109,7 @@ electron-builder.yml
 /.idea/deployment.xml
 /.idea/libraries/file_txt.xml
 
+/.vscode/settings.json
+
 # jre
 jre
