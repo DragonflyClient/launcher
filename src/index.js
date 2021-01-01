@@ -106,7 +106,7 @@ const createLoginWindow = async () => {
 const createMainWindow = async () => {
     console.log('== Launching main window ==');
     mainWindow = new BrowserWindow({
-        width: 1500,
+        width: 1350,
         height: 800,
         minWidth: 850,
         autoHideMenuBar: true,
