@@ -2,7 +2,9 @@
 const fs = require('fs');
 const axios = require('axios').default;
 
-module.exports.getMinecraftLauncherProfiles = async () => {
+const minecraftAuthBaseUrl = 'https://authserver.mojang.com';
+
+module.exports.getMinecraftLauncherProfiles = async (onlyMojang = true) => {
     const appData = process.env.APPDATA;
     const minecraftDir = appData + '\\.minecraft';
     const file = `${minecraftDir}\\launcher_accounts.json`;
@@ -22,11 +24,11 @@ module.exports.getMinecraftLauncherProfiles = async () => {
             accountObj.accessToken = minecraftAccount.accessToken;
             accountObj.clientToken = mojangClientToken;
             minecraftAccounts.push(accountObj);
-        } else {
-            // handle microsoft account
+        } else if (!onlyMojang) {
             accountObj.name = minecraftAccount.username;
             accountObj.uuid = null;
             accountObj.accessToken = minecraftAccount.accessToken;
+            accountObj.accessTokenExpiresAt = minecraftAccount.accessTokenExpiresAt;
             accountObj.clientToken = mojangClientToken;
             minecraftAccounts.push(accountObj);
         }
@@ -36,20 +38,47 @@ module.exports.getMinecraftLauncherProfiles = async () => {
 };
 
 module.exports.minecraftLogin = async (credentials, clientToken) => {
-    return axios
-        .post('https://authserver.mojang.com/authenticate', {
-            agent: {
-                name: 'Minecraft',
-                version: 1,
-            },
-            username: credentials.username,
-            password: credentials.password,
-            clientToken: clientToken,
-        })
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            return err;
-        });
+    try {
+        return axios
+            .post(minecraftAuthBaseUrl + '/authenticate', {
+                agent: {
+                    name: 'Minecraft',
+                    version: 1,
+                },
+                username: credentials.username,
+                password: credentials.password,
+                clientToken: clientToken,
+            })
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                console.log('> [Minecraft] Error while logging in:', error);
+                return err.response.data;
+            });
+    } catch (error) {
+        console.log('> [Minecraft] Error while logging in:', error);
+        return error;
+    }
+};
+
+module.exports.validateMinecraftToken = (accessToken, clientToken) => {
+    try {
+        return axios
+            .post(minecraftAuthBaseUrl + '/validate', {
+                accessToken: accessToken,
+                clientToken: clientToken,
+            })
+            .then(res => {
+                if (res.status == 204 || res.status == 200) return true;
+                return false;
+            })
+            .catch(err => {
+                err = err.response;
+                if (err.status == 403 && err.data.errorMessage == 'Invalid token') return false;
+                return err.data;
+            });
+    } catch (error) {
+        console.log('> [Minecraft] Error while validating minecraft access token:', error);
+    }
 };
