@@ -101,15 +101,21 @@ a {
     margin-right: 15px;
 }
 
-.account .names .name__dragonfly {
+.account .names .account-name__dragonfly {
     font-size: 22px;
     font-weight: 500;
     color: #ffffff;
 }
 
-.account .names .name__minecraft {
+.account .names .account-name__minecraft {
     color: rgba(255, 255, 255, 0.5);
     font-size: 16px;
+}
+
+.account .names .account-name__minecraft-dropdown-icon {
+    color: white;
+    width: 15px;
+    height: 11px;
 }
 
 #news {

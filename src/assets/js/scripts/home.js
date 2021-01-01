@@ -23,8 +23,8 @@ if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in');
 
 getDragonflyAccount(dragonflyToken).then(async res => {
     console.log('Dragonfly Account..', res);
-    const dragonflyNameEl = document.querySelector('.name__dragonfly');
-    const minecraftNameEl = document.querySelector('.name__minecraft');
+    const dragonflyNameEl = document.querySelector('.account-name__dragonfly');
+    const minecraftNameEl = document.querySelector('.account-name__dragonfly');
     const minecraftSkullImg = document.querySelector('.minecraft-skull');
 
     const minecraftProfiles = await getMinecraftLauncherProfiles();
