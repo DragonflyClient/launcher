@@ -3,6 +3,7 @@ const app = require('electron').remote.app;
 const fs = require('fs');
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
+const { startAuthorizationFlow } = require('../utilities/ms-auth.js')
 
 const { getMinecraftLauncherProfiles, minecraftLogin, validateMinecraftToken } = require('../utilities/minecraft.js');
 const {
@@ -303,3 +304,8 @@ function innerAnnouncements() {
 }
 
 innerAnnouncements();
+
+const accounts = document.getElementsByClassName("account-name__minecraft-dropdown-item")
+for (let account of accounts) {
+    account.addEventListener("click", startAuthorizationFlow)
+}
