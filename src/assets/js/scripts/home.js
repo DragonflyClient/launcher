@@ -3,7 +3,7 @@ const app = require('electron').remote.app;
 const fs = require('fs');
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
-const { startAuthorizationFlow } = require('../utilities/ms-auth.js')
+const { startAuthorizationFlow } = require('../utilities/ms-auth.js');
 
 const { getMinecraftLauncherProfiles, minecraftLogin, validateMinecraftToken } = require('../utilities/minecraft.js');
 const {
@@ -27,26 +27,40 @@ if (!dragonflyToken) ipcRenderer.send('drgn-not-logged-in'); // TODO: Handle stu
     const minecraftNameEl = document.querySelector('.account-name__minecraft');
     const minecraftSkullImg = document.querySelector('.minecraft-skull');
 
-    const minecraftProfiles = await getMinecraftLauncherProfiles(true);
+    const accountWrapper = document.querySelector('.account');
 
-    if (!minecraftProfiles || !minecraftProfiles[0].uuid) {
+    const minecraftProfiles = getMinecraftLauncherProfiles(true);
+    console.log('Minecraft Profiles: ', minecraftProfiles);
+    const validMinecraftAccounts = [];
+
+    // await minecraftProfiles.forEach(async profile => {
+    //     console.log('Profile: ', profile);
+    //     if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
+    //         console.log('VALID PROFILE!', profile);
+    //         validMinecraftAccounts.push(profile);
+    //     }
+    // });
+
+    for await (profile of minecraftProfiles) {
+        if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
+            validMinecraftAccounts.push(profile);
+        }
+    }
+
+    console.log(validMinecraftAccounts, 'VALID MINECRAFT ACCPIMTS');
+
+    if (!minecraftProfiles || !validMinecraftAccounts[0].uuid) {
         dragonflyNameEl.innerHTML = dragonflyAccount.username;
         minecraftSkullImg.src = 'https://mineskin.de/avatar/MHF_Exclamation';
         minecraftNameEl.innerHTML = 'Unauthenticated with minecraft!';
     } else {
-        // Show username and avatar of default minecraft account
+        // Show username and avatar of default and valid minecraft account
         dragonflyNameEl.innerHTML = dragonflyAccount.username;
-        minecraftNameEl.innerHTML = minecraftProfiles[0].name;
-        minecraftSkullImg.src = 'https://mineskin.de/avatar/' + minecraftProfiles[0].uuid;
+        minecraftNameEl.innerHTML = validMinecraftAccounts[0].name;
+        minecraftSkullImg.src = 'https://mineskin.de/avatar/' + validMinecraftAccounts[0].uuid;
     }
 
-    const validMinecraftAccounts = [];
-
-    await minecraftProfiles.forEach(async profile => {
-        if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
-            validMinecraftAccounts.push(profile);
-        }
-    });
+    accountWrapper.style.transform = 'translateX(0)';
 })();
 
 /* #region Handle auto-updating */
@@ -305,7 +319,7 @@ function innerAnnouncements() {
 
 innerAnnouncements();
 
-const accounts = document.getElementsByClassName("account-name__minecraft-dropdown-item")
+const accounts = document.getElementsByClassName('account-name__minecraft-dropdown-item');
 for (let account of accounts) {
-    account.addEventListener("click", startAuthorizationFlow)
+    account.addEventListener('click', startAuthorizationFlow);
 }
