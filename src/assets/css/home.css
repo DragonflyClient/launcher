@@ -93,6 +93,9 @@ a {
     /* width: 300px; */
     padding: 10px 25px;
     align-items: center;
+
+    transition: 0.4s ease;
+    transform: translateX(-500px);
 }
 
 #info .account .minecraft-skull {
