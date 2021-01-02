@@ -1,6 +1,6 @@
 const { BrowserWindow } = require("electron").remote
-const axios = require('axios');
-const qs = require('querystring')
+const axios = require("axios")
+const qs = require("querystring")
 
 /**
  * The URL of the Microsoft OAuth Window that prompts the user to enter their Microsoft credentials
@@ -70,33 +70,33 @@ function startAuthorizationFlow() {
             reject({
                 error: "unexpected_exception",
                 message: "<b>An error occurred during the Microsoft Authorization Flow execution</b>. Please " +
-                    "try again later or contact our support to get help. Error message: " + flow.error
+                    "try again later or contact our support to get help. Error message: " + flow.error,
             })
         } else if (!flow.hasXboxAccount) {
             reject({
                 error: "no_xbox_account",
                 message: "This Microsoft account doesn't have an Xbox profile. When purchasing Minecraft " +
                     "with a Microsoft account, an Xbox profile should be automatically created. Please " +
-                    "<b>make sure you logged in with the correct Microsoft account</b>."
+                    "<b>make sure you logged in with the correct Microsoft account</b>.",
             })
         } else if (!flow.ownsMinecraft) {
             reject({
                 error: "no_minecraft",
                 message: "<b>It seems like you don't own Minecraft on that account</b>. If you originally " +
                     "used a Mojang account, make sure to migrate from it to Microsoft and make sure you logged " +
-                    "in with the correct Microsoft account."
+                    "in with the correct Microsoft account.",
             })
         } else if (flow.minecraftProfile) {
             resolve({
                 accessToken: flow.minecraftToken,
-                profile: flow.minecraftProfile
+                profile: flow.minecraftProfile,
             })
         } else {
             reject({
                 error: "something_weird",
                 message: "The Microsoft Authorization Flow was successfully executed but no Minecraft profile is " +
                     "available although you should own Minecraft (which shouldn't happen). Please try again later " +
-                    "and if this keeps happening feel free to contact our support to get help."
+                    "and if this keeps happening feel free to contact our support to get help.",
             })
         }
     })
@@ -130,7 +130,7 @@ class MicrosoftAuthorizationFlow {
                 enableRemoteModule: false,
                 contextIsolation: true,
             },
-            show: false
+            show: false,
         })
 
         return new Promise(async (resolve, reject) => {
@@ -149,10 +149,10 @@ class MicrosoftAuthorizationFlow {
                         event.preventDefault()
                         microsoftLoginWindow.destroy()
 
-                        await this.acquireAuthorizationToken(code);
+                        await this.acquireAuthorizationToken(code)
                         resolve()
                     } else if (url.searchParams.has("error")) {
-                        const error = url.searchParams.get("error");
+                        const error = url.searchParams.get("error")
                         console.log("! [#1] Error during Microsoft OAuth Login:", error) // can be "access_denied"
 
                         event.preventDefault()
@@ -169,8 +169,8 @@ class MicrosoftAuthorizationFlow {
 
             const loginUrl = formatString(MICROSOFT_OAUTH_LOGIN_URL, {
                 client_id: CLIENT_ID,
-                redirect_uri: REDIRECT_URI
-            });
+                redirect_uri: REDIRECT_URI,
+            })
 
             await microsoftLoginWindow.loadURL(loginUrl)
         })
@@ -195,8 +195,8 @@ class MicrosoftAuthorizationFlow {
             code: code,
             client_id: CLIENT_ID,
             scope: "service::user.auth.xboxlive.com::MBI_SSL",
-            grant_type: "authorization_code"
-        };
+            grant_type: "authorization_code",
+        }
 
         try {
             const urlEncoded = qs.stringify(requestData)
@@ -206,9 +206,9 @@ class MicrosoftAuthorizationFlow {
                 urlEncoded,
                 {
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
-                }
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                },
             )
 
             const { access_token: accessToken, refresh_token: refreshToken } = response.data
@@ -244,16 +244,16 @@ class MicrosoftAuthorizationFlow {
                 "Properties": {
                     "AuthMethod": "RPS",
                     "SiteName": "user.auth.xboxlive.com",
-                    "RpsTicket": accessToken
+                    "RpsTicket": accessToken,
                 },
                 "RelyingParty": "http://auth.xboxlive.com",
-                "TokenType": "JWT"
+                "TokenType": "JWT",
             }
             const config = {
                 headers: {
                     "Content-Type": "application/json",
-                    "Accepts": "application/json"
-                }
+                    "Accepts": "application/json",
+                },
             }
 
             const response = await axios.post(XBOX_LIVE_AUTHENTICATION_URL, body, config)
@@ -289,17 +289,17 @@ class MicrosoftAuthorizationFlow {
                 "Properties": {
                     "SandboxId": "RETAIL",
                     "UserTokens": [
-                        xblToken
-                    ]
+                        xblToken,
+                    ],
                 },
                 "RelyingParty": "rp://api.minecraftservices.com/",
-                "TokenType": "JWT"
+                "TokenType": "JWT",
             }
             const config = {
                 headers: {
                     "Content-Type": "application/json",
-                    "Accepts": "application/json"
-                }
+                    "Accepts": "application/json",
+                },
             }
 
             const response = await axios.post(XSTS_AUTHORIZATION_URL, body, config)
@@ -350,13 +350,13 @@ class MicrosoftAuthorizationFlow {
 
         try {
             const body = {
-                "IdentityToken": `XBL3.0 x=${uhl};${xstsToken}`
+                "IdentityToken": `XBL3.0 x=${uhl};${xstsToken}`,
             }
             const config = {
                 headers: {
                     "Content-Type": "application/json",
-                    "Accepts": "application/json"
-                }
+                    "Accepts": "application/json",
+                },
             }
 
             const response = await axios.post(MC_SERVICES_AUTHENTICATION_URL, body, config)
@@ -400,8 +400,8 @@ class MicrosoftAuthorizationFlow {
         const config = {
             headers: {
                 "Authorization": "Bearer " + minecraftToken,
-                "Accept": "application/json"
-            }
+                "Accept": "application/json",
+            },
         }
 
         await axios.get(MC_SERVICES_PROFILE_URL, config)
@@ -410,7 +410,7 @@ class MicrosoftAuthorizationFlow {
                 const profile = {
                     id: responseData.id,
                     name: responseData.name,
-                    skins: responseData.skins
+                    skins: responseData.skins,
                 }
 
                 console.log("> [#6] Loaded Minecraft Profile")
@@ -453,11 +453,11 @@ class MicrosoftAuthorizationFlow {
  * For example: %NAME% -> replacements.name
  */
 function formatString(input, replacements) {
-    return input.replace(/%\w+%/g, function (all) {
-        return replacements[all.replaceAll("%", "").toLowerCase()] || all;
-    });
+    return input.replace(/%\w+%/g, function(all) {
+        return replacements[all.replaceAll("%", "").toLowerCase()] || all
+    })
 }
 
 module.exports = {
-    startAuthorizationFlow
+    startAuthorizationFlow,
 }
