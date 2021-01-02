@@ -3,7 +3,8 @@ const app = require('electron').remote.app;
 const fs = require('fs');
 const { setEdition, startGame } = require('../assets/js/launch.js');
 const { rootPath } = require('../utilities/path.js');
-const { startAuthorizationFlow } = require('../utilities/ms-auth.js')
+const { startAuthorizationFlow } = require('../utilities/ms-auth.js');
+const Swal = require('sweetalert2');
 
 const { getMinecraftLauncherProfiles, minecraftLogin, validateMinecraftToken } = require('../utilities/minecraft.js');
 const {
@@ -91,9 +92,11 @@ ipcRenderer.on('update_progress', (event, arg) => {
 function closeNotification() {
     notification.classList.add('hidden');
 }
+
 function restartApp() {
     ipcRenderer.send('restart_app');
 }
+
 /* #endregion */
 
 const versionDropdownToggle = document.querySelector('.minecraft-version__toggle');
@@ -107,7 +110,7 @@ versionDropdownToggle.addEventListener('click', e => {
 
 const externalLinks = document.querySelectorAll('a[href^="http"]');
 
-Array.from(externalLinks).forEach(function (link) {
+Array.from(externalLinks).forEach(function(link) {
     link.addEventListener('click', e => {
         e.preventDefault();
         shell.openExternal(link.getAttribute('href'));
@@ -127,12 +130,12 @@ function readEditionDetails() {
     } catch (error) {
         const main = document.querySelector('.main');
         main.innerHTML = `
-            <div class="error-container">
-                <img src="../assets/media/error.svg" />
+            <div class='error-container'>
+                <img src='../assets/media/error.svg' />
                 <h1>Whoops...</h1>
                 <p>An error occurred while trying to download necessary details!</p><br />
                 <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>
-                <p class="support-notice">For more information and possible help, please contact our support.
+                <p class='support-notice'>For more information and possible help, please contact our support.
             </div>
         `;
         return null;
@@ -215,13 +218,13 @@ launchButton.addEventListener('click', async () => {
 
     launchButton.setAttribute('disabled', 'true');
     launchButton.innerHTML = `
-        <div class="sk-chase">
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
+        <div class='sk-chase'>
+            <div class='sk-chase-dot'></div>
+            <div class='sk-chase-dot'></div>
+            <div class='sk-chase-dot'></div>
+            <div class='sk-chase-dot'></div>
+            <div class='sk-chase-dot'></div>
+            <div class='sk-chase-dot'></div>
         </div>
     `;
     try {
@@ -236,7 +239,7 @@ launchButton.addEventListener('click', async () => {
                 process.style.cursor = 'pointer';
                 launchButton.setAttribute('disabled', 'false');
                 launchButton.innerHTML = `Launch`;
-            }
+            },
         );
     } catch (error) {
         console.log(error);
@@ -270,12 +273,12 @@ function readAnnouncementDetails() {
     } catch (error) {
         const main = document.querySelector('.main');
         main.innerHTML = `
-            <div class="error-container">
-                <img src="../assets/media/error.svg" />
+            <div class='error-container'>
+                <img src='../assets/media/error.svg' />
                 <h1>Whoops...</h1>
                 <p>An error occurred while trying to download necessary details!</p><br />
                 <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>
-                <p class="support-notice">For more information and possible help, please contact our support.
+                <p class='support-notice'>For more information and possible help, please contact our support.
             </div>
         `;
         return null;
@@ -288,14 +291,14 @@ function innerAnnouncements() {
     announcements.forEach(announcement => {
         console.log(announcement.publishedOn);
         announcementContainer.innerHTML += `
-                    <div class="article">
-                        ${announcement.image ? `<img class="media" src="${announcement.image}" />` : ''}
-                        <div class="text-wrapper">
-                            <div class="line"></div>
+                    <div class='article'>
+                        ${announcement.image ? `<img class='media' src='${announcement.image}' />` : ''}
+                        <div class='text-wrapper'>
+                            <div class='line'></div>
                             <h1>${announcement.title}</h1>
-                            <p class="publish-date">${new Date(
-                                announcement.publishedOn * 1000
-                            ).toLocaleDateString()}</p>
+                            <p class='publish-date'>${new Date(
+            announcement.publishedOn * 1000,
+        ).toLocaleDateString()}</p>
                             <p>${announcement.content}</p>
                         </div>
                     </div>
@@ -305,7 +308,24 @@ function innerAnnouncements() {
 
 innerAnnouncements();
 
-const accounts = document.getElementsByClassName("account-name__minecraft-dropdown-item")
+const accounts = document.getElementsByClassName('account-name__minecraft-dropdown-item');
 for (let account of accounts) {
-    account.addEventListener("click", startAuthorizationFlow)
+    account.addEventListener('click', () => {
+        startAuthorizationFlow()
+            .then((acc) => {
+                Swal.fire({
+                    title: "Success!",
+                    html: "You have successfully added <b>" + acc.profile.name + "</b> with Microsoft.",
+                    icon: "success",
+                    confirmButtonText: "Great!"
+                })
+            })
+            .catch((obj) => Swal.fire({
+                title: 'Whooops...',
+                html: obj.message,
+                footer: `<span style="opacity: 50%">${obj.error.toUpperCase()}</span>`,
+                icon: 'error',
+                confirmButtonText: 'Okay',
+            }));
+    });
 }
