@@ -1,73 +1,75 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const path = require('path');
-const fs = require('fs');
-const fswin = require('fswin');
-const CryptoJS = require('crypto-js');
-const { autoUpdater } = require('electron-updater');
+const { app, BrowserWindow, ipcMain, dialog } = require("electron")
+const path = require("path")
+const fs = require("fs")
+const fswin = require("fswin")
+const CryptoJS = require("crypto-js")
+const { autoUpdater } = require("electron-updater")
 
-const { rootPath, ensureDirectoryExistence } = require('./utilities/path.js');
-const { getDragonflyAccount, getDragonflyToken } = require('./utilities/dragonfly');
-const { windowIndex } = require('./utilities/browser-window');
-const { downloadEditions, downloadAnnouncements } = require('./utilities/downloader.js');
+const { rootPath, ensureDirectoryExistence } = require("./utilities/path.js")
+const { getDragonflyAccount, getDragonflyToken } = require("./utilities/dragonfly")
+const { windowIndex } = require("./utilities/browser-window")
+const { downloadEditions, downloadAnnouncements } = require("./utilities/downloader.js")
 
-const currentAppPath = rootPath(app.getAppPath());
+const currentAppPath = rootPath(app.getAppPath())
+
+ensureDirectoryExistence(path.join(currentAppPath, "tmp"), true, "dir")
 
 // Require discord rpc
-const discordRPC = require('./assets/js/discord');
+const discordRPC = require("./assets/js/discord")
 
-if (require('electron-squirrel-startup')) {
-    app.quit();
+if (require("electron-squirrel-startup")) {
+    app.quit()
 }
 
-let loadingWindow;
+let loadingWindow
 
-let loginWindow;
-let mainWindow;
+let loginWindow
+let mainWindow
 
 const globalWebPreferences = {
     nodeIntegration: true,
     enableRemoteModule: true,
     contextIsolation: false,
-};
+}
 
-let checkedForUpdates = false;
-const openWindows = [];
+let checkedForUpdates = false
+const openWindows = []
 
 const createLoadingWindow = async () => {
-    console.log('== Launching loading screen ==');
+    console.log("== Launching loading screen ==")
     loadingWindow = new BrowserWindow({
         width: 320,
         height: 400,
         frame: false,
         webPreferences: globalWebPreferences,
-    });
+    })
 
-    console.log('> Loading page...');
-    await loadingWindow.loadFile(path.join(__dirname, 'sites/loading.html'));
+    console.log("> Loading page...")
+    await loadingWindow.loadFile(path.join(__dirname, "sites/loading.html"))
 
-    console.log('> Downloading Editions...');
-    await downloadEditions();
-    console.log('> Downloading Announcements...');
-    await downloadAnnouncements();
+    console.log("> Downloading Editions...")
+    await downloadEditions()
+    console.log("> Downloading Announcements...")
+    await downloadAnnouncements()
 
-    loadingWindow.on('closed', e => {
-        loadingWindow = null;
-    });
+    loadingWindow.on("closed", e => {
+        loadingWindow = null
+    })
 
-    await discordRPC.login('777509861780226069').catch(err => console.log(err));
-    const accessToken = await getDragonflyToken(currentAppPath);
+    await discordRPC.login("777509861780226069").catch(err => console.log(err))
+    const accessToken = await getDragonflyToken(currentAppPath)
 
     setTimeout(async () => {
         if (await getDragonflyAccount(accessToken)) {
-            await createMainWindow();
+            await createMainWindow()
         } else {
-            await createLoginWindow();
+            await createLoginWindow()
         }
-    }, 1000);
-};
+    }, 1000)
+}
 
 const createLoginWindow = async () => {
-    console.log('== Launching login window ==');
+    console.log("== Launching login window ==")
     loginWindow = new BrowserWindow({
         width: 800,
         height: 700,
@@ -75,36 +77,36 @@ const createLoginWindow = async () => {
         show: false,
         resizable: false,
         webPreferences: globalWebPreferences,
-    });
-    let windowId = loginWindow.id;
+    })
+    let windowId = loginWindow.id
 
-    loginWindow.webContents.on('did-finish-load', () => {
-        loginWindow.show();
-        if (loadingWindow) loadingWindow.close();
-    });
+    loginWindow.webContents.on("did-finish-load", () => {
+        loginWindow.show()
+        if (loadingWindow) loadingWindow.close()
+    })
 
-    loginWindow.loadFile(path.join(__dirname, 'sites/login.html'));
+    loginWindow.loadFile(path.join(__dirname, "sites/login.html"))
 
-    loginWindow.on('close', () => {
-        openWindows.splice(windowIndex(windowId, openWindows), 1);
-    });
+    loginWindow.on("close", () => {
+        openWindows.splice(windowIndex(windowId, openWindows), 1)
+    })
 
-    loginWindow.on('closed', function () {
-        loginWindow = null;
-    });
+    loginWindow.on("closed", function () {
+        loginWindow = null
+    })
 
-    loginWindow.once('ready-to-show', () => {
+    loginWindow.once("ready-to-show", () => {
         discordRPC
             .setPresence({
-                details: 'Login',
+                details: "Login",
             })
-            .catch(err => {});
-        openWindows.push(windowId);
-    });
-};
+            .catch(err => {})
+        openWindows.push(windowId)
+    })
+}
 
 const createMainWindow = async () => {
-    console.log('== Launching main window ==');
+    console.log("== Launching main window ==")
     mainWindow = new BrowserWindow({
         width: 1350,
         height: 800,
@@ -113,37 +115,37 @@ const createMainWindow = async () => {
         show: false,
         frame: false,
         webPreferences: globalWebPreferences,
-    });
+    })
 
-    let windowId = mainWindow.id;
+    let windowId = mainWindow.id
 
-    mainWindow.webContents.on('did-finish-load', () => {
-        mainWindow.show();
-        if (loadingWindow) loadingWindow.close();
-        if (loginWindow) loginWindow.close();
-    });
+    mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.show()
+        if (loadingWindow) loadingWindow.close()
+        if (loginWindow) loginWindow.close()
+    })
 
-    mainWindow.on('close', () => {
-        openWindows.splice(windowIndex(windowId, openWindows.length), 1);
-    });
+    mainWindow.on("close", () => {
+        openWindows.splice(windowIndex(windowId, openWindows.length), 1)
+    })
 
-    mainWindow.on('closed', function () {
-        mainWindow = null;
-    });
+    mainWindow.on("closed", function () {
+        mainWindow = null
+    })
 
-    mainWindow.once('ready-to-show', async () => {
+    mainWindow.once("ready-to-show", async () => {
         discordRPC
             .setPresence({
-                details: 'Home',
+                details: "Home",
             })
-            .catch(err => {});
-        openWindows.push(windowId);
-    });
+            .catch(err => {})
+        openWindows.push(windowId)
+    })
 
-    await mainWindow.loadFile(path.join(__dirname, 'sites/home.html'));
-};
+    await mainWindow.loadFile(path.join(__dirname, "sites/home.html"))
+}
 
-const outputWindows = {};
+const outputWindows = {}
 
 const createGameOutputWindow = async pid => {
     const gameOutputWindow = new BrowserWindow({
@@ -155,140 +157,140 @@ const createGameOutputWindow = async pid => {
         x: 100,
         y: 100,
         autoHideMenuBar: true,
-    });
-    const windowId = gameOutputWindow.id;
+    })
+    const windowId = gameOutputWindow.id
 
-    outputWindows[pid] = gameOutputWindow;
-    gameOutputWindow.loadFile(path.join(__dirname, 'sites/game-output.html'));
+    outputWindows[pid] = gameOutputWindow
+    gameOutputWindow.loadFile(path.join(__dirname, "sites/game-output.html"))
 
-    gameOutputWindow.on('close', () => {
-        openWindows.splice(windowIndex(windowId, openWindows), 1);
-    });
+    gameOutputWindow.on("close", () => {
+        openWindows.splice(windowIndex(windowId, openWindows), 1)
+    })
 
-    gameOutputWindow.on('closed', function () {
-        outputWindows[pid] = null;
-    });
+    gameOutputWindow.on("closed", function () {
+        outputWindows[pid] = null
+    })
 
-    gameOutputWindow.once('ready-to-show', () => {
-        gameOutputWindow.show();
-        openWindows.push(windowId);
-    });
-};
+    gameOutputWindow.once("ready-to-show", () => {
+        gameOutputWindow.show()
+        openWindows.push(windowId)
+    })
+}
 
 //
 
-app.on('ready', () => {
-    createLoadingWindow();
-});
+app.on("ready", () => {
+    createLoadingWindow()
+})
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
+app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
+        app.quit()
     }
-});
-app.on('activate', () => {
+})
+app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-        createLoginWindow();
+        createLoginWindow()
     }
-});
+})
 
 // MAIN IPC's
 // Write access token
-ipcMain.on('drgn-auth', async (event, data) => {
-    console.log('Receiving data...');
-    let accessToken = CryptoJS.AES.encrypt(data.token, 'secretKey').toString();
+ipcMain.on("drgn-auth", async (event, data) => {
+    console.log("Receiving data...")
+    let accessToken = CryptoJS.AES.encrypt(data.token, "secretKey").toString()
 
-    const accessPath = path.join(currentAppPath, '.secrets/access.txt');
-    await ensureDirectoryExistence(accessPath, true, 'dir');
+    const accessPath = path.join(currentAppPath, ".secrets/access.txt")
+    await ensureDirectoryExistence(accessPath, true, "dir")
 
     fs.writeFile(accessPath, accessToken, err => {
-        if (err) return console.log(err);
-    });
-    fswin.setAttributesSync(path.join(currentAppPath, '.secrets'), { IS_HIDDEN: true });
+        if (err) return console.log(err)
+    })
+    fswin.setAttributesSync(path.join(currentAppPath, ".secrets"), { IS_HIDDEN: true })
     discordRPC
         .setPresence({
-            details: 'Home',
+            details: "Home",
         })
         .catch(err => {
-            console.log(err);
-        });
-    await createMainWindow();
-    event.reply('drgn-auth-reply', data.token);
-});
+            console.log(err)
+        })
+    await createMainWindow()
+    event.reply("drgn-auth-reply", data.token)
+})
 
 // read access token
-ipcMain.on('drgn-auth-read', async (event, data) => {
+ipcMain.on("drgn-auth-read", async (event, data) => {
     try {
-        event.reply('drgn-auth-reply', 'Worked');
+        event.reply("drgn-auth-reply", "Worked")
     } catch (error) {
-        event.reply('drgn-auth-reply', `Some kinda error: ${error}`);
+        event.reply("drgn-auth-reply", `Some kinda error: ${error}`)
     }
-});
+})
 // Respond app version
-ipcMain.on('app_version', event => {
-    event.sender.send('app_version', { version: app.getVersion() });
-});
+ipcMain.on("app_version", event => {
+    event.sender.send("app_version", { version: app.getVersion() })
+})
 
 // Auto updater
-autoUpdater.on('update-available', e => {
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_available');
-});
-autoUpdater.on('update-downloaded', () => {
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_downloaded');
-});
+autoUpdater.on("update-available", e => {
+    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_available")
+})
+autoUpdater.on("update-downloaded", () => {
+    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_downloaded")
+})
 
-autoUpdater.on('download-progress', progressObj => {
-    let log_message = progressObj.percent + '%';
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send('update_progress', log_message);
-});
+autoUpdater.on("download-progress", progressObj => {
+    let log_message = progressObj.percent + "%"
+    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_progress", log_message)
+})
 
-ipcMain.on('restart_app', () => {
-    autoUpdater.quitAndInstall();
-});
+ipcMain.on("restart_app", () => {
+    autoUpdater.quitAndInstall()
+})
 
-ipcMain.on('check_for_updates', event => {
+ipcMain.on("check_for_updates", event => {
     if (!checkedForUpdates) {
         autoUpdater
             .checkForUpdatesAndNotify()
             .then(() => {
-                event.sender.send('check_for_updates', 'Checked for updates');
+                event.sender.send("check_for_updates", "Checked for updates")
             })
             .catch(err => {
-                event.sender.send('check_for_updates', `Check for updates failed: ${err}`);
-            });
-        checkedForUpdates = true;
+                event.sender.send("check_for_updates", `Check for updates failed: ${err}`)
+            })
+        checkedForUpdates = true
     } else {
-        console.log('Already checked for updates.');
-        event.sender.send('check_for_updates', 'Already checked for updates');
+        console.log("Already checked for updates.")
+        event.sender.send("check_for_updates", "Already checked for updates")
     }
-});
+})
 
-ipcMain.on('open-game-output', (event, args) => {
-    createGameOutputWindow(args.pid);
-});
+ipcMain.on("open-game-output", (event, args) => {
+    createGameOutputWindow(args.pid)
+})
 
-ipcMain.on('game-output-data', (event, args) => {
-    const pid = args.pid;
-    if (outputWindows[pid]) outputWindows[pid].webContents.send('game-output-data', args.message);
-});
+ipcMain.on("game-output-data", (event, args) => {
+    const pid = args.pid
+    if (outputWindows[pid]) outputWindows[pid].webContents.send("game-output-data", args.message)
+})
 
-ipcMain.on('open-game', (e, args) => {
-    const gameObject = args.gameObject;
+ipcMain.on("open-game", (e, args) => {
+    const gameObject = args.gameObject
     discordRPC
         .setPresence({
             details: `Playing Minecraft ${gameObject.gameVersion}`,
         })
         .catch(err => {
-            console.log(err);
-        });
-});
+            console.log(err)
+        })
+})
 
-ipcMain.on('game-closed', (e, args) => {
-    const openGames = args.openGames;
-    const closeGameOutput = args.closeGameOutput;
-    const outputWindow = outputWindows[args.closedGameObject.pid];
+ipcMain.on("game-closed", (e, args) => {
+    const openGames = args.openGames
+    const closeGameOutput = args.closeGameOutput
+    const outputWindow = outputWindows[args.closedGameObject.pid]
 
-    outputWindow && closeGameOutput && outputWindow.close();
+    outputWindow && closeGameOutput && outputWindow.close()
 
     if (openGames.length == 0) {
         discordRPC
@@ -296,16 +298,16 @@ ipcMain.on('game-closed', (e, args) => {
                 details: `Home`,
             })
             .catch(err => {
-                console.log(err);
-            });
+                console.log(err)
+            })
     } else {
-        const last = openGames.pop();
+        const last = openGames.pop()
         discordRPC
             .setPresence({
                 details: `Playing Minecraft ${last.gameVersion}`,
             })
             .catch(err => {
-                console.log(err);
-            });
+                console.log(err)
+            })
     }
-});
+})
