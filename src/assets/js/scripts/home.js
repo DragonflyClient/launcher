@@ -20,37 +20,45 @@ const cwd = rootPath(app.getAppPath())
 const dragonflyToken = getDragonflyToken(cwd)
 minecraft.setAppPath(cwd)
 
+const dragonflyNameEl = document.querySelector(".account-name__dragonfly")
+const minecraftNameEl = document.querySelector(".account-name__minecraft")
+// const minecraftWrapper = document.querySelector(".account-name__minecraft-wrapper")
+const minecraftSkullImg = document.querySelector(".minecraft-skull")
+const accountWrapper = document.querySelector(".account")
+
 if (!dragonflyToken)
-    ipcRenderer.send("drgn-not-logged-in"); // TODO: Handle stuff if user isn't logged into dragonfly account
-
-(async () => {
+    ipcRenderer.send("drgn-not-logged-in") // TODO: Handle stuff if user isn't logged into dragonfly account
+;(async () => {
     const dragonflyAccount = await getDragonflyAccount(dragonflyToken)
-
-    console.log("Dragonfly Account..", dragonflyAccount)
-    const dragonflyNameEl = document.querySelector(".account-name__dragonfly")
-    const minecraftNameEl = document.querySelector(".account-name__minecraft")
-    const minecraftSkullImg = document.querySelector(".minecraft-skull")
-    const accountWrapper = document.querySelector(".account")
-
     let selectedAccount = minecraft.getCurrentAccount()
-    if (!await minecraft.validateToken(selectedAccount.accessToken, selectedAccount.clientToken)) {
-        selectedAccount = null
+    console.log(selectedAccount, "SELECTED ACCC")
+    await innerMinecraftAccountDetails(selectedAccount)
+    innerDragonflyAccountDetails(dragonflyAccount)
+
+    accountWrapper.style.transform = "translateX(0)"
+})()
+
+async function innerMinecraftAccountDetails(account) {
+    if (!account || !(await minecraft.validateToken(account.accessToken, account.clientToken))) {
+        account = null
     }
 
-    if (!selectedAccount || !selectedAccount?.profile?.uuid) {
-        dragonflyNameEl.innerHTML = dragonflyAccount.username
+    if (!account || !account?.profile?.uuid) {
+        await fetch("https://mineskin.de/avatar/MHF_Exclamation")
         minecraftSkullImg.src = "https://mineskin.de/avatar/MHF_Exclamation"
         minecraftNameEl.innerHTML = "Unauthenticated with Minecraft"
     } else {
         // Show username and avatar of default and valid minecraft account
-        dragonflyNameEl.innerHTML = dragonflyAccount.username
-        minecraftNameEl.innerHTML = selectedAccount.profile.username
-        await fetch("https://mineskin.de/avatar/" + selectedAccount.profile.uuid)
-        minecraftSkullImg.src = "https://mineskin.de/avatar/" + selectedAccount.profile.uuid
+        minecraftNameEl.innerHTML = account.profile.username
+        await fetch("https://mineskin.de/avatar/" + account.profile.uuid)
+        minecraftSkullImg.src = "https://mineskin.de/avatar/" + account.profile.uuid
     }
-
     accountWrapper.style.transform = "translateX(0)"
-})()
+}
+
+function innerDragonflyAccountDetails(account) {
+    dragonflyNameEl.innerHTML = account.username
+}
 
 /* #region Handle auto-updating */
 const updaterNotification = document.getElementById("updater-notification")
@@ -110,9 +118,9 @@ versionDropdownToggle.addEventListener("click", e => {
     versionDropdownToggle.classList.toggle("active")
 })
 
-const externalLinks = document.querySelectorAll("a[href^=\"http\"]")
+const externalLinks = document.querySelectorAll('a[href^="http"]')
 
-Array.from(externalLinks).forEach(function(link) {
+Array.from(externalLinks).forEach(function (link) {
     link.addEventListener("click", e => {
         e.preventDefault()
         shell.openExternal(link.getAttribute("href"))
@@ -241,7 +249,7 @@ launchButton.addEventListener("click", async () => {
                 process.style.cursor = "pointer"
                 launchButton.setAttribute("disabled", "false")
                 launchButton.innerHTML = `Launch`
-            },
+            }
         )
     } catch (error) {
         console.log(error)
@@ -299,8 +307,8 @@ function innerAnnouncements() {
                             <div class="line"></div>
                             <h1>${announcement.title}</h1>
                             <p class="publish-date">${new Date(
-            announcement.publishedOn * 1000,
-        ).toLocaleDateString()}</p>
+                                announcement.publishedOn * 1000
+                            ).toLocaleDateString()}</p>
                             <p>${announcement.content}</p>
                         </div>
                     </div>
@@ -313,31 +321,37 @@ innerAnnouncements()
 const accounts = document.getElementsByClassName("minecraft-skull")
 for (let account of accounts) {
     account.addEventListener("click", () => {
-        startAuthorizationFlow()
-            .then((acc) => {
-                minecraft.addAccount({
-                    type: "microsoft",
-                    accessToken: acc.minecraftToken,
-                    profile: {
-                        uuid: acc.profile.id,
-                        username: acc.profile.name,
-                    },
-                })
-                Swal.fire({
-                    title: "Success!",
-                    html: "You have successfully added <b>" + acc.profile.name + "</b> with Microsoft.",
-                    icon: "success",
-                    confirmButtonText: "Great!",
-                })
-            })
-            .catch((obj) => {
-                Swal.fire({
-                    title: "Whooops...",
-                    html: obj?.message ?? obj,
-                    footer: `<b style="opacity: 50%">${obj?.error?.toUpperCase() ?? "INTERNAL_ERROR"}</b>`,
-                    icon: "error",
-                    confirmButtonText: "Okay",
-                })
-            })
+        // startAuthorizationFlow()
+        //     .then(acc => {
+        //         minecraft.addAccount({
+        //             type: "microsoft",
+        //             accessToken: acc.minecraftToken,
+        //             profile: {
+        //                 uuid: acc.profile.id,
+        //                 username: acc.profile.name,
+        //             },
+        //         })
+        //         Swal.fire({
+        //             title: "Success!",
+        //             html: "You have successfully added <b>" + acc.profile.name + "</b> with Microsoft.",
+        //             icon: "success",
+        //             confirmButtonText: "Great!",
+        //         })
+        //     })
+        //     .catch(obj => {
+        //         Swal.fire({
+        //             title: "Whooops...",
+        //             html: obj?.message ?? obj,
+        //             footer: `<b style="opacity: 50%">${obj?.error?.toUpperCase() ?? "INTERNAL_ERROR"}</b>`,
+        //             icon: "error",
+        //             confirmButtonText: "Okay",
+        //         })
+        //     })
+
+        accountWrapper.style.transform = "translateX(-500px)"
+        minecraft.mojangLogin({ username: "<>", password: "<>" }).then(account => {
+            console.log(account, "ACCOUNT HOME JS")
+            innerMinecraftAccountDetails(account)
+        })
     })
 }
