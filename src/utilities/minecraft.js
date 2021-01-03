@@ -30,8 +30,9 @@ function loadIfRequired() {
 }
 
 function generateUUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0, v = c === "x" ? r : (r & 0x3 | 0x8)
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0,
+            v = c === "x" ? r : (r & 0x3) | 0x8
         return v.toString(16)
     })
 }
@@ -56,11 +57,12 @@ function addAccount(account) {
     accountsJson.accounts = storedAccounts
     accountsJson.currentSelectedAccount = identifier
 
+    // TODO: Check if account is already saved before writing
     fs.writeFileSync(file, JSON.stringify(accountsJson))
     return identifier
 }
 
-async function minecraftLogin(credentials, clientToken) {
+async function mojangLogin(credentials, clientToken = null) {
     try {
         return axios
             .post(minecraftAuthBaseUrl + "/authenticate", {
@@ -73,10 +75,29 @@ async function minecraftLogin(credentials, clientToken) {
                 clientToken: clientToken,
             })
             .then(res => {
-                return res.data
+                const data = res.data
+                let account
+                if (!data.selectedProfile.id && !data.availableProfiles[0]) {
+                    return console.log("> [Minecraft] Sus.. No minecraft profile found")
+                } else if (!data.selectedProfile.id) {
+                    account = data.availableProfiles[0]
+                } else {
+                    account = data.selectedProfile
+                }
+                const accountData = {
+                    type: "mojang",
+                    accessToken: data.accessToken,
+                    clientToken: data.clientToken,
+                    profile: {
+                        uuid: account.id,
+                        username: account.name,
+                    },
+                }
+                addAccount(accountData)
+                return accountData
             })
             .catch(err => {
-                console.log("> [Minecraft] Error while logging in:", error)
+                console.log("> [Minecraft] Error while logging in:", err)
                 return err.response.data
             })
     } catch (error) {
@@ -113,6 +134,6 @@ module.exports = {
     addAccount,
     getAccounts,
     getCurrentAccount,
-    minecraftLogin,
+    mojangLogin,
     validateToken,
 }
