@@ -6,7 +6,7 @@ const { rootPath } = require("../utilities/path.js")
 const { startAuthorizationFlow } = require("../utilities/ms-auth.js")
 const Swal = require("sweetalert2")
 
-const { getMinecraftLauncherProfiles, minecraftLogin, validateMinecraftToken } = require("../utilities/minecraft.js")
+const minecraft = require("../utilities/minecraft.js")
 const {
     getDragonflyToken,
     getDragonflyAccount,
@@ -14,12 +14,15 @@ const {
     writeEditionVersion,
 } = require("../utilities/dragonfly.js")
 require("../assets/js/devtools")
+require("../utilities/developer")
 
 const cwd = rootPath(app.getAppPath())
 const dragonflyToken = getDragonflyToken(cwd)
+minecraft.setAppPath(cwd)
 
 if (!dragonflyToken)
     ipcRenderer.send("drgn-not-logged-in"); // TODO: Handle stuff if user isn't logged into dragonfly account
+
 (async () => {
     const dragonflyAccount = await getDragonflyAccount(dragonflyToken)
 
@@ -27,36 +30,23 @@ if (!dragonflyToken)
     const dragonflyNameEl = document.querySelector(".account-name__dragonfly")
     const minecraftNameEl = document.querySelector(".account-name__minecraft")
     const minecraftSkullImg = document.querySelector(".minecraft-skull")
-
     const accountWrapper = document.querySelector(".account")
 
-    const minecraftProfiles = await getMinecraftLauncherProfiles(true)
-    console.log("Minecraft Profiles: ", minecraftProfiles)
-    const validMinecraftAccounts = []
-
-    // await minecraftProfiles.forEach(async profile => {
-    //     console.log('Profile: ', profile);
-    //     if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
-    //         console.log('VALID PROFILE!', profile);
-    //         validMinecraftAccounts.push(profile);
-    //     }
-    // });
-
-    for await (profile of minecraftProfiles) {
-        if (await validateMinecraftToken(profile.accessToken, profile.clientToken)) {
-            validMinecraftAccounts.push(profile)
-        }
+    let selectedAccount = minecraft.getCurrentAccount()
+    if (!await minecraft.validateToken(selectedAccount.accessToken, selectedAccount.clientToken)) {
+        selectedAccount = null
     }
 
-    if (!minecraftProfiles || !validMinecraftAccounts[0].uuid) {
+    if (!selectedAccount || !selectedAccount?.profile?.uuid) {
         dragonflyNameEl.innerHTML = dragonflyAccount.username
         minecraftSkullImg.src = "https://mineskin.de/avatar/MHF_Exclamation"
-        minecraftNameEl.innerHTML = "Unauthenticated with minecraft!"
+        minecraftNameEl.innerHTML = "Unauthenticated with Minecraft"
     } else {
         // Show username and avatar of default and valid minecraft account
         dragonflyNameEl.innerHTML = dragonflyAccount.username
-        minecraftNameEl.innerHTML = validMinecraftAccounts[0].name
-        minecraftSkullImg.src = "https://mineskin.de/avatar/" + validMinecraftAccounts[0].uuid
+        minecraftNameEl.innerHTML = selectedAccount.profile.username
+        await fetch("https://mineskin.de/avatar/" + selectedAccount.profile.uuid)
+        minecraftSkullImg.src = "https://mineskin.de/avatar/" + selectedAccount.profile.uuid
     }
 
     accountWrapper.style.transform = "translateX(0)"
@@ -320,11 +310,19 @@ function innerAnnouncements() {
 
 innerAnnouncements()
 
-const accounts = document.getElementsByClassName("account-name__minecraft-dropdown-item")
+const accounts = document.getElementsByClassName("minecraft-skull")
 for (let account of accounts) {
     account.addEventListener("click", () => {
         startAuthorizationFlow()
             .then((acc) => {
+                minecraft.addAccount({
+                    type: "microsoft",
+                    accessToken: acc.minecraftToken,
+                    profile: {
+                        uuid: acc.profile.id,
+                        username: acc.profile.name,
+                    },
+                })
                 Swal.fire({
                     title: "Success!",
                     html: "You have successfully added <b>" + acc.profile.name + "</b> with Microsoft.",
@@ -332,12 +330,14 @@ for (let account of accounts) {
                     confirmButtonText: "Great!",
                 })
             })
-            .catch((obj) => Swal.fire({
-                title: "Whooops...",
-                html: obj.message,
-                footer: `<b style="opacity: 50%">${obj.error.toUpperCase()}</b>`,
-                icon: "error",
-                confirmButtonText: "Okay",
-            }))
+            .catch((obj) => {
+                Swal.fire({
+                    title: "Whooops...",
+                    html: obj?.message ?? obj,
+                    footer: `<b style="opacity: 50%">${obj?.error?.toUpperCase() ?? "INTERNAL_ERROR"}</b>`,
+                    icon: "error",
+                    confirmButtonText: "Okay",
+                })
+            })
     })
 }

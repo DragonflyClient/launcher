@@ -1,8 +1,6 @@
 const crypto = require('crypto');
 require('dotenv/config');
 
-let developerMode = computeDeveloperMode();
-
 function computeDeveloperMode() {
     const variable = process.env.DRAGONFLY_DEVELOPER;
     if (variable) {
@@ -17,14 +15,4 @@ function computeDeveloperMode() {
     return false;
 }
 
-function disableDeveloperMode() {
-    developerMode = false;
-    return 'disabled';
-}
-
-function isDeveloperMode() {
-    return developerMode;
-}
-
-module.exports.disableDeveloperMode = disableDeveloperMode;
-module.exports.isDeveloperMode = isDeveloperMode;
+global.developerMode = computeDeveloperMode()

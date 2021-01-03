@@ -12,7 +12,6 @@ const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const getDirectoryName = require('path').dirname;
 const os = require('os');
-const { isDeveloperMode } = require('../../utilities/developer.js');
 
 // the edition that is selected by the user
 let edition;
@@ -149,7 +148,7 @@ class Launcher {
     }
 
     async downloadDragonfly() {
-        if (isDeveloperMode()) {
+        if (global.developerMode) {
             return console.log('> Skipping Dragonfly download due to developer mode being enabled');
         }
 
@@ -217,7 +216,6 @@ class Launcher {
             console.log('=== Pre refresh ===');
             console.log('Access token: ', firstAccount.accessToken);
             console.log('Client token: ', launcherAccounts.mojangClientToken);
-            console.log('====================================');
             const response = await axios.post('https://authserver.mojang.com/refresh', {
                 accessToken: firstAccount.accessToken,
                 clientToken: launcherAccounts.mojangClientToken,

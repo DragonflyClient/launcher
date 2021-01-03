@@ -1,48 +1,71 @@
 /* minecraft (auth) stuff will be handled here */
-const fs = require('fs');
-const axios = require('axios').default;
+const fs = require("fs")
+const path = require("path")
+const axios = require("axios").default
 
-const minecraftAuthBaseUrl = 'https://authserver.mojang.com';
+const minecraftAuthBaseUrl = "https://authserver.mojang.com"
 
-module.exports.getMinecraftLauncherProfiles = async (onlyMojang = true) => {
-    const appData = process.env.APPDATA;
-    const minecraftDir = appData + '\\.minecraft';
-    const file = `${minecraftDir}\\launcher_accounts.json`;
-    const launcherAccounts = JSON.parse(fs.readFileSync(file));
+let storedAccounts = null
+let currentAccountKey = null
 
-    if (!launcherAccounts.accounts) return false;
+let appPath
 
-    const mojangClientToken = launcherAccounts.mojangClientToken;
-    const minecraftAccounts = [];
+function loadAccounts() {
+    const file = path.join(appPath, "tmp", "accounts.json")
 
-    Object.keys(launcherAccounts.accounts).forEach(account => {
-        const minecraftAccount = launcherAccounts.accounts[account];
-        const accountObj = {};
-        if (minecraftAccount.minecraftProfile) {
-            accountObj.name = minecraftAccount.minecraftProfile.name;
-            accountObj.uuid = minecraftAccount.minecraftProfile.id;
-            accountObj.accessToken = minecraftAccount.accessToken;
-            accountObj.clientToken = mojangClientToken;
-            minecraftAccounts.push(accountObj);
-        } else if (!onlyMojang) {
-            accountObj.name = minecraftAccount.username;
-            accountObj.uuid = null;
-            accountObj.accessToken = minecraftAccount.accessToken;
-            accountObj.accessTokenExpiresAt = minecraftAccount.accessTokenExpiresAt;
-            accountObj.clientToken = mojangClientToken;
-            minecraftAccounts.push(accountObj);
-        }
-    });
+    if (fs.existsSync(file)) {
+        const { accounts, currentSelectedAccount } = JSON.parse(fs.readFileSync(file))
+        storedAccounts = accounts ?? {}
+        currentAccountKey = currentSelectedAccount ?? null
+    } else {
+        storedAccounts = {}
+        currentAccountKey = null
+    }
+}
 
-    return minecraftAccounts;
-};
+function loadIfRequired() {
+    if (!storedAccounts) {
+        loadAccounts()
+    }
+}
 
-module.exports.minecraftLogin = async (credentials, clientToken) => {
+function generateUUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === "x" ? r : (r & 0x3 | 0x8)
+        return v.toString(16)
+    })
+}
+
+function getAccounts() {
+    loadIfRequired()
+    return storedAccounts
+}
+
+function getCurrentAccount() {
+    loadIfRequired()
+    return currentAccountKey ? storedAccounts[currentAccountKey] : null
+}
+
+function addAccount(account) {
+    loadIfRequired()
+    const identifier = generateUUID()
+    storedAccounts[identifier] = account
+
+    const file = path.join(appPath, "tmp", "accounts.json")
+    const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
+    accountsJson.accounts = storedAccounts
+    accountsJson.currentSelectedAccount = identifier
+
+    fs.writeFileSync(file, JSON.stringify(accountsJson))
+    return identifier
+}
+
+async function minecraftLogin(credentials, clientToken) {
     try {
         return axios
-            .post(minecraftAuthBaseUrl + '/authenticate', {
+            .post(minecraftAuthBaseUrl + "/authenticate", {
                 agent: {
-                    name: 'Minecraft',
+                    name: "Minecraft",
                     version: 1,
                 },
                 username: credentials.username,
@@ -50,35 +73,46 @@ module.exports.minecraftLogin = async (credentials, clientToken) => {
                 clientToken: clientToken,
             })
             .then(res => {
-                return res.data;
+                return res.data
             })
             .catch(err => {
-                console.log('> [Minecraft] Error while logging in:', error);
-                return err.response.data;
-            });
+                console.log("> [Minecraft] Error while logging in:", error)
+                return err.response.data
+            })
     } catch (error) {
-        console.log('> [Minecraft] Error while logging in:', error);
-        return error;
+        console.log("> [Minecraft] Error while logging in:", error)
+        return error
     }
-};
+}
 
-module.exports.validateMinecraftToken = (accessToken, clientToken) => {
+function validateToken(accessToken, clientToken) {
     try {
         return axios
-            .post(minecraftAuthBaseUrl + '/validate', {
+            .post(minecraftAuthBaseUrl + "/validate", {
                 accessToken: accessToken,
                 clientToken: clientToken,
             })
             .then(res => {
-                if (res.status == 204 || res.status == 200) return true;
-                return false;
+                return res.status === 204 || res.status === 200
             })
-            .catch(err => {
-                err = err.response;
-                if (err.status == 403 && err.data.errorMessage == 'Invalid token') return false;
-                return err.data;
-            });
+            .catch(({ response: res }) => {
+                if (res.status === 403 && res.data.errorMessage === "Invalid token") return false
+                return res.data
+            })
     } catch (error) {
-        console.log('> [Minecraft] Error while validating minecraft access token:', error);
+        console.log("> [Minecraft] Error while validating minecraft access token:", error)
     }
-};
+}
+
+function setAppPath(inputAppPath) {
+    appPath = inputAppPath
+}
+
+module.exports = {
+    setAppPath,
+    addAccount,
+    getAccounts,
+    getCurrentAccount,
+    minecraftLogin,
+    validateToken,
+}
