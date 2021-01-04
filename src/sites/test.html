@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+
+        <style>
+           :root {
+              --radius: 5px;
+           }
+
+           .full-button {
+              display: flex;
+              position: relative;
+              align-items: stretch;
+              width: 400px;
+              height: 50px;
+              cursor: pointer;
+           }
+
+           .text {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              width: 100%;
+              color: white;
+              text-align: center;
+              transform: translate(-50%, -50%);
+              font-family: Rubik, sans-serif;
+              font-weight: 400;
+              font-size: 1.4em;
+              letter-spacing: -.2px;
+              transition: .2s ease;
+           }
+
+           .button-part {
+              background: #4F4F4F;
+              width: 50%;
+              margin: 0;
+              transition: margin-right .4s cubic-bezier(0.44, 3.2, 0.64, 1),
+              background-color .3s ease-out;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+           }
+
+           .img-part {
+              width: 25px;
+              height: auto;
+              margin-right: 15px;
+              filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.7));
+              opacity: 0;
+              transition: .3s ease;
+           }
+
+           .text-part {
+              font-family: Rubik, sans-serif;
+              font-weight: 400;
+              font-size: 1.3em;
+              letter-spacing: -.1px;
+              opacity: 0;
+              transition: .3s ease;
+              color: #ffffff;
+           }
+
+           .left {
+              border-radius: var(--radius) 0 0 var(--radius);
+           }
+
+           .right {
+              border-radius: 0 var(--radius) var(--radius) 0;
+           }
+
+           .right img {
+              width: 22px;
+           }
+        </style>
+    </head>
+    <body>
+        <div class="full-button">
+            <div class="text">Login to a new account</div>
+            <div class="left button-part">
+                <img
+                    class="img-part"
+                    src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/977e8c4f-1c99-46cd-b070-10cd97086c08/d36qrs5-017c3744-8c94-4d47-9633-d85b991bf2f7.png"
+                    alt="">
+                <a class="text-part">Mojang</a>
+            </div>
+            <div class="right button-part">
+                <img
+                    class="img-part"
+                    src="https://www.flaticon.com/svg/static/icons/svg/732/732221.svg"
+                    alt="">
+                <a class="text-part">Microsoft</a>
+            </div>
+        </div>
+
+        <script>
+            const text = document.getElementsByClassName("text")[0]
+            const left = document.getElementsByClassName("left")[0]
+            const right = document.getElementsByClassName("right")[0]
+            const full = document.getElementsByClassName("full-button")[0]
+            const textParts = Array.from(document.getElementsByClassName("text-part"))
+            const imageParts = Array.from(document.getElementsByClassName("img-part"))
+
+            full.addEventListener("click", () => {
+                text.style.opacity = "0"
+                full.style.cursor = "default"
+
+                left.style.marginRight = "40px"
+                left.style.borderRadius = "var(--radius)"
+                left.style.backgroundColor = "#7cbb00"
+                left.addEventListener("click", addMinecraftAccount)
+
+                right.style.borderRadius = "var(--radius)"
+                right.style.backgroundColor = "#00a1f1"
+                right.addEventListener("click", addMicrosoftAccount)
+
+                textParts.forEach(it => it.style.opacity = "100%")
+                imageParts.forEach(it => it.style.opacity = "100%")
+
+                setTimeout(() => {
+                    text.style.display = "none"
+                }, 200)
+            })
+
+            function addMinecraftAccount() {
+                window.location.href = "https://minecraft.net"
+            }
+
+            function addMicrosoftAccount() {
+                window.location.href = "https://login.live.com"
+            }
+        </script>
+    </body>
+</html>
