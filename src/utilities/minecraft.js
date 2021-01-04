@@ -13,14 +13,19 @@ let appPath
 function loadAccounts() {
     const file = path.join(appPath, "tmp", "accounts.json")
 
-    if (fs.existsSync(file)) {
-        const { accounts, currentSelectedAccount } = JSON.parse(fs.readFileSync(file))
-        storedAccounts = accounts ?? {}
-        currentAccountKey = currentSelectedAccount ?? null
-    } else {
-        storedAccounts = {}
-        currentAccountKey = null
+    try {
+        if (fs.existsSync(file)) {
+            const { accounts, currentSelectedAccount } = JSON.parse(fs.readFileSync(file))
+            storedAccounts = accounts ?? {}
+            currentAccountKey = currentSelectedAccount ?? null
+            return
+        }
+    } catch (e) {
+        console.error("! Error during loading of accounts.json:", e)
     }
+
+    storedAccounts = {}
+    currentAccountKey = null
 }
 
 function loadIfRequired() {
