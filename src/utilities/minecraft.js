@@ -35,7 +35,7 @@ function loadIfRequired() {
 }
 
 function generateUUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
         const r = (Math.random() * 16) | 0,
             v = c === "x" ? r : (r & 0x3) | 0x8
         return v.toString(16)
@@ -52,12 +52,14 @@ function getCurrentAccount() {
     return currentAccountKey ? storedAccounts[currentAccountKey] : null
 }
 
-function addAccount(account) {
+function addAccount(account, setCurrent = true, identifier) {
     try {
         loadIfRequired()
-        const identifier = generateUUID()
+        const identifier = identifier ?? generateUUID()
+
         storedAccounts[identifier] = account
-        currentAccountKey = identifier
+        if (setCurrent)
+            currentAccountKey = identifier
 
         const file = path.join(appPath, "tmp", "accounts.json")
         const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
@@ -67,7 +69,7 @@ function addAccount(account) {
         // TODO: Check if account is already saved before writing
         fs.writeFileSync(file, JSON.stringify(accountsJson))
         return identifier
-    } catch(e) {
+    } catch (e) {
         console.error("! Could not add account:", e)
     }
 }
@@ -86,7 +88,7 @@ function removeAccount(identifier) {
 
         fs.writeFileSync(file, JSON.stringify(accountsJson))
         return identifier
-    } catch(e) {
+    } catch (e) {
         console.error("! Could not remove account:", e)
     }
 }
@@ -100,7 +102,7 @@ function setCurrentAccount(identifier) {
         accountsJson.currentSelectedAccount = currentAccountKey
 
         fs.writeFileSync(file, JSON.stringify(accountsJson))
-    } catch(e) {
+    } catch (e) {
         console.error("! Could not change current account:", e)
     }
 }
@@ -168,6 +170,20 @@ function validateToken(accessToken, clientToken) {
     }
 }
 
+async function refreshToken(identifier, account) {
+    if (account.type !== "mojang")
+        throw "Refreshing is currently only supported for Mojang accounts"
+
+    const response = await axios.post(minecraftAuthBaseUrl + "/refresh", {
+        accessToken: account.accessToken,
+        clientToken: account.clientToken,
+    })
+
+    account.accessToken = response.data.accessToken
+    addAccount(account, false, identifier)
+    return true
+}
+
 function setAppPath(inputAppPath) {
     appPath = inputAppPath
 }
@@ -181,4 +197,5 @@ module.exports = {
     setCurrentAccount,
     mojangLogin,
     validateToken,
+    refreshToken,
 }
