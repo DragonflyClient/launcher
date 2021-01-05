@@ -60,10 +60,12 @@ const CLIENT_ID = "00000000402b5328"
  */
 const REDIRECT_URI = "https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf"
 
-function startAuthorizationFlow() {
+function startAuthorizationFlow(onAbort) {
     return new Promise(async (resolve, reject) => {
+        MicrosoftAuthorizationFlow.flows.forEach(flow => flow.window && flow.window.close())
+
         console.log("== Starting Microsoft Authorization Flow ==")
-        const flow = new MicrosoftAuthorizationFlow()
+        const flow = new MicrosoftAuthorizationFlow(onAbort)
         await flow.promptMicrosoftOAuthLogin()
 
         if (flow.error) {
@@ -112,6 +114,22 @@ function startAuthorizationFlow() {
 class MicrosoftAuthorizationFlow {
 
     /**
+     * Holds the instances of the authorization flows whose windows are currently visible.
+     * @type {[MicrosoftAuthorizationFlow]}
+     */
+    static flows = []
+
+    /**
+     * Creates a new Microsoft Authorization Flow
+     * @param onAbort The function to be called if the flow is aborted during the
+     * user-input-phase (step #1)
+     */
+    constructor(onAbort) {
+        this.onAbort = onAbort
+        MicrosoftAuthorizationFlow.flows.push(this)
+    }
+
+    /**
      * Opens a new window in which the user can log in to their Microsoft account and grant
      * the Launcher access via OAuth.
      *
@@ -133,9 +151,19 @@ class MicrosoftAuthorizationFlow {
             show: false,
         })
 
+        this.window = microsoftLoginWindow
+
         return new Promise(async (resolve, reject) => {
             microsoftLoginWindow.webContents.once("did-finish-load", () => {
                 microsoftLoginWindow.show()
+            })
+
+            microsoftLoginWindow.on("close", () => {
+                MicrosoftAuthorizationFlow.flows.splice(MicrosoftAuthorizationFlow.flows.indexOf(this), 1)
+                if (this.isControlledClose) return
+
+                console.log("> Aborting Microsoft OAuth Flow...")
+                this.onAbort()
             })
 
             microsoftLoginWindow.webContents.on("will-redirect", async (event, data) => {
@@ -146,8 +174,9 @@ class MicrosoftAuthorizationFlow {
                         const code = url.searchParams.get("code")
                         console.log("> [#1] Microsoft Authorization Code received:", code)
 
+                        this.isControlledClose = true
                         event.preventDefault()
-                        microsoftLoginWindow.destroy()
+                        microsoftLoginWindow.close()
 
                         await this.acquireAuthorizationToken(code)
                         resolve()
@@ -155,8 +184,9 @@ class MicrosoftAuthorizationFlow {
                         const error = url.searchParams.get("error")
                         console.log("! [#1] Error during Microsoft OAuth Login:", error) // can be "access_denied"
 
+                        this.isControlledClose = true
                         event.preventDefault()
-                        microsoftLoginWindow.destroy()
+                        microsoftLoginWindow.close()
 
                         reject(error)
                     }

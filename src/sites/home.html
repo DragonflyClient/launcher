@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../assets/css/home.css" />
     <link rel="stylesheet" href="../assets/css/partials/titlebar.css" />
     <link rel="stylesheet" href="../assets/css/partials/auto-update.css" />
+    <link rel="stylesheet" href="../assets/css/partials/account-modal.css" />
 </head>
 
 <body style="height: 100vh !important;">
@@ -98,10 +99,64 @@
         <button id="updater__close-button" class="updater__button" onClick="closeNotification()">Close</button>
         <button id="updater__restart-button" onClick="restartApp()" class="hidden updater__button">Restart</button>
     </div>
+
+    <div id="account-modal-wrapper">
+        <div id="account-modal">
+            <div id="account-modal-header">
+                <h1>Account Manager</h1>
+            </div>
+            <div id="account-modal-content">
+                <div id="account-modal__accounts">
+                    <div class="account-modal__account account-modal__current-account">
+                        <img src="https://mineskin.de/avatar/decxption" alt="decxption" class="account-modal__skull">
+                        <div class="account-modal__info-wrapper">
+                            <span class="account-modal__name">decxption</span>
+                            <span class="account-modal__uuid">411fe2ac-4a1c-4c65-938d-68956de767b4</span>
+                        </div>
+                        <img class="account-modal__logout" src="../assets/media/svg/logout.svg" alt="logout">
+                    </div>
+                    <div class="account-modal__account">
+                        <img src="https://mineskin.de/avatar/jwli" alt="jwli" class="account-modal__skull">
+                        <div class="account-modal__info-wrapper">
+                            <span class="account-modal__name">jwli</span>
+                            <span class="account-modal__uuid">96a90c3d-afdb-4696-a297-19450418f10d</span>
+                        </div>
+                        <img class="account-modal__logout" src="../assets/media/svg/logout.svg" alt="logout">
+                    </div>
+                    <div class="account-modal__account">
+                        <img src="https://mineskin.de/avatar/incxption" alt="incxption" class="account-modal__skull">
+                        <div class="account-modal__info-wrapper">
+                            <span class="account-modal__name">incxption</span>
+                            <span class="account-modal__uuid">bc73becb-bc3b-487b-95a2-35ab00e11d0a</span>
+                        </div>
+                        <img class="account-modal__logout" src="../assets/media/svg/logout.svg" alt="logout">
+                    </div>
+                </div>
+                <div id="account-modal__button">
+                    <div class="full-button collapsed">
+                        <div class="text">Login to a new account</div>
+                        <div class="left button-part">
+                            <img class="img-part"
+                                 src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/977e8c4f-1c99-46cd-b070-10cd97086c08/d36qrs5-017c3744-8c94-4d47-9633-d85b991bf2f7.png"
+                                 alt="">
+                            <a class="text-part">Mojang</a>
+                        </div>
+                        <div class="right button-part">
+                            <img class="img-part" src="https://www.flaticon.com/svg/static/icons/svg/732/732221.svg" alt="">
+                            <a class="text-part">Microsoft</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="account-modal-footer">
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/js/scripts/home.js"></script>
     <script src="../assets/js/partials/titlebar.js"></script>
+    <script src="../assets/js/partials/account-modal.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
-
 </body>
 
 </html>

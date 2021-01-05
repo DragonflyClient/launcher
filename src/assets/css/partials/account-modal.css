@@ -1,0 +1,232 @@
+:root {
+   --radius: 5px;
+}
+
+.full-button {
+   display: flex;
+   position: relative;
+   align-items: stretch;
+   width: 400px;
+   height: 50px;
+   cursor: pointer;
+   overflow: hidden;
+   transition: .2s;
+}
+
+.full-button.collapsed:hover {
+   filter: brightness(88%);
+}
+
+.full-button:not(.collapsed) .button-part:not([disabled="true"]):hover {
+   filter: brightness(95%);
+}
+
+.text {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   width: 100%;
+   color: white;
+   text-align: center;
+   transform: translate(-50%, -50%);
+   font-family: Rubik, sans-serif;
+   font-weight: 400;
+   font-size: 1.4em;
+   letter-spacing: -.2px;
+   transition: .4s ease;
+   clip-path: view-box;
+}
+
+.button-part {
+   background: #4F4F4F;
+   width: 50%;
+   margin: 0;
+   transition: margin-right .15s ease, background-color .2s ease-out, filter .2s;
+   cursor: pointer;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.img-part {
+   width: 25px;
+   height: auto;
+   margin-right: 15px;
+   filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.7));
+   transform: translateY(10px);
+   opacity: 0;
+   transition: .25s ease;
+}
+
+.text-part {
+   font-family: Rubik, sans-serif;
+   font-weight: 400;
+   font-size: 1.3em;
+   letter-spacing: -.1px;
+   opacity: 0;
+   transition: .25s ease;
+   transform: scale(0.9);
+   color: #ffffff;
+}
+
+.left {
+   border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.right {
+   border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.right img {
+   width: 22px;
+}
+
+
+#account-modal-wrapper {
+   position: absolute;
+   z-index: 99999999999999999;
+   top: 30px;
+   left: 0;
+   width: 100vw;
+   height: calc(100vh - 30px);
+
+   background-color: rgba(0, 0, 0, .6);
+   backdrop-filter: blur(5px);
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+#account-modal {
+   width: 500px;
+   color: #2A2B2B;
+   letter-spacing: -.3px;
+
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: center;
+
+   transition: .3s ease;
+}
+
+#account-modal-header {
+   width: 100%;
+   text-align: center;
+   padding: 12px 0;
+   border-bottom: 2px solid rgba(255, 255, 255, .2);
+
+   color: white;
+   background-color: rgb(51, 51, 51);
+   border-radius: 10px 10px 0 0;
+
+   font-size: .9rem;
+}
+
+#account-modal-content {
+   width: 100%;
+   height: 100%;
+   background-color: rgb(255, 255, 255);
+}
+
+#account-modal-footer {
+   width: 100%;
+   height: 0;
+   padding-bottom: 25px;
+   padding-top: 0;
+
+   background-color: rgb(255, 255, 255);
+   border-radius: 0 0 10px 10px;
+   transition: all .2s ease-out;
+
+   display: flex;
+   justify-content: center;
+   align-items: flex-end;
+}
+
+#status {
+   width: 100%;
+   padding: 0 30px;
+
+   color: rgba(0, 0, 0, .6);
+   font-size: 1.1rem;
+   text-align: center;
+
+   opacity: 0;
+   transition: .2s ease-out;
+}
+
+#account-modal__accounts {
+   width: 100%;
+   min-height: 150px;
+}
+
+#account-modal__button {
+   width: 100%;
+   padding: 25px 0 0;
+   display: flex;
+   justify-content: center;
+}
+
+.account-modal__account {
+   display: flex;
+   align-items: center;
+   padding: 8px 20px;
+   transition: background-color .2s;
+}
+
+.account-modal__account:hover {
+   background-color: rgba(0,0,0,0.07)
+}
+
+.account-modal__current-account {
+   border-left: 3px solid rgb(239, 133, 46);
+   background-color: rgba(239, 133, 46, .1);
+   padding-left: 17px;
+}
+
+.account-modal__info-wrapper {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   margin-left: 15px;
+   width: 100%;
+}
+
+.account-modal__skull {
+   width: 40px;
+   height: 40px;
+   box-shadow: 0 0 3px rgba(0, 0, 0, .5);
+}
+
+.account-modal__name {
+   font-size: 1.2rem;
+   font-weight: 500;
+}
+
+.account-modal__uuid {
+   font-size: .8rem;
+   font-weight: 400;
+   color: rgba(42, 43, 43, .8);
+}
+
+.account-modal__logout {
+   width: 25px;
+   height: auto;
+   filter: grayscale(100%);
+   transition: .1s ease;
+}
+
+.account-modal__logout:hover {
+   filter: grayscale(10%);
+}
+
+.account-modal-animation {
+   width: 23px;
+   height: 23px;
+}
+
+.account-modal-animation .sk-chase-dot:before {
+   background-color: #DEDEDE;
+}
