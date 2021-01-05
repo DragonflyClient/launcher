@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;1,400&display=swap");
 
 :root {
     --clr-fg: #eff1f3;
@@ -90,12 +90,12 @@ a {
 
 #info .account {
     display: flex;
-    /* width: 300px; */
+    width: 360px;
     padding: 10px 25px;
     align-items: center;
 
     transition: 0.4s ease;
-    transform: translateX(-500px);
+    transform: translateX(-100%);
 }
 
 #info .account .minecraft-skull {
@@ -419,7 +419,7 @@ div#progress {
     background: rgba(239, 133, 46, 0.35);
 }
 
-#launch .buttons .launch-game[disabled='true'] {
+#launch .buttons .launch-game[disabled="true"] {
     background: rgba(184, 104, 39, 0.6);
 }
 
@@ -480,7 +480,7 @@ div#progress {
 }
 
 .sk-chase-dot:before {
-    content: '';
+    content: "";
     display: block;
     width: 25%;
     height: 25%;
