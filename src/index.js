@@ -111,6 +111,7 @@ const createMainWindow = async () => {
         width: 1350,
         height: 800,
         minWidth: 850,
+        minHeight: 720,
         autoHideMenuBar: true,
         show: false,
         frame: false,
