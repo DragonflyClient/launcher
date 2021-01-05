@@ -6,8 +6,8 @@
    display: flex;
    position: relative;
    align-items: stretch;
-   width: 400px;
-   height: 50px;
+   width: 280px;
+   height: 38px;
    cursor: pointer;
    overflow: hidden;
    transition: .2s;
@@ -31,7 +31,7 @@
    transform: translate(-50%, -50%);
    font-family: Rubik, sans-serif;
    font-weight: 400;
-   font-size: 1.4em;
+   font-size: 1.2rem;
    letter-spacing: -.2px;
    transition: .4s ease;
    clip-path: view-box;
@@ -49,7 +49,7 @@
 }
 
 .img-part {
-   width: 25px;
+   width: 23px;
    height: auto;
    margin-right: 15px;
    filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.7));
@@ -61,7 +61,7 @@
 .text-part {
    font-family: Rubik, sans-serif;
    font-weight: 400;
-   font-size: 1.3em;
+   font-size: 1.2rem;
    letter-spacing: -.1px;
    opacity: 0;
    transition: .25s ease;
@@ -78,7 +78,7 @@
 }
 
 .right img {
-   width: 22px;
+   width: 20px;
 }
 
 
@@ -92,8 +92,11 @@
 
    background-color: rgba(0, 0, 0, .6);
    backdrop-filter: blur(5px);
+   transition: opacity .4s ease;
 
-   display: flex;
+   display: none; /* is changed to "flex" when opened */
+   opacity: 0; /* is changed to "1" when opened */
+
    justify-content: center;
    align-items: center;
 }
@@ -112,6 +115,7 @@
 }
 
 #account-modal-header {
+   position: relative;
    width: 100%;
    text-align: center;
    padding: 12px 0;
@@ -121,7 +125,29 @@
    background-color: rgb(51, 51, 51);
    border-radius: 10px 10px 0 0;
 
-   font-size: .9rem;
+   font-size: 1.5rem;
+   font-weight: 500;
+}
+
+#account-modal-close {
+   position: absolute;
+   right: 0;
+   top: 0;
+   width: 40px;
+   height: 30px;
+
+   border-radius: 0 10px 0 10px;
+   background-color: rgb(186, 71, 71);
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   cursor: pointer;
+}
+
+#account-modal-close img {
+   width: 13px;
+   height: auto;
 }
 
 #account-modal-content {
@@ -130,14 +156,23 @@
    background-color: rgb(255, 255, 255);
 }
 
+#account-modal__accounts-header {
+   text-align: center;
+   margin-top: 15px;
+   font-weight: 500;
+   font-size: 1.2rem;
+}
+
 #account-modal__accounts {
    width: 100%;
    min-height: 150px;
+   margin: 15px 0;
 }
 
 #account-modal__button {
    width: 100%;
-   padding: 25px 0 0;
+   border-top: 2px solid #EEEEEE;
+   padding: 15px 0 0;
    display: flex;
    justify-content: center;
 }
@@ -147,6 +182,7 @@
    align-items: center;
    padding: 8px 20px;
    transition: background-color .2s;
+   cursor: pointer;
 }
 
 .account-modal__account:hover {
@@ -208,7 +244,7 @@
 #account-modal-footer {
    width: 100%;
    height: 0;
-   padding-bottom: 25px;
+   padding-bottom: 15px;
    padding-top: 0;
 
    background-color: rgb(255, 255, 255);
