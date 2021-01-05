@@ -52,23 +52,39 @@ function getCurrentAccount() {
     return currentAccountKey ? storedAccounts[currentAccountKey] : null
 }
 
+function getCurrentAccountIdentifier() {
+    loadIfRequired()
+    return currentAccountKey
+}
+
 function addAccount(account, setCurrent = true, identifierIn) {
     try {
         loadIfRequired()
+
+        const existingIdentifier = Object.keys(storedAccounts)
+            .find(key => storedAccounts[key].profile.uuid === account.profile.uuid)
         const identifier = identifierIn ?? generateUUID()
 
-        storedAccounts[identifier] = account
-        if (setCurrent)
-            currentAccountKey = identifier
+        if (existingIdentifier) {
+            const existing = storedAccounts[existingIdentifier]
+            existing.accessToken = account.accessToken
+            existing.clientToken = account.clientToken
+            storedAccounts[existingIdentifier] = existing
+
+            console.log("Altering existing account:", existing)
+            if (setCurrent) currentAccountKey = existingIdentifier
+        } else {
+            storedAccounts[identifier] = account
+            if (setCurrent) currentAccountKey = identifier
+        }
 
         const file = path.join(appPath, "tmp", "accounts.json")
         const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
         accountsJson.accounts = storedAccounts
         accountsJson.currentSelectedAccount = currentAccountKey
 
-        // TODO: Check if account is already saved before writing
         fs.writeFileSync(file, JSON.stringify(accountsJson))
-        return identifier
+        return existingIdentifier ? false : identifier
     } catch (e) {
         console.error("! Could not add account:", e)
     }
@@ -80,11 +96,14 @@ function removeAccount(identifier) {
 
         const file = path.join(appPath, "tmp", "accounts.json")
         const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
-        accountsJson.accounts = storedAccounts
 
         if (currentAccountKey === identifier) {
-            currentAccountKey = storedAccounts[Object.keys(storedAccounts)[0]]
+            currentAccountKey = Object.keys(storedAccounts)[0]
+            console.log("Switched current account to " + currentAccountKey)
         }
+
+        accountsJson.accounts = storedAccounts
+        accountsJson.currentSelectedAccount = currentAccountKey
 
         fs.writeFileSync(file, JSON.stringify(accountsJson))
         return identifier
@@ -168,7 +187,8 @@ function validateToken(accessToken, clientToken) {
     }
 }
 
-async function refreshToken(identifier, account) {
+async function refreshToken(identifier) {
+    const account = storedAccounts[identifier]
     if (account.type !== "mojang")
         throw "Refreshing is currently only supported for Mojang accounts"
 
@@ -192,6 +212,7 @@ module.exports = {
     getAccounts,
     removeAccount,
     getCurrentAccount,
+    getCurrentAccountIdentifier,
     setCurrentAccount,
     mojangLogin,
     validateToken,
