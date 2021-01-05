@@ -52,10 +52,10 @@ function getCurrentAccount() {
     return currentAccountKey ? storedAccounts[currentAccountKey] : null
 }
 
-function addAccount(account, setCurrent = true, identifier) {
+function addAccount(account, setCurrent = true, identifierIn) {
     try {
         loadIfRequired()
-        const identifier = identifier ?? generateUUID()
+        const identifier = identifierIn ?? generateUUID()
 
         storedAccounts[identifier] = account
         if (setCurrent)
@@ -129,7 +129,7 @@ async function mojangLogin(credentials, clientToken = null) {
                 } else {
                     account = data.selectedProfile
                 }
-                const accountData = {
+                return {
                     type: "mojang",
                     accessToken: data.accessToken,
                     clientToken: data.clientToken,
@@ -138,8 +138,6 @@ async function mojangLogin(credentials, clientToken = null) {
                         username: account.name,
                     },
                 }
-                addAccount(accountData)
-                return accountData
             })
             .catch(err => {
                 console.log("> [Minecraft] Error while logging in:", err)
