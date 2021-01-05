@@ -25,6 +25,7 @@ const LOADING_ANIMATION = `
 
 full.addEventListener("click", () => {
     text.style.transform = "translate(-50%, -100px)"
+    full.style.width = "350px"
     setTimeout(() => {
         full.classList.remove("collapsed")
         full.style.cursor = "default"
@@ -72,7 +73,8 @@ function addMicrosoftAccount() {
     microsoftAuth.startAuthorizationFlow(() => {
         finishMicrosoftLogin()
     }).then(acc => {
-        minecraftAuth.addAccount({
+        finishMicrosoftLogin()
+        insertAccount({
             type: "microsoft",
             accessToken: acc.minecraftToken,
             profile: {
@@ -80,15 +82,9 @@ function addMicrosoftAccount() {
                 username: acc.profile.name,
             },
         })
-
-        finishMicrosoftLogin()
-        showStatus(
-            `Minecraft account <b>${acc.profile.name}</b> has been successfully added to the Account Manager.`,
-            100,
-        )
     }).catch(error => {
         finishMicrosoftLogin()
-        showStatus(error.message, 140)
+        showStatus(error.message, 120)
     })
 }
 
@@ -102,8 +98,6 @@ function addMinecraftAccount() {
 
 function showStatus(message, height) {
     footer.style.height = `${height}px`
-    footer.style.paddingTop = "20px"
-    footer.style.paddingBottom = "30px"
     footer.innerHTML = `
         <div id="status">
             ${message}
@@ -125,9 +119,7 @@ function finishMicrosoftLogin() {
 }
 
 function showMojangFields() {
-    footer.style.height = `230px`
-    footer.style.paddingTop = "20px"
-    footer.style.paddingBottom = "30px"
+    footer.style.height = `210px`
     footer.innerHTML = `
         <form id="mojang-form">
             <p class="mojang-form-info">Enter your Mojang account credentials</p>
@@ -158,8 +150,6 @@ function clearFooter() {
 
     setTimeout(() => {
         footer.style.height = "0"
-        footer.style.paddingTop = "0"
-        footer.style.paddingBottom = "25px"
         footer.innerHTML = ""
     }, 150)
 }
@@ -193,13 +183,148 @@ function submitMojangForm(event) {
                 submitButton.removeAttribute("disabled")
                 submitButton.innerText = "Login"
             } else {
-                const account = response
-                minecraftAuth.addAccount(account)
-                showStatus(
-                    `Minecraft account <b>${account.profile.username}</b> has been successfully added to the Account Manager.`,
-                    100,
-                )
+                insertAccount(response)
             }
         })
     }, 500)
 }
+
+function loadAccounts() {
+    const targetElement = document.getElementById("account-modal__accounts")
+    const current = minecraftAuth.getCurrentAccountIdentifier()
+    const accounts = minecraftAuth.getAccounts()
+
+    targetElement.innerHTML = ""
+
+    Object.keys(accounts).forEach(identifier => {
+        const account = accounts[identifier]
+        const isCurrent = identifier === current
+
+        targetElement.innerHTML += createHtmlForAccount(isCurrent, identifier, account)
+    })
+
+    Array.from(document.getElementsByClassName("account-modal__account"))
+        .forEach(element => element.addEventListener("click",
+            async event => await switchAccount(event, element.getAttribute("data-account-id")),
+        ))
+
+    Array.from(document.getElementsByClassName("account-modal__logout"))
+        .forEach(element => element.addEventListener("click",
+            async event => await deleteAccount(event, element.parentElement.getAttribute("data-account-id")),
+        ))
+}
+
+function showAccountManagerModal() {
+    loadAccounts()
+    clearFooter()
+
+    accountWrapper.style.transform = "translateX(-500px)"
+    // ^ used from home.js
+
+    const modalWrapper = document.getElementById("account-modal-wrapper")
+    modalWrapper.style.display = "flex"
+
+    setTimeout(() => modalWrapper.style.opacity = "1", 10)
+}
+
+function hideAccountModal() {
+    insertAccountData()
+
+    const modalWrapper = document.getElementById("account-modal-wrapper")
+    modalWrapper.style.opacity = "0"
+
+    setTimeout(() => modalWrapper.style.display = "none", 500)
+}
+
+function insertAccount(account) {
+    const identifier = minecraftAuth.addAccount(account)
+
+    if (identifier === false) {
+        showStatus(
+            `The Minecraft account <b>${account.profile.username}</b> is already contained
+            in the Account Manager.`,
+            80,
+        )
+    } else if (identifier) {
+        showStatus(
+            `Minecraft account <b>${account.profile.username}</b> has been successfully 
+            added to the Account Manager.`,
+            80,
+        )
+        document.getElementById("account-modal__accounts").innerHTML +=
+            createHtmlForAccount(true, identifier, account)
+        selectCurrentAccount(identifier)
+    } else {
+        showStatus(
+            `<b>An unexpected error occurred while trying to add the account to the
+            Account Manager!</b>`,
+            80,
+        )
+    }
+}
+
+async function switchAccount(event, accountId) {
+    if (event.target.classList.contains("account-modal__logout")) return
+
+    minecraftAuth.setCurrentAccount(accountId)
+    try {
+        await minecraftAuth.refreshToken(accountId)
+    } catch (e) {}
+    selectCurrentAccount(accountId)
+}
+
+async function deleteAccount(event, accountId) {
+    minecraftAuth.removeAccount(accountId)
+
+    for (let element of document.getElementsByClassName("account-modal__account")) {
+        if (element.getAttribute("data-account-id") === accountId) {
+            element.remove()
+        }
+    }
+
+    selectCurrentAccount(minecraftAuth.getCurrentAccountIdentifier())
+    try {
+        await minecraftAuth.refreshToken(accountId)
+    } catch (e) {}
+}
+
+function selectCurrentAccount(identifier) {
+    for (let element of document.getElementsByClassName("account-modal__account")) {
+        if (element.getAttribute("data-account-id") === identifier) {
+            element.classList.add("account-modal__current-account")
+        } else {
+            element.classList.remove("account-modal__current-account")
+        }
+    }
+}
+
+function createHtmlForAccount(isCurrent, identifier, account) {
+    return `
+            <div class="account-modal__account ${isCurrent ? "account-modal__current-account" : ""}" data-account-id="${identifier}">
+                <img src="https://mineskin.de/avatar/${account.profile.username}" alt="${account.profile.username}" class="account-modal__skull">
+                <div class="account-modal__info-wrapper">
+                    <span class="account-modal__name">${account.profile.username}</span>
+                    <span class="account-modal__uuid">${account.profile.uuid}</span>
+                </div>
+                <img class="account-modal__logout" src="../assets/media/svg/logout.svg" alt="logout">
+            </div>
+        `
+}
+
+document.getElementsByClassName("account-name__minecraft-wrapper")[0]
+    .addEventListener("click", showAccountManagerModal)
+
+document.getElementById("account-modal-wrapper")
+    .addEventListener("click", event => {
+        if (event.target === document.getElementById("account-modal-wrapper")) {
+            hideAccountModal()
+        }
+    })
+document.getElementById("account-modal-close")
+    .addEventListener("click", hideAccountModal)
+
+window.addEventListener("keydown", event => {
+    if (event.code === "Escape" && document.getElementById("account-modal-wrapper").style.display === "flex") {
+        hideAccountModal()
+    }
+})
