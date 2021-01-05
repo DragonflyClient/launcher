@@ -26,17 +26,21 @@ const minecraftNameEl = document.querySelector(".account-name__minecraft")
 const minecraftSkullImg = document.querySelector(".minecraft-skull")
 const accountWrapper = document.querySelector(".account")
 
-if (!dragonflyToken)
+if (!dragonflyToken) {
     ipcRenderer.send("drgn-not-logged-in") // TODO: Handle stuff if user isn't logged into dragonfly account
-;(async () => {
+}
+
+async function insertAccountData() {
     const dragonflyAccount = await getDragonflyAccount(dragonflyToken)
-    let selectedAccount = minecraft.getCurrentAccount()
-    console.log(selectedAccount, "SELECTED ACCC")
-    await innerMinecraftAccountDetails(selectedAccount)
+    const minecraftAccount = minecraft.getCurrentAccount()
+
+    await innerMinecraftAccountDetails(minecraftAccount)
     innerDragonflyAccountDetails(dragonflyAccount)
 
     accountWrapper.style.transform = "translateX(0)"
-})()
+}
+
+insertAccountData()
 
 async function innerMinecraftAccountDetails(account) {
     if (!account || !(await minecraft.validateToken(account.accessToken, account.clientToken))) {
@@ -118,9 +122,9 @@ versionDropdownToggle.addEventListener("click", e => {
     versionDropdownToggle.classList.toggle("active")
 })
 
-const externalLinks = document.querySelectorAll('a[href^="http"]')
+const externalLinks = document.querySelectorAll("a[href^=\"http\"]")
 
-Array.from(externalLinks).forEach(function (link) {
+Array.from(externalLinks).forEach(function(link) {
     link.addEventListener("click", e => {
         e.preventDefault()
         shell.openExternal(link.getAttribute("href"))
@@ -249,7 +253,7 @@ launchButton.addEventListener("click", async () => {
                 process.style.cursor = "pointer"
                 launchButton.setAttribute("disabled", "false")
                 launchButton.innerHTML = `Launch`
-            }
+            },
         )
     } catch (error) {
         console.log(error)
@@ -307,8 +311,8 @@ function innerAnnouncements() {
                             <div class="line"></div>
                             <h1>${announcement.title}</h1>
                             <p class="publish-date">${new Date(
-                                announcement.publishedOn * 1000
-                            ).toLocaleDateString()}</p>
+            announcement.publishedOn * 1000,
+        ).toLocaleDateString()}</p>
                             <p>${announcement.content}</p>
                         </div>
                     </div>
@@ -317,41 +321,3 @@ function innerAnnouncements() {
 }
 
 innerAnnouncements()
-
-const accounts = document.getElementsByClassName("minecraft-skull")
-for (let account of accounts) {
-    account.addEventListener("click", () => {
-        // startAuthorizationFlow()
-        //     .then(acc => {
-        //         minecraft.addAccount({
-        //             type: "microsoft",
-        //             accessToken: acc.minecraftToken,
-        //             profile: {
-        //                 uuid: acc.profile.id,
-        //                 username: acc.profile.name,
-        //             },
-        //         })
-        //         Swal.fire({
-        //             title: "Success!",
-        //             html: "You have successfully added <b>" + acc.profile.name + "</b> with Microsoft.",
-        //             icon: "success",
-        //             confirmButtonText: "Great!",
-        //         })
-        //     })
-        //     .catch(obj => {
-        //         Swal.fire({
-        //             title: "Whooops...",
-        //             html: obj?.message ?? obj,
-        //             footer: `<b style="opacity: 50%">${obj?.error?.toUpperCase() ?? "INTERNAL_ERROR"}</b>`,
-        //             icon: "error",
-        //             confirmButtonText: "Okay",
-        //         })
-        //     })
-
-        accountWrapper.style.transform = "translateX(-500px)"
-        minecraft.mojangLogin({ username: "<>", password: "<>" }).then(account => {
-            console.log(account, "ACCOUNT HOME JS")
-            innerMinecraftAccountDetails(account)
-        })
-    })
-}
