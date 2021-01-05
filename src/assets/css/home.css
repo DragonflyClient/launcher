@@ -117,12 +117,17 @@ a {
 .account .names .account-name__minecraft {
     color: rgba(255, 255, 255, 0.5);
     font-size: 16px;
+    margin-right: 5px;
 }
 
 .account .names .account-name__minecraft-dropdown-icon {
     color: white;
     width: 15px;
     height: 11px;
+}
+
+.account-name__minecraft-wrapper {
+    cursor: pointer;
 }
 
 /* minecraft account dropdown */
@@ -418,11 +423,9 @@ div#progress {
     background: rgba(184, 104, 39, 0.6);
 }
 
-@media (max-height: 720px) {
+@media (max-height: 750px) {
     #launch .buttons {
-        width: 100% !important;
-        margin: 50px auto 0 auto !important;
-        position: static !important;
+        bottom: 0;
     }
 }
 
