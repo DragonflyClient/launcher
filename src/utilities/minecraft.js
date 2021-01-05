@@ -35,7 +35,7 @@ function loadIfRequired() {
 }
 
 function generateUUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         const r = (Math.random() * 16) | 0,
             v = c === "x" ? r : (r & 0x3) | 0x8
         return v.toString(16)
@@ -61,8 +61,9 @@ function addAccount(account, setCurrent = true, identifierIn) {
     try {
         loadIfRequired()
 
-        const existingIdentifier = Object.keys(storedAccounts)
-            .find(key => storedAccounts[key].profile.uuid === account.profile.uuid)
+        const existingIdentifier = Object.keys(storedAccounts).find(
+            key => storedAccounts[key].profile.uuid === account.profile.uuid
+        )
         const identifier = identifierIn ?? generateUUID()
 
         if (existingIdentifier) {
@@ -92,6 +93,7 @@ function addAccount(account, setCurrent = true, identifierIn) {
 
 function removeAccount(identifier) {
     try {
+        let switched = false
         delete storedAccounts[identifier]
 
         const file = path.join(appPath, "tmp", "accounts.json")
@@ -100,13 +102,14 @@ function removeAccount(identifier) {
         if (currentAccountKey === identifier) {
             currentAccountKey = Object.keys(storedAccounts)[0]
             console.log("Switched current account to " + currentAccountKey)
+            switched = true
         }
 
         accountsJson.accounts = storedAccounts
         accountsJson.currentSelectedAccount = currentAccountKey
 
         fs.writeFileSync(file, JSON.stringify(accountsJson))
-        return identifier
+        return switched
     } catch (e) {
         console.error("! Could not remove account:", e)
     }
@@ -189,8 +192,7 @@ function validateToken(accessToken, clientToken) {
 
 async function refreshToken(identifier) {
     const account = storedAccounts[identifier]
-    if (account.type !== "mojang")
-        throw "Refreshing is currently only supported for Mojang accounts"
+    if (account.type !== "mojang") throw "Refreshing is currently only supported for Mojang accounts"
 
     const response = await axios.post(minecraftAuthBaseUrl + "/refresh", {
         accessToken: account.accessToken,
