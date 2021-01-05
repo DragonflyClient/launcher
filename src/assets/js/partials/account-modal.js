@@ -190,7 +190,7 @@ function submitMojangForm(event) {
                 infoElement.innerHTML = "⛔ Invalid credentials"
                 passwordElement.value = ""
 
-                submitButton.setAttribute("disabled", "false")
+                submitButton.removeAttribute("disabled")
                 submitButton.innerText = "Login"
             } else {
                 const account = response
