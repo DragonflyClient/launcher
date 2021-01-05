@@ -130,33 +130,6 @@
    background-color: rgb(255, 255, 255);
 }
 
-#account-modal-footer {
-   width: 100%;
-   height: 0;
-   padding-bottom: 25px;
-   padding-top: 0;
-
-   background-color: rgb(255, 255, 255);
-   border-radius: 0 0 10px 10px;
-   transition: all .2s ease-out;
-
-   display: flex;
-   justify-content: center;
-   align-items: flex-end;
-}
-
-#status {
-   width: 100%;
-   padding: 0 30px;
-
-   color: rgba(0, 0, 0, .6);
-   font-size: 1.1rem;
-   text-align: center;
-
-   opacity: 0;
-   transition: .2s ease-out;
-}
-
 #account-modal__accounts {
    width: 100%;
    min-height: 150px;
@@ -216,6 +189,7 @@
    height: auto;
    filter: grayscale(100%);
    transition: .1s ease;
+   cursor: pointer;
 }
 
 .account-modal__logout:hover {
@@ -229,4 +203,105 @@
 
 .account-modal-animation .sk-chase-dot:before {
    background-color: #DEDEDE;
+}
+
+#account-modal-footer {
+   width: 100%;
+   height: 0;
+   padding-bottom: 25px;
+   padding-top: 0;
+
+   background-color: rgb(255, 255, 255);
+   border-radius: 0 0 10px 10px;
+   transition: all .2s ease-out;
+
+   display: flex;
+   justify-content: center;
+   align-items: flex-end;
+}
+
+#status {
+   width: 100%;
+   padding: 0 30px;
+
+   color: rgba(0, 0, 0, .6);
+   font-size: 1.1rem;
+   text-align: center;
+
+   opacity: 0;
+   transition: .2s ease-out;
+}
+
+#mojang-form {
+   opacity: 0;
+   transition: .2s ease-out;
+
+   width: 100%;
+   padding: 0 60px;
+
+   display: flex;
+   flex-direction: column;
+}
+
+.mojang-form-info {
+   width: 100%;
+   text-align: center;
+   margin-bottom: 15px;
+}
+
+.mojang-form-item {
+   margin: 5px 0;
+   position: relative;
+}
+
+.mojang-field {
+   box-sizing: border-box;
+   border-radius: 3px 3px 0 0;
+   width: 100%;
+   outline: 0;
+   border: 0;
+   background-color: #E2E2E2;
+   color: #37393a;
+   height: 35px;
+   padding: 10px;
+   font-size: 18px;
+}
+
+.mojang-field::placeholder {
+   color: rgba(55, 57, 58, .4);
+}
+
+.mojang-field:focus + .input-border {
+   transform: scaleX(1);
+}
+
+.input-border {
+   position: absolute;
+   width: 100%;
+   height: 2px;
+   left: 0;
+   bottom: 0;
+   background-color: #7CBB00;
+   transition: 0.2s ease;
+   transform: scaleX(0);
+   transform-origin: left;
+}
+
+#mojang-form-submit {
+   all: unset;
+   color: #fff;
+   width: 100%;
+   box-sizing: border-box;
+   height: 40px;
+   font-size: 20px;
+   font-weight: 500;
+   background-color: #7CBB00;
+   border-radius: 3px;
+   text-align: center;
+   margin-top: 5px;
+}
+
+#mojang-form-submit:not([disabled="true"]):hover {
+   filter: brightness(95%);
+   cursor: pointer;
 }
