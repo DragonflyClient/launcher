@@ -102,37 +102,24 @@ const minecraftFacts = [
     "Cave Game is the first name of Minecraft.",
 ]
 
-const randomFact = document.getElementById("random-fact")
+const informationElement = document.getElementById("information")
+const { ipcRenderer } = require("electron")
 
-randomFact.innerText = minecraftFacts[Math.floor(Math.random() * minecraftFacts.length)]
+informationElement.innerText = minecraftFacts[Math.floor(Math.random() * minecraftFacts.length)]
 
 /* #region Handle auto-updating */
-const updaterNotification = document.getElementById("updater-notification")
-const updaterMessage = document.getElementById("updater__message")
-const updaterRestartButton = document.getElementById("updater__restart-button")
 
 // handle update available
 ipcRenderer.on("update_available", () => {
     console.log("> An update for the Dragonfly Launcher is available")
     ipcRenderer.removeAllListeners("update_available")
-    updaterMessage.innerText = "A new update is available. Downloading now..."
-    updaterNotification.classList.remove("hidden")
+    informationElement.innerText = "A new update is available. Downloading now..."
 })
 
 // handle update download
 ipcRenderer.on("update_downloaded", () => {
     console.log("> The update for the Dragonfly Launcher has been downloaded")
-    ipcRenderer.removeAllListeners("update_downloaded")
-    updaterMessage.innerText = "Update Downloaded. It will be installed on restart. Restart now?"
-    updaterRestartButton.classList.remove("hidden")
-    updaterNotification.classList.remove("hidden")
-})
-
-// Receive current app version
-ipcRenderer.send("app_version")
-ipcRenderer.on("app_version", (event, arg) => {
-    ipcRenderer.removeAllListeners("app_version")
-    document.title = "Dragonfly Launcher v" + arg.version
+    informationElement.innerText = "Update Downloaded. We'll restart you launcher now!"
 })
 
 // check for updates
@@ -142,7 +129,8 @@ ipcRenderer.on("check_for_updates", (event, arg) => {
 })
 
 ipcRenderer.on("update_progress", (event, arg) => {
-    document.querySelector(".updater__border").style.width = arg
+    document.querySelector("#updater-progress-border").style.opacity = "1"
+    document.querySelector("#updater-progress-border").style.transform = `scaleX(${c / 100})`
 })
 
 /* #endregion */
