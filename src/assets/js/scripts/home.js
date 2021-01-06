@@ -16,6 +16,13 @@ const {
 require("../assets/js/devtools")
 require("../utilities/developer")
 
+// Receive current app version
+ipcRenderer.send("app_version")
+ipcRenderer.on("app_version", (event, arg) => {
+    ipcRenderer.removeAllListeners("app_version")
+    document.title = "Dragonfly Launcher v" + arg.version
+})
+
 const cwd = rootPath(app.getAppPath())
 const dragonflyToken = getDragonflyToken(cwd)
 minecraft.setAppPath(cwd)
