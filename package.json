@@ -35,7 +35,7 @@
             "allowToChangeInstallationDirectory": true
         },
         "directories": {
-            "output": "dist/Dragonfly Launcher v${version}"
+            "output": "dist"
         },
         "publish": {
             "provider": "github"
