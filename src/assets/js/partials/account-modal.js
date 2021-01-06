@@ -257,6 +257,7 @@ function showAccountManagerModal() {
     loadAccounts()
 
     accountWrapper.style.transform = "translateX(-100%)"
+    accountWrapper.style.pointerEvents = "none"
     // ^ used from home.js
 
     const modalWrapper = document.getElementById("account-modal-wrapper")
@@ -271,6 +272,7 @@ function hideAccountModal() {
         isDirty = false
     } else {
         accountWrapper.style.transform = "translateX(0)"
+        accountWrapper.style.pointerEvents = "all"
     }
 
     const modalWrapper = document.getElementById("account-modal-wrapper")
