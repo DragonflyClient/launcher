@@ -257,10 +257,6 @@ autoUpdater.on("update-available", e => {
     loadingWindow.webContents.send("update_available")
 })
 
-autoUpdater.on("update-not-available", async e => {
-    await continueLoadingWindow()
-})
-
 autoUpdater.on("update-downloaded", () => {
     loadingWindow.webContents.send("update_downloaded")
     setTimeout(() => {
