@@ -90,3 +90,14 @@ h2 {
         background-color: var(--clr-pdark);
     }
 }
+
+#updater-progress-border {
+    background: var(--clr-primary);
+    height: 2px;
+    width: 100%;
+    bottom: 1px;
+    position: absolute;
+    transform-origin: left;
+    opacity: 0;
+    transition: 0.4s ease;
+}
