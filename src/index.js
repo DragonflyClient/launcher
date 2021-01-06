@@ -47,14 +47,33 @@ const createLoadingWindow = async () => {
     console.log("> Loading page...")
     await loadingWindow.loadFile(path.join(__dirname, "sites/loading.html"))
 
+    loadingWindow.on("closed", e => {
+        loadingWindow = null
+    })
+
+    console.log("> Checking for updates")
+    if (!checkedForUpdates) {
+        await autoUpdater
+            .checkForUpdatesAndNotify()
+            .then(() => {
+                console.log("Checked for updates")
+            })
+            .catch(async err => {
+                console.log(`Check for updates failed: ${err}`)
+                await continueLoadingWindow()
+            })
+        checkedForUpdates = true
+    } else {
+        console.log("Already checked for updates.")
+        await continueLoadingWindow()
+    }
+}
+
+async function continueLoadingWindow() {
     console.log("> Downloading Editions...")
     await downloadEditions()
     console.log("> Downloading Announcements...")
     await downloadAnnouncements()
-
-    loadingWindow.on("closed", e => {
-        loadingWindow = null
-    })
 
     await discordRPC.login("777509861780226069").catch(err => console.log(err))
     const accessToken = await getDragonflyToken(currentAppPath)
@@ -234,37 +253,26 @@ ipcMain.on("app_version", event => {
 
 // Auto updater
 autoUpdater.on("update-available", e => {
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_available")
+    loadingWindow.webContents.send("update_available")
 })
+
+autoUpdater.on("update-not-available", async e => {
+    await continueLoadingWindow()
+})
+
 autoUpdater.on("update-downloaded", () => {
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_downloaded")
+    loadingWindow.webContents.send("update_downloaded")
 })
 
 autoUpdater.on("download-progress", progressObj => {
     let log_message = progressObj.percent + "%"
-    BrowserWindow.fromId(openWindows[openWindows.length - 1]).webContents.send("update_progress", log_message)
+    loadingWindow.webContents.send("update_progress", log_message)
 })
 
-ipcMain.on("restart_app", () => {
+autoUpdater.on("update-downloaded", () => {
     autoUpdater.quitAndInstall()
 })
-
-ipcMain.on("check_for_updates", event => {
-    if (!checkedForUpdates) {
-        autoUpdater
-            .checkForUpdatesAndNotify()
-            .then(() => {
-                event.sender.send("check_for_updates", "Checked for updates")
-            })
-            .catch(err => {
-                event.sender.send("check_for_updates", `Check for updates failed: ${err}`)
-            })
-        checkedForUpdates = true
-    } else {
-        console.log("Already checked for updates.")
-        event.sender.send("check_for_updates", "Already checked for updates")
-    }
-})
+//
 
 ipcMain.on("open-game-output", (event, args) => {
     createGameOutputWindow(args.pid)
