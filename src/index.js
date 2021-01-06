@@ -263,15 +263,14 @@ autoUpdater.on("update-not-available", async e => {
 
 autoUpdater.on("update-downloaded", () => {
     loadingWindow.webContents.send("update_downloaded")
+    setTimeout(() => {
+        autoUpdater.quitAndInstall()
+    }, 600)
 })
 
 autoUpdater.on("download-progress", progressObj => {
-    let log_message = progressObj.percent + "%"
+    let log_message = progressObj.percent
     loadingWindow.webContents.send("update_progress", log_message)
-})
-
-autoUpdater.on("update-downloaded", () => {
-    autoUpdater.quitAndInstall()
 })
 //
 
