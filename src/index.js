@@ -55,10 +55,8 @@ const mainWindowSettings = {
     webPreferences: globalWebPreferences,
 }
 
-function createWindow(name, settings) {
-    const fileName = name == "Main" ? "home" : name
+function createWindow(name, fileName, settings, rpc) {
     console.log("Creating", name)
-    console.log(name)
     let w = new BrowserWindow(settings)
     let windowId = w.id
 
@@ -80,12 +78,16 @@ function createWindow(name, settings) {
     w.once("ready-to-show", () => {
         discordRPC
             .setPresence({
-                details: name,
+                details: rpc?.details ?? capitalize(name),
             })
             .catch(err => {})
         openWindows.push(windowId)
     })
     return w
+}
+
+const capitalize = string => {
+    return string.trim().replace(/^\w/, c => c.toUpperCase())
 }
 
 const createLoadingWindow = async () => {
@@ -134,10 +136,10 @@ async function continueLoadingWindow() {
 
     setTimeout(async () => {
         if (await getDragonflyAccount(accessToken)) {
-            mainWindow = await createWindow("Main", mainWindowSettings)
+            mainWindow = await createWindow("Main", "home", mainWindowSettings)
             closeWindows([loadingWindow, loginWindow])
         } else {
-            loginWindow = await createWindow("Login", loginWindowSettings)
+            loginWindow = await createWindow("Login", "login", loginWindowSettings)
             closeWindows([loadingWindow])
         }
     }, 1000)
@@ -220,7 +222,7 @@ ipcMain.on("drgn-auth", async (event, data) => {
         .catch(err => {
             console.log(err)
         })
-    mainWindow = await createWindow("Main", mainWindowSettings)
+    mainWindow = await createWindow("Main", "home", mainWindowSettings)
     event.reply("drgn-auth-reply", data.token)
 })
 
