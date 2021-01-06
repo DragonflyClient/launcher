@@ -64,55 +64,6 @@ function innerDragonflyAccountDetails(account) {
     dragonflyNameEl.innerHTML = account.username
 }
 
-/* #region Handle auto-updating */
-const updaterNotification = document.getElementById("updater-notification")
-const updaterMessage = document.getElementById("updater__message")
-const updaterRestartButton = document.getElementById("updater__restart-button")
-
-// handle update available
-ipcRenderer.on("update_available", () => {
-    console.log("> An update for the Dragonfly Launcher is available")
-    ipcRenderer.removeAllListeners("update_available")
-    updaterMessage.innerText = "A new update is available. Downloading now..."
-    updaterNotification.classList.remove("hidden")
-})
-
-// handle update download
-ipcRenderer.on("update_downloaded", () => {
-    console.log("> The update for the Dragonfly Launcher has been downloaded")
-    ipcRenderer.removeAllListeners("update_downloaded")
-    updaterMessage.innerText = "Update Downloaded. It will be installed on restart. Restart now?"
-    updaterRestartButton.classList.remove("hidden")
-    updaterNotification.classList.remove("hidden")
-})
-
-// Receive current app version
-ipcRenderer.send("app_version")
-ipcRenderer.on("app_version", (event, arg) => {
-    ipcRenderer.removeAllListeners("app_version")
-    document.title = "Dragonfly Launcher v" + arg.version
-})
-
-// check for updates
-ipcRenderer.send("check_for_updates")
-ipcRenderer.on("check_for_updates", (event, arg) => {
-    console.log("Checked for updates.")
-})
-
-ipcRenderer.on("update_progress", (event, arg) => {
-    document.querySelector(".updater__border").style.width = arg
-})
-
-function closeNotification() {
-    notification.classList.add("hidden")
-}
-
-function restartApp() {
-    ipcRenderer.send("restart_app")
-}
-
-/* #endregion */
-
 const versionDropdownToggle = document.querySelector(".minecraft-version__toggle")
 const versionDropdownMenu = document.querySelector(".minecraft-version__dropdown")
 console.log(versionDropdownToggle, versionDropdownMenu)
@@ -122,9 +73,9 @@ versionDropdownToggle.addEventListener("click", e => {
     versionDropdownToggle.classList.toggle("active")
 })
 
-const externalLinks = document.querySelectorAll("a[href^=\"http\"]")
+const externalLinks = document.querySelectorAll('a[href^="http"]')
 
-Array.from(externalLinks).forEach(function(link) {
+Array.from(externalLinks).forEach(function (link) {
     link.addEventListener("click", e => {
         e.preventDefault()
         shell.openExternal(link.getAttribute("href"))
@@ -253,7 +204,7 @@ launchButton.addEventListener("click", async () => {
                 process.style.cursor = "pointer"
                 launchButton.setAttribute("disabled", "false")
                 launchButton.innerHTML = `Launch`
-            },
+            }
         )
     } catch (error) {
         console.log(error)
@@ -311,8 +262,8 @@ function innerAnnouncements() {
                             <div class="line"></div>
                             <h1>${announcement.title}</h1>
                             <p class="publish-date">${new Date(
-            announcement.publishedOn * 1000,
-        ).toLocaleDateString()}</p>
+                                announcement.publishedOn * 1000
+                            ).toLocaleDateString()}</p>
                             <p>${announcement.content}</p>
                         </div>
                     </div>
