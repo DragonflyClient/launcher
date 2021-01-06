@@ -35,6 +35,59 @@ const globalWebPreferences = {
 let checkedForUpdates = false
 const openWindows = []
 
+const loginWindowSettings = {
+    width: 800,
+    height: 700,
+    frame: false,
+    show: false,
+    resizable: false,
+    webPreferences: globalWebPreferences,
+}
+
+const mainWindowSettings = {
+    width: 1350,
+    height: 800,
+    minWidth: 850,
+    minHeight: 720,
+    autoHideMenuBar: true,
+    show: false,
+    frame: false,
+    webPreferences: globalWebPreferences,
+}
+
+function createWindow(name, settings) {
+    const fileName = name == "Main" ? "home" : name
+    console.log("Creating", name)
+    console.log(name)
+    let w = new BrowserWindow(settings)
+    let windowId = w.id
+
+    w.webContents.on("did-finish-load", () => {
+        w.show()
+        if (name == "Login" && w) w.close()
+    })
+
+    w.loadFile(path.join(__dirname, `sites/${fileName}.html`))
+
+    w.on("close", () => {
+        openWindows.splice(windowIndex(windowId, openWindows), 1)
+    })
+
+    w.on("closed", function () {
+        w = null
+    })
+
+    w.once("ready-to-show", () => {
+        discordRPC
+            .setPresence({
+                details: name,
+            })
+            .catch(err => {})
+        openWindows.push(windowId)
+    })
+    return w
+}
+
 const createLoadingWindow = async () => {
     console.log("== Launching loading screen ==")
     loadingWindow = new BrowserWindow({
@@ -81,89 +134,22 @@ async function continueLoadingWindow() {
 
     setTimeout(async () => {
         if (await getDragonflyAccount(accessToken)) {
-            await createMainWindow()
+            mainWindow = await createWindow("Main", mainWindowSettings)
+            closeWindows([loadingWindow, loginWindow])
         } else {
-            await createLoginWindow()
+            loginWindow = await createWindow("Login", loginWindowSettings)
+            closeWindows([loadingWindow])
         }
     }, 1000)
 }
 
-const createLoginWindow = async () => {
-    console.log("== Launching login window ==")
-    loginWindow = new BrowserWindow({
-        width: 800,
-        height: 700,
-        frame: false,
-        show: false,
-        resizable: false,
-        webPreferences: globalWebPreferences,
+function closeWindows(windowNames) {
+    windowNames.forEach(w => {
+        if (w) {
+            w.hide()
+            w.close()
+        }
     })
-    let windowId = loginWindow.id
-
-    loginWindow.webContents.on("did-finish-load", () => {
-        loginWindow.show()
-        if (loadingWindow) loadingWindow.close()
-    })
-
-    loginWindow.loadFile(path.join(__dirname, "sites/login.html"))
-
-    loginWindow.on("close", () => {
-        openWindows.splice(windowIndex(windowId, openWindows), 1)
-    })
-
-    loginWindow.on("closed", function () {
-        loginWindow = null
-    })
-
-    loginWindow.once("ready-to-show", () => {
-        discordRPC
-            .setPresence({
-                details: "Login",
-            })
-            .catch(err => {})
-        openWindows.push(windowId)
-    })
-}
-
-const createMainWindow = async () => {
-    console.log("== Launching main window ==")
-    mainWindow = new BrowserWindow({
-        width: 1350,
-        height: 800,
-        minWidth: 850,
-        minHeight: 720,
-        autoHideMenuBar: true,
-        show: false,
-        frame: false,
-        webPreferences: globalWebPreferences,
-    })
-
-    let windowId = mainWindow.id
-
-    mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow.show()
-        if (loadingWindow) loadingWindow.close()
-        if (loginWindow) loginWindow.close()
-    })
-
-    mainWindow.on("close", () => {
-        openWindows.splice(windowIndex(windowId, openWindows.length), 1)
-    })
-
-    mainWindow.on("closed", function () {
-        mainWindow = null
-    })
-
-    mainWindow.once("ready-to-show", async () => {
-        discordRPC
-            .setPresence({
-                details: "Home",
-            })
-            .catch(err => {})
-        openWindows.push(windowId)
-    })
-
-    await mainWindow.loadFile(path.join(__dirname, "sites/home.html"))
 }
 
 const outputWindows = {}
@@ -199,7 +185,6 @@ const createGameOutputWindow = async pid => {
 }
 
 //
-
 app.on("ready", () => {
     createLoadingWindow()
 })
@@ -211,7 +196,7 @@ app.on("window-all-closed", () => {
 })
 app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-        createLoginWindow()
+        // createLoginWindow()
     }
 })
 
@@ -235,7 +220,7 @@ ipcMain.on("drgn-auth", async (event, data) => {
         .catch(err => {
             console.log(err)
         })
-    await createMainWindow()
+    mainWindow = await createWindow("Main", mainWindowSettings)
     event.reply("drgn-auth-reply", data.token)
 })
 
