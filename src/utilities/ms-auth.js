@@ -60,6 +60,15 @@ const CLIENT_ID = "00000000402b5328"
  */
 const REDIRECT_URI = "https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf"
 
+/**
+ * Starts the Microsoft Authorization Flow and returns a promise that is resolved if the flow
+ * finished successfully with the `accessToken` and `profile` as properties on the returned
+ * object. If the flow encounters any error, the promise is rejected and the returned object
+ * has an `error` and a `message` property which explain what went wrong.
+ *
+ * @param onAbort Function to be called if the flow is aborted (e.g. by closing the OAuth window)
+ * @returns {Promise<unknown>} The promise acting as described above
+ */
 function startAuthorizationFlow(onAbort) {
     return new Promise(async (resolve, reject) => {
         MicrosoftAuthorizationFlow.flows.forEach(flow => flow.window && flow.window.close())
@@ -164,6 +173,7 @@ class MicrosoftAuthorizationFlow {
 
                 console.log("> Aborting Microsoft OAuth Flow...")
                 this.onAbort()
+                reject(null)
             })
 
             microsoftLoginWindow.webContents.on("will-redirect", async (event, data) => {
