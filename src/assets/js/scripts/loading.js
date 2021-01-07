@@ -130,7 +130,7 @@ ipcRenderer.on("check_for_updates", (event, arg) => {
 
 ipcRenderer.on("update_progress", (event, arg) => {
     document.querySelector("#updater-progress-border").style.opacity = "1"
-    document.querySelector("#updater-progress-border").style.transform = `scaleX(${c / 100})`
+    document.querySelector("#updater-progress-border").style.transform = `scaleX(${arg / 100})`
 })
 
 /* #endregion */
