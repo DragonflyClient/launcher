@@ -57,7 +57,7 @@ const mainWindowSettings = {
 }
 
 function createWindow(name, fileName, settings, rpc) {
-    console.log("Creating", name)
+    console.log(`== Launching window "${name}" ==`)
     let w = new BrowserWindow(settings)
     let windowId = w.id
 
@@ -112,8 +112,7 @@ const createLoadingWindow = async () => {
         await autoUpdater
             .checkForUpdatesAndNotify()
             .then(async update => {
-                console.log("Checked for updates")
-                console.log(update)
+                console.log(`> Checked for updates (available: ${!!update})`)
                 if (!update || app.getVersion() != update?.updateInfo?.version) await continueLoadingWindow()
             })
             .catch(async err => {
