@@ -71,7 +71,7 @@ const REDIRECT_URI = "https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf"
  */
 function startAuthorizationFlow(onAbort) {
     return new Promise(async (resolve, reject) => {
-        MicrosoftAuthorizationFlow.flows.forEach(flow => flow.window && flow.window.close())
+        abortAll()
 
         console.log("== Starting Microsoft Authorization Flow ==")
         const flow = new MicrosoftAuthorizationFlow(onAbort)
@@ -110,6 +110,17 @@ function startAuthorizationFlow(onAbort) {
                     "and if this keeps happening feel free to contact our support to get help.",
             })
         }
+    })
+}
+
+/**
+ * Aborts all currently running authorization flows.
+ * @public
+ */
+function abortAll(controlled = false) {
+    MicrosoftAuthorizationFlow.flows.forEach(flow => {
+        flow.isControlledClose = controlled
+        flow.window && flow.window.close()
     })
 }
 
@@ -500,4 +511,5 @@ function formatString(input, replacements) {
 
 module.exports = {
     startAuthorizationFlow,
+    abortAll
 }

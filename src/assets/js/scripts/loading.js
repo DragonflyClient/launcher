@@ -128,7 +128,7 @@ ipcRenderer.on("check_for_updates", (event, arg) => {
     console.log("Checked for updates.")
 })
 
-ipcRenderer.on("update_progress", (event, arg) => {
+ipcRenderer.on("download-progress", (event, arg) => {
     document.querySelector("#updater-progress-border").style.opacity = "1"
     document.querySelector("#updater-progress-border").style.transform = `scaleX(${arg / 100})`
 })

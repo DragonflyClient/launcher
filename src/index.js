@@ -254,8 +254,8 @@ autoUpdater.on("update-downloaded", () => {
 })
 
 autoUpdater.on("download-progress", progressObj => {
-    let log_message = progressObj.percent
-    loadingWindow.webContents.send("update_progress", log_message)
+    let percent = progressObj.percent
+    loadingWindow.webContents.send("download-progress", percent)
 })
 //
 
