@@ -78,7 +78,7 @@ header img {
 }
 
 header h3 {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 20px;
     margin: 15px 0;
 }
@@ -155,7 +155,7 @@ input:focus + .input-border {
     box-sizing: border-box;
     height: 50px;
     font-size: 20px;
-    font-weight: bolder;
+    font-weight: 500;
 }
 
 .btn.btn-primary {
