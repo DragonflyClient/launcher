@@ -11,8 +11,9 @@ const { windowIndex } = require("./utilities/browser-window")
 const { downloadEditions, downloadAnnouncements } = require("./utilities/downloader.js")
 
 const currentAppPath = rootPath(app.getAppPath())
+console.log("CAP", currentAppPath)
 
-ensureDirectoryExistence(path.join(currentAppPath, "tmp"), true, "dir")
+ensureDirectoryExistence(currentAppPath + "\\tmp", true, "dir")
 
 // Require discord rpc
 const discordRPC = require("./assets/js/discord")
@@ -62,7 +63,7 @@ function createWindow(name, fileName, settings, rpc) {
 
     w.webContents.on("did-finish-load", () => {
         w.show()
-        if (name == "Login" && w) w.close()
+        // if (name == "Login" && w) w.close()
     })
 
     w.loadFile(path.join(__dirname, `sites/${fileName}.html`))
@@ -112,7 +113,7 @@ const createLoadingWindow = async () => {
             .checkForUpdatesAndNotify()
             .then(async update => {
                 console.log(`> Checked for updates (available: ${!!update})`)
-                if (!update || app.getVersion != update?.updateInfo.version) await continueLoadingWindow()
+                if (!update || app.getVersion() != update?.updateInfo?.version) await continueLoadingWindow()
             })
             .catch(async err => {
                 console.log(`Check for updates failed: ${err}`)
@@ -223,6 +224,7 @@ ipcMain.on("drgn-auth", async (event, data) => {
             console.log(err)
         })
     mainWindow = await createWindow("Main", "home", mainWindowSettings)
+    closeWindows([loginWindow])
     event.reply("drgn-auth-reply", data.token)
 })
 
