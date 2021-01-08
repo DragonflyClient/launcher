@@ -1,28 +1,28 @@
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: "JetBrains Mono";
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('../../fonts/JetBrainsMono-Regular.woff2');
+    src: url("../../fonts/JetBrains/JetBrainsMono-Regular.woff2");
 }
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: "JetBrains Mono";
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src: url('../../fonts/JetBrainsMono-Medium.woff2');
+    src: url("../../fonts/JetBrains/JetBrainsMono-Medium.woff2");
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "JetBrains Mono", monospace;
     font-weight: 400;
     font-size: 0.9rem;
     letter-spacing: -0.1px;
-    color: #E5E5E5;
+    color: #e5e5e5;
 }
 
 html,
@@ -33,49 +33,49 @@ body {
 }
 
 .level-trace .output__level-tag {
-    background-color: #E1C876;
-    color: #6E643B;
+    background-color: #e1c876;
+    color: #6e643b;
 }
 
 .level-trace .output__overview-message {
-    color: #AFAFAF;
+    color: #afafaf;
 }
 
 .level-debug .output__level-tag {
-    background-color: #66C166;
-    color: #2A512A;
+    background-color: #66c166;
+    color: #2a512a;
 }
 
 .level-info .output__level-tag {
-    background-color: #7693E8;
-    color: #2F3655;
+    background-color: #7693e8;
+    color: #2f3655;
 }
 
 .level-warn .output__level-tag {
-    background-color: #E8B276;
-    color: #775E3E;
+    background-color: #e8b276;
+    color: #775e3e;
 }
 
 .level-warn .output__overview-message {
-    color: #E8B276;
+    color: #e8b276;
 }
 
 .level-error .output__level-tag {
-    background-color: #E87676;
-    color: #7C4040;
+    background-color: #e87676;
+    color: #7c4040;
 }
 
 .level-error .output__overview-message {
-    color: #E87676;
+    color: #e87676;
 }
 
 .level-fatal .output__level-tag {
-    background-color: #E64F4F;
-    color: #581E1E;
+    background-color: #e64f4f;
+    color: #581e1e;
 }
 
 .level-fatal .output__overview-message {
-    color: #E64F4F;
+    color: #e64f4f;
 }
 
 .logger-stdout {
@@ -94,7 +94,7 @@ body {
     width: 100%;
     overflow: auto;
     padding: 10px 0;
-    height: calc(100% - 50px)
+    height: calc(100% - 50px);
 }
 
 #logger-controls {
@@ -137,7 +137,7 @@ span.output__overview-timestamp {
 }
 
 span.output__overview-logger.dragonfly-logger {
-    color: #D48748;
+    color: #d48748;
 }
 
 span.output__overview-logger {
