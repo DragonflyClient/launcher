@@ -1,6 +1,8 @@
 const microsoftAuth = require("../utilities/ms-auth.js")
 const minecraftAuth = require("../utilities/minecraft.js")
 
+const button = document.getElementById("account-modal__button")
+
 const text = document.getElementsByClassName("text")[0]
 const full = document.getElementsByClassName("full-button")[0]
 
@@ -23,83 +25,36 @@ const LOADING_ANIMATION = `
 let isDirty = false
 
 full.addEventListener("click", () => {
-    text.style.transform = "translate(-50%, -100px)"
-    full.style.width = "350px"
+    button.classList.add("expanded-1")
     setTimeout(() => {
-        const textParts = Array.from(document.getElementsByClassName("text-part"))
-        const imageParts = Array.from(document.getElementsByClassName("img-part"))
-
         full.classList.remove("collapsed")
-        full.style.cursor = "default"
-        full.style.transition = "none"
+        button.classList.add("expanded-2")
 
-        left.style.marginRight = "30px"
-        left.style.backgroundColor = "#7CBB00"
-        right.style.backgroundColor = "#00A1F1"
-
-        textParts.forEach(it => {
-            it.style.opacity = "100%"
-            it.style.transform = "scale(1)"
-        })
-
-        setTimeout(() => {
-            imageParts.forEach(it => {
-                it.style.opacity = "1"
-                it.style.transform = "translate(0)"
-            })
-        }, 50)
-
-        left.style.borderRadius = "var(--radius)"
-        right.style.borderRadius = "var(--radius)"
         left.addEventListener("click", addMinecraftAccount)
         right.addEventListener("click", addMicrosoftAccount)
 
         setTimeout(() => {
-            text.style.display = "none"
+            button.classList.add("expanded-3")
         }, 200)
     }, 100)
 })
 
 function resetButton() {
-    const textParts = Array.from(document.getElementsByClassName("text-part"))
-    const imageParts = Array.from(document.getElementsByClassName("img-part"))
-
-    full.style.width = "280px"
+    button.classList.remove("expanded-3", "expanded-2", "expanded-1")
     full.classList.add("collapsed")
-    full.style.cursor = "pointer"
-    full.style.transition = "0.2s"
 
-    text.style.transform = "translate(-50%, -50%)"
-    text.style.display = "block"
-
-    left.style.marginRight = "0px"
-    left.style.backgroundColor = "#4f4f4f"
-    left.style.borderRadius = "var(--radius) 0 0 var(--radius)"
     left.removeEventListener("click", addMinecraftAccount)
-
     left.innerHTML = `
         <img class="img-part" src="../assets/media/png/minecraft-logo.png" alt="">
         <a class="text-part">Mojang</a>
     `
 
-    right.style.backgroundColor = "#4f4f4f"
-    right.style.borderRadius = "0 var(--radius) var(--radius) 0"
     right.removeEventListener("click", addMicrosoftAccount)
-
+    right.setAttribute("disabled", "false")
     right.innerHTML = `
         <img class="img-part" src="../assets/media/svg/microsoft-logo.svg" alt="">
         <a class="text-part">Microsoft</a>
     `
-
-    textParts.forEach(it => {
-        it.style.opacity = "0"
-        it.style.transform = "scale(0)"
-    })
-
-    imageParts.forEach(it => {
-        it.style.opacity = "0"
-        it.style.transform = "translateY(10px)"
-    })
 }
 
 function addMicrosoftAccount() {
@@ -385,11 +340,6 @@ function createHtmlForAccount(isCurrent, identifier, account) {
 
 document.getElementsByClassName("account-name__minecraft-wrapper")[0].addEventListener("click", showAccountManagerModal)
 
-document.getElementById("account-modal-wrapper").addEventListener("click", event => {
-    if (event.target === document.getElementById("account-modal-wrapper")) {
-        hideAccountModal()
-    }
-})
 document.getElementById("account-modal-close").addEventListener("click", hideAccountModal)
 
 window.addEventListener("keydown", event => {

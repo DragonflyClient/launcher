@@ -340,3 +340,41 @@
     filter: brightness(95%);
     cursor: pointer;
 }
+
+.expanded-1 .text {
+    transform: translate(-50%, -100px);
+}
+
+.expanded-1 .full-button {
+    width: 350px;
+}
+
+.expanded-2 .full-button {
+    cursor: default;
+    transition: none;
+}
+
+.expanded-2 .left {
+    margin-right: 30px;
+    background-color: #7CBB00;
+    border-radius: var(--radius);
+}
+
+.expanded-2 .right {
+    background-color: #00A1F1;
+    border-radius: var(--radius);
+}
+
+.expanded-2 .text-part {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.expanded-2 .img-part {
+    opacity: 1;
+    transform: translate(0);
+}
+
+.expanded-3 .text {
+    display: none;
+}
