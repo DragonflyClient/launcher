@@ -7,9 +7,6 @@ const full = document.getElementsByClassName("full-button")[0]
 const left = document.getElementsByClassName("left")[0]
 const right = document.getElementsByClassName("right")[0]
 
-const textParts = Array.from(document.getElementsByClassName("text-part"))
-const imageParts = Array.from(document.getElementsByClassName("img-part"))
-
 const footer = document.getElementById("account-modal-footer")
 
 const LOADING_ANIMATION = `
@@ -29,6 +26,9 @@ full.addEventListener("click", () => {
     text.style.transform = "translate(-50%, -100px)"
     full.style.width = "350px"
     setTimeout(() => {
+        const textParts = Array.from(document.getElementsByClassName("text-part"))
+        const imageParts = Array.from(document.getElementsByClassName("img-part"))
+
         full.classList.remove("collapsed")
         full.style.cursor = "default"
         full.style.transition = "none"
@@ -61,6 +61,9 @@ full.addEventListener("click", () => {
 })
 
 function resetButton() {
+    const textParts = Array.from(document.getElementsByClassName("text-part"))
+    const imageParts = Array.from(document.getElementsByClassName("img-part"))
+
     full.style.width = "280px"
     full.classList.add("collapsed")
     full.style.cursor = "pointer"
@@ -74,9 +77,19 @@ function resetButton() {
     left.style.borderRadius = "var(--radius) 0 0 var(--radius)"
     left.removeEventListener("click", addMinecraftAccount)
 
+    left.innerHTML = `
+        <img class="img-part" src="../assets/media/png/minecraft-logo.png" alt="">
+        <a class="text-part">Mojang</a>
+    `
+
     right.style.backgroundColor = "#4f4f4f"
     right.style.borderRadius = "0 var(--radius) var(--radius) 0"
     right.removeEventListener("click", addMicrosoftAccount)
+
+    right.innerHTML = `
+        <img class="img-part" src="../assets/media/svg/microsoft-logo.svg" alt="">
+        <a class="text-part">Microsoft</a>
+    `
 
     textParts.forEach(it => {
         it.style.opacity = "0"
@@ -91,7 +104,6 @@ function resetButton() {
 
 function addMicrosoftAccount() {
     if (right.getAttribute("disabled") === "true") {
-        console.log("Skip")
         return
     }
 
@@ -272,8 +284,10 @@ function hideAccountModal() {
         isDirty = false
     } else {
         accountWrapper.style.transform = "translateX(0)"
-        accountWrapper.style.pointerEvents = "all"
     }
+
+    microsoftAuth.abortAll(true)
+    accountWrapper.style.pointerEvents = "all"
 
     const modalWrapper = document.getElementById("account-modal-wrapper")
     modalWrapper.style.opacity = "0"
@@ -302,6 +316,7 @@ function insertAccount(account) {
         )
         document.getElementById("account-modal__accounts").innerHTML += createHtmlForAccount(true, identifier, account)
         selectCurrentAccount(identifier)
+        isDirty = true
     } else {
         showStatus(
             `<b>An unexpected error occurred while trying to add the account to the
