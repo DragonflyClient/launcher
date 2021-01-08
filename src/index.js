@@ -110,9 +110,10 @@ const createLoadingWindow = async () => {
     if (!checkedForUpdates) {
         await autoUpdater
             .checkForUpdatesAndNotify()
-            .then(update => {
+            .then(async update => {
                 console.log("Checked for updates")
-                if (!update) continueLoadingWindow()
+                console.log(update)
+                if (!update || app.getVersion != update?.updateInfo.version) await continueLoadingWindow()
             })
             .catch(async err => {
                 console.log(`Check for updates failed: ${err}`)
