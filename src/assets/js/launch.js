@@ -66,9 +66,9 @@ async function startGame(callback, finishCallback) {
 }
 
 class Launcher {
-    constructor(edition, finishCallback) {
-        this.targetVersion = edition.minecraftVersion
-        this.edition = edition
+    constructor(targetEdition, finishCallback) {
+        this.targetVersion = targetEdition.minecraftVersion
+        this.targetEdition = targetEdition
         this.finishCallback = finishCallback
     }
 
@@ -351,7 +351,7 @@ class Launcher {
         const agentArgs = [
             `-v ${this.targetVersion}`,
             `-i net.dragonfly.core.DragonflyCore`,
-            `-i ${this.edition.injectionHook}`,
+            `-i ${this.targetEdition.injectionHook}`,
         ]
         const jvmArgs = [
             `-javaagent:dragonfly/injection/agent-shared.jar="${agentArgs.join(" ")}"`,
