@@ -196,6 +196,11 @@ function loadAccounts() {
     const current = minecraftAuth.getCurrentAccountIdentifier()
     const accounts = minecraftAuth.getAccounts()
 
+    if (Object.keys(accounts).length == 0) {
+        toggleAccountManagerStatus(true)
+        return
+    }
+
     targetElement.innerHTML = ""
 
     Object.keys(accounts).forEach(identifier => {
@@ -269,6 +274,8 @@ function insertAccount(account) {
             added to the Account Manager.`,
             80
         )
+        console.log(document.getElementById("account-modal__accounts").childElementCount, "CHILD ELEMENT COUNT!")
+        if (document.getElementById("account-modal__accounts").childElementCount) toggleAccountManagerStatus(false)
         document.getElementById("account-modal__accounts").innerHTML += createHtmlForAccount(true, identifier, account)
         selectCurrentAccount(identifier)
         isDirty = true
@@ -294,13 +301,14 @@ async function switchAccount(event, accountId) {
 
 async function deleteAccount(event, accountId) {
     const switched = minecraftAuth.removeAccount(accountId)
-
     for (let element of document.getElementsByClassName("account-modal__account")) {
         if (element.getAttribute("data-account-id") === accountId) {
             element.remove()
         }
     }
-
+    if (document.getElementsByClassName("account-modal__account").length == 0) {
+        toggleAccountManagerStatus(true)
+    }
     selectCurrentAccount(minecraftAuth.getCurrentAccountIdentifier())
     try {
         await minecraftAuth.refreshToken(accountId)
@@ -308,6 +316,18 @@ async function deleteAccount(event, accountId) {
 
     if (switched) {
         isDirty = true
+    }
+}
+
+function toggleAccountManagerStatus(empty = true) {
+    if (empty) {
+        document.getElementById("account-modal__accounts-header").textContent = "No accounts available."
+        document.getElementById("account-modal__accounts").innerHTML = `
+            <img class="accounts-empty-img" src="../assets/media/svg/empty.svg" />
+        `
+    } else {
+        document.getElementById("account-modal__accounts").innerHTML = ""
+        document.getElementById("account-modal__accounts-header").innerHTML = "Saved Minecraft Accounts"
     }
 }
 
