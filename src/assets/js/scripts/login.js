@@ -32,7 +32,7 @@ loginForm.addEventListener("submit", async function (e) {
     } else if (!result.success) {
         changeButtonState()
         return Swal.fire({
-            title: "Error!",
+            title: result.title || "Error!",
             text: result.error,
             icon: "error",
             confirmButtonText: "Okay",
