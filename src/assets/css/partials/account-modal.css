@@ -168,6 +168,15 @@
     margin: 15px 0;
 }
 
+.accounts-empty-img {
+    width: 110px;
+    position: relative;
+    display: block;
+    height: 100%;
+    margin: 0 auto;
+    transform: translateY(15px);
+}
+
 #account-modal__button {
     width: 100%;
     border-top: 2px solid #eeeeee;
@@ -356,12 +365,12 @@
 
 .expanded-2 .left {
     margin-right: 30px;
-    background-color: #7CBB00;
+    background-color: #7cbb00;
     border-radius: var(--radius);
 }
 
 .expanded-2 .right {
-    background-color: #00A1F1;
+    background-color: #00a1f1;
     border-radius: var(--radius);
 }
 
