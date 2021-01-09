@@ -17,6 +17,7 @@ ensureDirectoryExistence(currentAppPath + "\\tmp", true, "dir")
 
 // Require discord rpc
 const discordRPC = require("./assets/js/discord")
+const { allowedNodeEnvironmentFlags } = require("process")
 
 if (require("electron-squirrel-startup")) {
     app.quit()
@@ -113,7 +114,8 @@ const createLoadingWindow = async () => {
             .checkForUpdatesAndNotify()
             .then(async update => {
                 console.log(`> Checked for updates (available: ${!!update})`)
-                if (!update || app.getVersion() != update?.updateInfo?.version) await continueLoadingWindow()
+                console.log("Update value:", update)
+                if (!update || app.getVersion() == update?.updateInfo?.version) await continueLoadingWindow()
             })
             .catch(async err => {
                 console.log(`Check for updates failed: ${err}`)
