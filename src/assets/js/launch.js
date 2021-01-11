@@ -209,47 +209,31 @@ class Launcher {
     }
 
     async setupAccount() {
-        // take first account from launcher_accounts.json
-        const file = `${this.installationDirectory}\\tmp\\accounts.json`
-        const launcherAccounts = JSON.parse(fs.readFileSync(file))
-        let currentSelectedKey
-        try {
-            currentSelectedKey = launcherAccounts.currentSelectedAccount
-        } catch (error) {
+        function throwError() {
             Swal.fire({
                 title: `Unauthenticated`,
-                text: `Please make sure to login with an minecraft account before starting the game.`,
+                text: `Please make sure to login with a Minecraft or Mojang account before starting the game.`,
                 icon: "error",
                 confirmButtonText: "Okay",
             })
-            throw "missing_mojang_auth"
+            throw "unauthenticated"
         }
-        const account = launcherAccounts.accounts[currentSelectedKey]
+
+        // take first account from launcher_accounts.json
+        let account = minecraft.getCurrentAccount() || throwError()
+        const accountIdentifier = minecraft.getCurrentAccountIdentifier()
 
         try {
-            console.log("=== Pre refresh ===")
-            console.log("Access token: ", account.accessToken)
-            console.log("Client token: ", account.clientToken)
-            const response = await axios.post("https://authserver.mojang.com/refresh", {
-                accessToken: account.accessToken,
-                clientToken: account.clientToken,
-            })
-            const { accessToken } = response.data
-            console.log("Mojang refresh request response: ", response.data)
-
-            this.accessToken = accessToken
-
-            account.accessToken = accessToken
-            launcherAccounts.accounts[currentSelectedKey] = account
-
-            fs.writeFileSync(file, JSON.stringify(launcherAccounts))
+            await minecraft.refreshToken(accountIdentifier)
+            account = minecraft.getCurrentAccount()
+            console.log(`> Refreshed account token of ${account.profile.username}`)
         } catch (error) {
-            this.accessToken = account.accessToken
+            console.log(`! Could not refresh account token`)
         }
 
         this.uuid = account.profile.uuid
         this.name = account.profile.username
-        this.mojangClientToken = account.clientToken
+        this.accessToken = account.accessToken
 
         console.log(`> Setting up user ${this.name} (UUID: ${this.uuid})`)
     }
