@@ -68,6 +68,8 @@ async function startGame(callback, finishCallback) {
 class Launcher {
     constructor(targetEdition, finishCallback) {
         this.targetVersion = targetEdition.minecraftVersion
+        this.targetOptifineVersion = targetEdition.optifineVersion
+        this.targetOptifineName = `${targetEdition.minecraftVersion}-OptiFine_${targetEdition.optifineVersion}`
         this.targetEdition = targetEdition
         this.finishCallback = finishCallback
     }
@@ -100,7 +102,8 @@ class Launcher {
             if (fs.existsSync(this.javaExe)) {
                 return console.log("> Java is installed")
             }
-        } catch (e) {}
+        } catch (e) {
+        }
 
         console.log("> Download Java from: " + url)
 
@@ -115,29 +118,38 @@ class Launcher {
     prepareVersion() {
         // select Minecraft directory
         const targetVersion = this.targetVersion
+        const targetOptifineName = this.targetOptifineName
+        const targetOptifineVersion = this.targetOptifineVersion
         const appData = process.env.APPDATA
         const minecraftDir = appData + "\\.minecraft"
 
         this.minecraftDir = minecraftDir
 
         console.log(`== Starting version ${targetVersion} ==`)
+        console.log("> Optifine version: " + targetOptifineName)
         console.log("> Minecraft home: " + minecraftDir)
 
         // select version directory + JAR/JSON files
         this.versionDir = minecraftDir + `\\versions\\${targetVersion}`
+        this.optifineVersionDir = minecraftDir + `\\versions\\${targetOptifineName}`
         this.jsonFile = this.versionDir + `\\${targetVersion}.json`
-        this.jarFile = this.versionDir + `\\${targetVersion}.jar`
+        this.jarFile = this.optifineVersionDir + `\\${targetOptifineName}.jar`
 
         // check if version is downloaded
         if (
             !ensureDirectoryExistence(this.versionDir, false, "file") ||
+            !ensureDirectoryExistence(this.optifineVersionDir, false, "file") ||
             !fs.existsSync(this.jsonFile) ||
             !fs.existsSync(this.jarFile)
         ) {
             console.log("! Version not installed, abandoning...")
+            console.log(targetOptifineVersion)
             Swal.fire({
                 title: `Cannot launch ${targetVersion}!`,
-                text: `Please make sure to download and run Minecraft ${targetVersion} from the Minecraft Launcher first.`,
+                html: `Please make sure to download and run Minecraft ${targetVersion} from the Minecraft Launcher first. `
+                    + `Additionally OptiFine ${targetOptifineVersion} must be installed which can be downloaded on `
+                    + `<a href="https://www.optifine.net">optifine.net</a>.`,
+                // TODO: Open link externally
                 icon: "error",
                 confirmButtonText: "Okay",
             })
@@ -172,7 +184,8 @@ class Launcher {
                     if (localHash === checksum) {
                         continue
                     }
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 console.log("    Downloading from " + url + "...")
 
@@ -246,14 +259,21 @@ class Launcher {
     }
 
     loadLibraries() {
-        const libraries = this.json.libraries
-            .filter(e => e.downloads && e.downloads.artifact)
-            .map(e => `libraries/${e.downloads.artifact.path}`)
-        libraries.push(this.jarFile)
-        libraries.push("dragonfly\\injection\\dragonfly-core.jar")
-        libraries.push(`dragonfly\\injection\\injection-hook-${this.targetVersion}.jar`)
-        this.classPathArgument = libraries.join(";")
-        console.log(`> Including ${libraries.length} libraries`)
+        const libraries = this.json.libraries.filter(e => e.name)
+        libraries.push({ name: `optifine:OptiFine:${this.targetVersion}_${this.targetOptifineVersion}` })
+        libraries.push({ name: "optifine:launchwrapper-of:2.1" })
+
+        const libraryPaths = libraries.map(e => {
+            const [group, artifact, version] = e.name.split(":")
+            const groupPath = group.replaceAll(".", "\\")
+            return `libraries\\${groupPath}\\${artifact}\\${version}\\${artifact}-${version}.jar`
+        })
+        libraryPaths.push("dragonfly\\injection\\dragonfly-core.jar")
+        libraryPaths.push(`dragonfly\\injection\\injection-hook-${this.targetVersion}.jar`)
+        libraryPaths.push(this.jarFile)
+
+        this.classPathArgument = libraryPaths.join(";")
+        console.log(`> Including ${libraryPaths.length} libraries`)
     }
 
     loadNatives() {
@@ -329,15 +349,15 @@ class Launcher {
 
     compileMappings() {
         console.log("> Compiling mappings")
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const process = exec(
                 `"${this.javaExe}" -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
-                    `--version ${this.targetVersion} ` +
-                    `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
-                    `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
+                `--version ${this.targetVersion} ` +
+                `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
+                `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
                 {
                     cwd: this.minecraftDir,
-                }
+                },
             )
 
             process.stdout.on("data", data => console.log(data))
@@ -347,7 +367,7 @@ class Launcher {
     }
 
     executeCommand() {
-        const mainClass = "net.minecraft.client.main.Main"
+        const mainClass = "net.minecraft.launchwrapper.Launch"
         const agentArgs = [
             `-v ${this.targetVersion}`,
             `-i net.dragonfly.core.DragonflyCore`,
@@ -367,6 +387,8 @@ class Launcher {
             uuid: this.uuid,
             username: this.name,
             userType: "mojang",
+            tweakClass: "optifine.OptiFineTweaker",
+            gameDir: this.minecraftDir,
         }
 
         const command = this.buildCommand(jvmArgs, programArgs, mainClass)
@@ -375,15 +397,13 @@ class Launcher {
     }
 
     buildCommand(jvmArgs, programArgs, mainClass) {
-        let command = '"' + this.javaExe + '"'
+        let command = `"${this.javaExe}"`
         command += " "
         command += jvmArgs.join(" ")
         command += " "
         command += mainClass
         command += " "
-        command += Object.keys(programArgs)
-            .map(key => `--${key} ${programArgs[key]}`)
-            .join(" ")
+        command += Object.keys(programArgs).map(key => `--${key} ${programArgs[key]}`).join(" ")
         return command
     }
 
@@ -414,7 +434,7 @@ class Launcher {
             if (!data || !data.toString()) return
             const xml = data.toString()
 
-            parser.parseString(xml, function (err, result) {
+            parser.parseString(xml, function(err, result) {
                 let message
                 if (result) {
                     const event = result["log4j:Event"]
