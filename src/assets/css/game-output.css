@@ -38,7 +38,7 @@ body {
 }
 
 .level-trace .output__overview-message {
-    color: #afafaf;
+    opacity: .8;
 }
 
 .level-debug .output__level-tag {
@@ -56,27 +56,29 @@ body {
     color: #775e3e;
 }
 
+/*
 .level-warn .output__overview-message {
-    color: #e8b276;
+    color: #e8b276 !important;
 }
+*/
 
 .level-error .output__level-tag {
     background-color: #e87676;
     color: #7c4040;
 }
 
-.level-error .output__overview-message {
+/*.level-error .output__overview-message {
     color: #e87676;
-}
+}*/
 
 .level-fatal .output__level-tag {
     background-color: #e64f4f;
     color: #581e1e;
 }
 
-.level-fatal .output__overview-message {
-    color: #e64f4f;
-}
+/*.level-fatal .output__overview-message {
+    color: #e64f4f !important;
+}*/
 
 .logger-stdout {
     color: #d0d2d2;
@@ -201,4 +203,46 @@ span.output__overview-message {
     margin-right: 6px;
     width: 15px;
     height: 15px;
+}
+
+b {
+    font-weight: 400;
+}
+
+b[type="java-class"] {
+    color: #BD9FDB;
+}
+
+b[type="bracket"], b[type="parentheses"], b[type="prefix"] {
+    color: #8a8a8a;
+}
+
+b[type="bracket-content"] {
+    color: #61AFEF;
+}
+
+b[type="parentheses-content"] {
+    color: #44DF8D;
+}
+
+b[type="heading"] {
+    color: #8a8a8a;
+    font-weight: 600;
+}
+
+b[type="heading-content"] {
+    color: #E8768F;
+    font-weight: 600;
+}
+
+b[type="decimal"] {
+    color: #e8b276;
+}
+
+b[type="exception-message"] {
+    color: #E18888;
+}
+
+b[type="exception-type"] {
+    color: #D36060;
 }
