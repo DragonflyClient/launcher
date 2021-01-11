@@ -71,7 +71,6 @@ function innerDragonflyAccountDetails(account) {
 
 const versionDropdownToggle = document.querySelector(".minecraft-version__toggle")
 const versionDropdownMenu = document.querySelector(".minecraft-version__dropdown")
-console.log(versionDropdownToggle, versionDropdownMenu)
 
 versionDropdownToggle.addEventListener("click", e => {
     versionDropdownMenu.classList.toggle("active")
@@ -148,7 +147,7 @@ function configureDropdown(selectedVersion) {
     versionDropdownMenu.classList.remove("active") // +1
     versionDropdownToggle.classList.remove("active")
 
-    const otherEditions = editionDetails.filter(edition => edition.minecraftVersion != selectedVersion)
+    const otherEditions = editionDetails.filter(edition => edition.minecraftVersion !== selectedVersion)
     dropdownVersionEl.innerHTML = ""
     otherEditions.forEach(edition => (dropdownVersionEl.innerHTML += `<p>Minecraft ${edition.minecraftVersion}</p>`))
     Array.from(dropdownVersionEl.children).forEach(child => child.addEventListener("click", switchVersion))
@@ -157,7 +156,7 @@ function configureDropdown(selectedVersion) {
 function switchVersion(event) {
     const versionName = event.target.innerText
     const version = versionName.split("Minecraft ")[1]
-    const edition = editionDetails?.find(edition => edition.minecraftVersion == version)
+    const edition = editionDetails?.find(edition => edition.minecraftVersion === version)
     if (!edition) return
 
     setEdition(edition)
@@ -175,14 +174,14 @@ function setDefaults() {
 }
 
 function getEditionByVersion(version) {
-    return editionDetails?.find(edition => edition.minecraftVersion == version)
+    return editionDetails?.find(edition => edition.minecraftVersion === version)
 }
 
 const launchButton = document.getElementById("launch-game-button")
 
 const process = document.getElementById("progress")
 launchButton.addEventListener("click", async () => {
-    if (launchButton.getAttribute("disabled") == "true") return
+    if (launchButton.getAttribute("disabled") === "true") return
 
     process.dataset.progress = "running"
 
@@ -259,19 +258,18 @@ const announcementContainer = document.getElementById("news")
 
 function innerAnnouncements() {
     announcements.forEach(announcement => {
-        console.log(announcement.publishedOn)
         announcementContainer.innerHTML += `
-                    <div class="article">
-                        ${announcement.image ? `<img class="media" src="${announcement.image}" />` : ""}
-                        <div class="text-wrapper">
-                            <div class="line"></div>
-                            <h1>${announcement.title}</h1>
-                            <p class="publish-date">${new Date(
-                                announcement.publishedOn * 1000
-                            ).toLocaleDateString()}</p>
-                            <p>${announcement.content}</p>
-                        </div>
-                    </div>
+            <div class="article">
+                ${announcement.image ? `<img class="media" src="${announcement.image}"/>` : ""}
+                <div class="text-wrapper">
+                    <div class="line"></div>
+                    <h1>${announcement.title}</h1>
+                    <p class="publish-date">${new Date(
+                        announcement.publishedOn * 1000
+                    ).toLocaleDateString()}</p>
+                    <p>${announcement.content}</p>
+                </div>
+            </div>
         `
     })
 }
