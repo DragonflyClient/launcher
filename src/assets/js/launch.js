@@ -76,7 +76,6 @@ class Launcher {
 
     async downloadJava() {
         const installationDirectory = rootPath(app.getAppPath())
-        this.installationDirectory = installationDirectory
         const localDirectory = installationDirectory + "\\jre"
 
         const githubRelease = "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1%2B1"
@@ -245,7 +244,8 @@ class Launcher {
     loadLibraries() {
         const libraries = this.json.libraries.filter(e => e.name)
         libraries.push({ name: `optifine:OptiFine:${this.targetVersion}_${this.targetOptifineVersion}` })
-        libraries.push({ name: "optifine:launchwrapper-of:2.1" })
+        libraries.push({ name: "optifine:launchwrapper-of:2.2" })
+        // TODO: OptiFine Launch Wrapper 2.2 is not shipped with OF1.8.9_HD_U_L5
 
         const libraryPaths = libraries.map(e => {
             const [group, artifact, version] = e.name.split(":")
