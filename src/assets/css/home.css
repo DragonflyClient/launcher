@@ -353,7 +353,7 @@ div#progress {
 
 .minecraft-version__dropdown {
     position: absolute;
-    top: -105px;
+    top: -55px;
     display: none;
     opacity: 1;
     animation: reveal 0.2s ease;
@@ -395,9 +395,11 @@ div#progress {
     border-top-right-radius: 8px;
 }
 .minecraft-version__dropdown p:last-child {
-    border-top: 2px solid #cfcfcf;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+}
+.minecraft-version__dropdown p:not(p:first-child) {
+    border-top: 2px solid #cfcfcf;
 }
 
 #launch .buttons .launch-game {
