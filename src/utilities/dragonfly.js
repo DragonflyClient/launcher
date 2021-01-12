@@ -6,7 +6,7 @@ const path = require("path")
 
 const CryptoJS = require("crypto-js")
 
-const defaultDragonflyConfig = { editionMinecraftVersion: "1.8.8" }
+const defaultDragonflyConfig = { editionMinecraftVersion: "1.8.9" }
 
 module.exports.getDragonflyAccount = (token, validate = false) => {
     return axios
