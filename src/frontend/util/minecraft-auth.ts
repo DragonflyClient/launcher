@@ -1,24 +1,25 @@
 /* minecraft (auth) stuff will be handled here */
-const fs = require("fs")
-const path = require("path")
-const axios = require("axios").default
+import fs from "fs"
+import path from "path"
+import axios from "axios"
+import { Account, AccountList, AccountsFile } from "./accounts"
 
 const minecraftAuthBaseUrl = "https://authserver.mojang.com"
 
-let storedAccounts = null
-let currentAccountKey = null
+let isAccountsLoaded: boolean = false
+let storedAccounts: AccountList = {}
+let currentAccountKey: string | null = null
 
-let appPath
+let appPath: string
+let file: string
 
-function loadAccounts() {
-    const file = path.join(appPath, "tmp", "accounts.json")
-
+function loadAccounts(): boolean {
     try {
         if (fs.existsSync(file)) {
-            const { accounts, currentSelectedAccount } = JSON.parse(fs.readFileSync(file))
+            const { accounts, currentSelectedAccount } = readAccountsJson()
             storedAccounts = accounts ?? {}
             currentAccountKey = currentSelectedAccount ?? null
-            return
+            return true
         }
     } catch (e) {
         console.error("! Error during loading of accounts.json:", e)
@@ -26,15 +27,16 @@ function loadAccounts() {
 
     storedAccounts = {}
     currentAccountKey = null
+    return false
 }
 
 function loadIfRequired() {
-    if (!storedAccounts) {
-        loadAccounts()
+    if (!isAccountsLoaded) {
+        isAccountsLoaded = loadAccounts()
     }
 }
 
-function generateUUID() {
+function generateUUID(): string {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         const r = (Math.random() * 16) | 0,
             v = c === "x" ? r : (r & 0x3) | 0x8
@@ -42,62 +44,69 @@ function generateUUID() {
     })
 }
 
-function getAccounts() {
+export function getAccounts(): AccountList | null {
     loadIfRequired()
     return storedAccounts
 }
 
-function getCurrentAccount() {
+export function getCurrentAccount(): Account | null {
     loadIfRequired()
-    return currentAccountKey ? storedAccounts[currentAccountKey] : null
+    return currentAccountKey != null ? storedAccounts[currentAccountKey] : null
 }
 
-function getCurrentAccountIdentifier() {
+export function getCurrentAccountIdentifier(): string | null {
     loadIfRequired()
     return currentAccountKey
 }
 
-function addAccount(account, setCurrent = true, identifierIn) {
+export function addAccount(account: Account, setCurrent: boolean = true, identifierIn: string) {
     try {
         loadIfRequired()
 
-        const existingIdentifier = Object.keys(storedAccounts).find(
-            key => storedAccounts[key].profile.uuid === account.profile.uuid
-        )
+        const existingIdentifier = Object.keys(storedAccounts)
+            .find(key => storedAccounts[key].profile.uuid === account.profile.uuid)
         const identifier = identifierIn ?? generateUUID()
 
         if (existingIdentifier) {
             const existing = storedAccounts[existingIdentifier]
+            if (existing.type === "mojang" && account.type === "mojang") {
+                existing.clientToken = account.clientToken
+            } else if (existing.type === "microsoft" && account.type === "microsoft") {
+                existing.refreshToken = account.refreshToken
+            } else {
+                console.warn("Tried to update properties of an existing account with another account " +
+                    "that doesn't match the original one's type!")
+                console.warn("Original account:", existing)
+                console.warn("Update account:", account)
+                return
+            }
+
             existing.accessToken = account.accessToken
-            existing.clientToken = account.clientToken
             storedAccounts[existingIdentifier] = existing
 
-            console.log("Altering existing account:", existing)
             if (setCurrent) currentAccountKey = existingIdentifier
         } else {
             storedAccounts[identifier] = account
             if (setCurrent) currentAccountKey = identifier
         }
 
-        const file = path.join(appPath, "tmp", "accounts.json")
-        const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
+        const accountsJson = readAccountsJson()
         accountsJson.accounts = storedAccounts
-        accountsJson.currentSelectedAccount = currentAccountKey
+        accountsJson.currentSelectedAccount = currentAccountKey ?? undefined
 
-        fs.writeFileSync(file, JSON.stringify(accountsJson))
+        writeAccountsJson(accountsJson)
         return existingIdentifier ? false : identifier
     } catch (e) {
         console.error("! Could not add account:", e)
     }
 }
 
-function removeAccount(identifier) {
+export function removeAccount(identifier: string) {
     try {
         let switched = false
         delete storedAccounts[identifier]
 
-        const file = path.join(appPath, "tmp", "accounts.json")
-        const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
+        const accountsJson = readAccountsJson()
 
         if (currentAccountKey === identifier) {
             currentAccountKey = Object.keys(storedAccounts)[0]
@@ -106,21 +115,20 @@ function removeAccount(identifier) {
         }
 
         accountsJson.accounts = storedAccounts
-        accountsJson.currentSelectedAccount = currentAccountKey
+        accountsJson.currentSelectedAccount = currentAccountKey ?? undefined
 
-        fs.writeFileSync(file, JSON.stringify(accountsJson))
+        writeAccountsJson(accountsJson)
         return switched
     } catch (e) {
         console.error("! Could not remove account:", e)
     }
 }
 
-function setCurrentAccount(identifier) {
+export function setCurrentAccount(identifier: string) {
     try {
         currentAccountKey = identifier
 
-        const file = path.join(appPath, "tmp", "accounts.json")
-        const accountsJson = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : {}
+        const accountsJson = readAccountsJson()
         accountsJson.currentSelectedAccount = currentAccountKey
 
         fs.writeFileSync(file, JSON.stringify(accountsJson))
@@ -129,7 +137,7 @@ function setCurrentAccount(identifier) {
     }
 }
 
-async function mojangLogin(credentials, clientToken = null) {
+export async function mojangLogin(credentials: { username: string; password: string }, clientToken = null) {
     try {
         return axios
             .post(minecraftAuthBaseUrl + "/authenticate", {
@@ -171,7 +179,7 @@ async function mojangLogin(credentials, clientToken = null) {
     }
 }
 
-function validateToken(accessToken, clientToken) {
+export function validateToken(accessToken: string, clientToken: string) {
     try {
         return axios
             .post(minecraftAuthBaseUrl + "/validate", {
@@ -190,7 +198,7 @@ function validateToken(accessToken, clientToken) {
     }
 }
 
-async function refreshToken(identifier) {
+export async function refreshToken(identifier: string) {
     const account = storedAccounts[identifier]
     if (account.type !== "mojang") throw "Refreshing is currently only supported for Mojang accounts"
 
@@ -204,19 +212,22 @@ async function refreshToken(identifier) {
     return true
 }
 
-function setAppPath(inputAppPath) {
+export function setAppPath(inputAppPath: string) {
     appPath = inputAppPath
+    file = path.join(appPath, "tmp", "accounts.json")
 }
 
-module.exports = {
-    setAppPath,
-    addAccount,
-    getAccounts,
-    removeAccount,
-    getCurrentAccount,
-    getCurrentAccountIdentifier,
-    setCurrentAccount,
-    mojangLogin,
-    validateToken,
-    refreshToken,
+function readAccountsJson(): AccountsFile {
+    console.log("file =", file)
+    console.log("fs.existsSync =", fs.existsSync(file))
+    console.log("fs.readFileSync(file) =", fs.readFileSync(file))
+    console.log("fs.readFileSync(file).toString() =", fs.readFileSync(file).toString())
+    console.log("JSON.parse(fs.readFileSync(file).toString()) =", JSON.parse(fs.readFileSync(file).toString()))
+    return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file).toString()) : {}
+}
+
+function writeAccountsJson(object: AccountsFile) {
+    console.log("writing")
+    console.log("object =", object)
+    fs.writeFileSync(file, JSON.stringify(object))
 }

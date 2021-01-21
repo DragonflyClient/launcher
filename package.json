@@ -5,7 +5,8 @@
     "description": "The launcher for the Dragonfly minecraft client",
     "main": "build/backend/index.js",
     "scripts": {
-        "start": "tsc && electron .",
+        "start": "npm run compile && electron .",
+        "compile": "tsc",
         "package": "electron-forge package",
         "make": "electron-forge make",
         "build": "electron-builder build --win --l --mac --publish never",
