@@ -218,16 +218,9 @@ export function setAppPath(inputAppPath: string) {
 }
 
 function readAccountsJson(): AccountsFile {
-    console.log("file =", file)
-    console.log("fs.existsSync =", fs.existsSync(file))
-    console.log("fs.readFileSync(file) =", fs.readFileSync(file))
-    console.log("fs.readFileSync(file).toString() =", fs.readFileSync(file).toString())
-    console.log("JSON.parse(fs.readFileSync(file).toString()) =", JSON.parse(fs.readFileSync(file).toString()))
     return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file).toString()) : {}
 }
 
 function writeAccountsJson(object: AccountsFile) {
-    console.log("writing")
-    console.log("object =", object)
     fs.writeFileSync(file, JSON.stringify(object))
 }
