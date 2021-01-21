@@ -3,7 +3,7 @@
     "productName": "Dragonfly Launcher",
     "version": "0.4.0",
     "description": "The launcher for the Dragonfly minecraft client",
-    "main": "src/index.js",
+    "main": "src/backend/index.js",
     "scripts": {
         "start": "electron .",
         "package": "electron-forge package",
