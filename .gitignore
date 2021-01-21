@@ -96,20 +96,10 @@ tmp/
 
 # Deployment config
 electron-builder.yml
-/.idea/codeStyles/codeStyleConfig.xml
-/.idea/.gitignore
-/.idea/discord.xml
-/.idea/dragonfly-launcher.iml
-/.idea/git_toolbox_prj.xml
-/.idea/jsLibraryMappings.xml
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
-/.idea/deployment.xml
-/.idea/libraries/file_txt.xml
-
-/.vscode/settings.json
 
 # jre
 jre
+
+# IDE Configuration
+/.idea
+/.vscode/settings.json
