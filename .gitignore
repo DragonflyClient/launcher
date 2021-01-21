@@ -103,3 +103,7 @@ jre
 # IDE Configuration
 /.idea
 /.vscode/settings.json
+
+# TypeScript Compiler
+build/
+buildcache/
