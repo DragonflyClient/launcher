@@ -5,19 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dragonfly</title>
-    <link rel="stylesheet" href="../assets/css/home.css" />
-    <link rel="stylesheet" href="../assets/css/partials/titlebar.css" />
-    <link rel="stylesheet" href="../assets/css/partials/account-modal.css" />
-    <link rel="stylesheet" href="../assets/fonts/fonts.css">
+    <link rel="stylesheet" href="./home.css" />
+    <link rel="stylesheet" href="../../mixin/titlebar/titlebar.css" />
+    <link rel="stylesheet" href="../../mixin/account-modal/account-modal.css" />
+    <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 </head>
 
 <body style="height: 100vh !important;">
     <div class="titlebar">
         <div class="titlebar-button" id="min-btn">
-            <img width="15px" src="../assets/media/svg/minus-solid.svg" alt="Minimize" title="Minimize">
+            <img width="15px" src="../../assets/media/svg/minus-solid.svg" alt="Minimize" title="Minimize">
         </div>
         <div class="titlebar-button" id="close-btn">
-            <img width="15px" src="../assets/media/svg/times-solid.svg" alt="Close" title="Close">
+            <img width="15px" src="../../assets/media/svg/times-solid.svg" alt="Close" title="Close">
         </div>
     </div>
     <div id="page-wrapper">
@@ -50,17 +50,17 @@
             <div class="header">
                 <a href="https://ping.playdragonfly.net/" class="status">
                     <div class="container success">
-                        <img src="../assets/media/svg/green_tick.svg" />
+                        <img src="../../assets/media/svg/green_tick.svg" />
                         <span>Connected to Dragonfly</span>
                     </div>
                 </a>
                 <div class="settings">
-                    <img src="../assets/media/svg/settings.svg" alt="Settings" title="Settings">
+                    <img src="../../assets/media/svg/settings.svg" alt="Settings" title="Settings">
                 </div>
             </div>
             <div class="main">
                 <div id="edition-details">
-                    <img src="../assets/media/svg/Logo.svg" alt="Logo">
+                    <img src="../../assets/media/svg/Logo.svg" alt="Logo">
                     <h1 class="edition-title"></h1>
                     <p class="dragonfly-version edition-version"></p>
                     <p class="description edition-description"></p>
@@ -73,7 +73,7 @@
                         </div>
                         <div class="button minecraft-version__toggle">
                             <span class="selected-mc-version"></span>
-                            <img src="../assets/media/svg/dropdown-angle.svg" alt="Dropdown">
+                            <img src="../../assets/media/svg/dropdown-angle.svg" alt="Dropdown">
                         </div>
                     </div>
                     <div class="button launch-game" id="launch-game-button">
@@ -90,7 +90,7 @@
             <div id="account-modal-header">
                 Account Manager
                 <div id="account-modal-close">
-                    <img width="15px" src="../assets/media/svg/times-solid.svg" alt="Close" title="Close">
+                    <img width="15px" src="../../assets/media/svg/times-solid.svg" alt="Close" title="Close">
                 </div>
             </div>
             <div id="account-modal-content">
@@ -103,11 +103,11 @@
                     <div class="full-button collapsed">
                         <div class="text">Login to a new account</div>
                         <div class="left button-part">
-                            <img class="img-part" src="../assets/media/png/minecraft-logo.png" alt="">
+                            <img class="img-part" src="../../assets/media/png/minecraft-logo.png" alt="">
                             <a class="text-part">Mojang</a>
                         </div>
                         <div class="right button-part">
-                            <img class="img-part" src="../assets/media/svg/microsoft-logo.svg" alt="">
+                            <img class="img-part" src="../../assets/media/svg/microsoft-logo.svg" alt="">
                             <a class="text-part">Microsoft</a>
                         </div>
                     </div>
@@ -118,9 +118,9 @@
         </div>
     </div>
 
-    <script src="../assets/js/scripts/home.js"></script>
-    <script src="../assets/js/partials/titlebar.js"></script>
-    <script src="../assets/js/partials/account-modal.js"></script>
+    <script>require("./home.js")</script>
+    <script src="../../mixin/titlebar/titlebar.js"></script>
+    <script src="../../mixin/account-modal/account-modal.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
 </body>
 

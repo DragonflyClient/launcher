@@ -5,14 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading</title>
-    <link rel="stylesheet" href="../assets/css/loading.css">
-    <link rel="stylesheet" href="../assets/css/partials/auto-update.css" />
-    <link rel="stylesheet" href="../assets/fonts/fonts.css">
+    <link rel="stylesheet" href="./loading.css">
+    <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 </head>
 
 <body>
     <div id="loader">
-        <img width="150" class="loader__logo" src="../assets/media/svg/Logo.svg" />
+        <img width="150" class="loader__logo" src="../../assets/media/svg/Logo.svg"  alt="Logo"/>
         <div class="loader__text">
             <div class="progress container">
                 <span></span>
@@ -29,7 +28,7 @@
         <div id="updater-progress-border"></div>
     </div>
 
-    <script defer src="../assets/js/scripts/loading.js"></script>
+    <script>require("./loading.js")</script>
 </body>
 
 </html>

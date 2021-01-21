@@ -5,30 +5,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log in to your Dragonfly account</title>
-    <link rel="stylesheet" href="../assets/css/login.css" />
-    <link rel="stylesheet" href="../assets/css/partials/titlebar.css" />
-    <link rel="stylesheet" href="../assets/css/partials/auto-update.css" />
+    <link rel="stylesheet" href="./login.css" />
+    <link rel="stylesheet" href="../../mixin/titlebar/titlebar.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="../assets/fonts/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 </head>
 
 <body>
     <div class="titlebar">
         <div class="titlebar-button" id="min-btn">
-            <img width="15px" src="../assets/media/svg/minus-solid.svg" alt="Minimize" title="Minimize">
+            <img width="15px" src="../../assets/media/svg/minus-solid.svg" alt="Minimize" title="Minimize">
         </div>
         <div class="titlebar-button" id="close-btn">
-            <img width="15px" src="../assets/media/svg/times-solid.svg" alt="Close" title="Close">
+            <img width="15px" src="../../assets/media/svg/times-solid.svg" alt="Close" title="Close">
         </div>
     </div>
     <div id="bg-overlay"></div>
     <video autoplay muted loop id="bg-video">
-        <source src="../assets/media/video/D_Launcher_Background.mp4" type="video/mp4" />
+        <source src="../../assets/media/video/D_Launcher_Background.mp4" type="video/mp4" />
         Your browser does not support HTML5 videos.
     </video>
     <main>
         <header>
-            <img src="../assets/media/svg/Logo.svg" width="120" alt="Dragonfly" />
+            <img src="../../assets/media/svg/Logo.svg" width="120" alt="Dragonfly" />
             <h3>Login with your <span class="dragonfly-lettering"><a
                         href="https://playdragonfly.net/">Dragonfly</a></span> account</h3>
         </header>
@@ -51,17 +50,8 @@
                     href="https://playdragonfly.net/">Dragonfly</a></span> is not affiliated with Mojang AB</p>
     </main>
 
-    <!-- Show updater notification -->
-
-    <div id="updater-notification" class="hidden">
-        <div class="updater__border"></div>
-        <p id="updater__message"></p>
-        <button id="updater__close-button" class="updater__button" onClick="closeNotification()">Close</button>
-        <button id="updater__restart-button" onClick="restartApp()" class="hidden updater__button">Restart</button>
-    </div>
-
-    <script src="../assets/js/partials/titlebar.js"></script>
-    <script src="../assets/js/scripts/login.js"></script>
+    <script src="../../mixin/titlebar/titlebar.js"></script>
+    <script>require('./login')</script>
 </body>
 
 </html>
