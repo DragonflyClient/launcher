@@ -1,8 +1,10 @@
-const path = require("path")
-const app = require("electron").remote.app
+import path from "path"
+import electron from "electron"
+
+const app = electron.remote.app
 
 document.onkeydown = function(evt) {
-    if (global.developerMode) return
+    if (hasOwnProperty(global, "developerMode") && global.developerMode) return
     if (evt.ctrlKey && evt.shiftKey && evt.keyCode === 73) {
         console.log(
             "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
@@ -26,4 +28,9 @@ document.onkeydown = function(evt) {
     }
 
     if ((evt.ctrlKey && evt.key == "-") || (evt.ctrlKey && evt.key == "+")) evt.preventDefault()
+}
+
+function hasOwnProperty<X extends {}, Y extends PropertyKey>(obj: X, prop: Y):
+    obj is X & Record<Y, unknown> {
+    return obj.hasOwnProperty(prop)
 }
