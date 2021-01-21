@@ -13,6 +13,7 @@ const mkdirp = require("mkdirp")
 const getDirectoryName = require("path").dirname
 const os = require("os")
 const minecraft = require("./minecraft-auth");
+const { chunksToLinesAsync, chomp } = require('@rauschma/stringio');
 
 // the edition that is selected by the user
 let edition
@@ -411,43 +412,16 @@ class Launcher {
         setTimeout(this.finishCallback, 4000)
     }
 
-    enableLogging() {
-        const openWithGameOutput = this.openWithGameOutput
-        const parser = new xml2js.Parser()
-        const gameObject = this.gameObject
-        const parseMessage = (data, defaultLevel, defaultLogger) => {
-            if (!data || !data.toString()) return
-            const xml = data.toString()
+    async enableLogging() {
+        if (!this.openWithGameOutput) return
 
-            parser.parseString(xml, function(err, result) {
-                let message
-                if (result) {
-                    const event = result["log4j:Event"]
-                    const info = event["$"]
+        const xmlParser = new xml2js.Parser()
+        const logParser = new LogParser(xmlParser, this.gameObject)
 
-                    message = {
-                        level: info.level,
-                        logger: info.logger,
-                        thread: info.thread,
-                        timestamp: info.timestamp,
-                        message: event["log4j:Message"][0],
-                    }
-                } else {
-                    message = {
-                        level: defaultLevel,
-                        logger: defaultLogger,
-                        thread: "",
-                        timestamp: new Date().getTime(),
-                        message: xml,
-                    }
-                }
-                console.log(message.message)
-                openWithGameOutput && ipcRenderer.send("game-output-data", { message, pid: gameObject.pid })
-            })
-        }
-
-        this.gameProcess.stdout.on("data", data => parseMessage(data, "DEBUG", "STDOUT"))
-        this.gameProcess.stderr.on("data", data => parseMessage(data, "ERROR", "STDERR"))
+        // noinspection ES6MissingAwait
+        logParser.readStdout(this.gameProcess.stdout)
+        // noinspection ES6MissingAwait
+        logParser.readStderr(this.gameProcess.stderr)
     }
 
     handleGameClose() {
@@ -465,6 +439,70 @@ class Launcher {
 
             console.log(`> Game closed (${openGames.length} running)`)
         })
+    }
+}
+
+class LogParser {
+    constructor(xmlParser, gameObject) {
+        this.xmlParser = xmlParser
+        this.gameObject = gameObject
+    }
+
+    async readStdout(stream) {
+        for await (const line of chunksToLinesAsync(stream)) {
+            this.parseMessage(chomp(line), "DEBUG", "STDOUT")
+        }
+    }
+
+    async readStderr(stream) {
+        for await (const line of chunksToLinesAsync(stream)) {
+            this.parseMessage(chomp(line), "ERROR", "STDERR")
+        }
+    }
+
+    parseMessage(data, defaultLevel, defaultLogger) {
+        try {
+            if (!data || !data.toString()) return
+            if (this.collectLines(data.toString())) return
+
+            const { gameObject, xml } = this
+            console.log(xml)
+
+            this.xmlParser.parseString(xml, function(err, result) {
+                let message
+                if (result) {
+                    const event = result["log4j:Event"]
+                    const { level, logger, thread, timestamp } = event["$"]
+
+                    message = { level, logger, thread, timestamp, message: event["log4j:Message"][0], }
+                } else {
+                    message = {
+                        level: defaultLevel,
+                        logger: defaultLogger,
+                        thread: "",
+                        timestamp: new Date().getTime(),
+                        message: xml,
+                    }
+                }
+
+                ipcRenderer.send("game-output-data", { message, pid: gameObject.pid })
+            })
+        } catch (e) {
+        }
+    }
+
+    collectLines(string) {
+        if (string.indexOf("<log4j:Event") !== -1) {
+            this.xml = string
+            return true
+        } else if (string.indexOf("<log4j:Message>") !== -1) {
+            this.xml += string
+            return true
+        } else if (string.indexOf("</log4j:Event>") !== -1) {
+            this.xml += string
+        } else {
+            this.xml = string
+        }
     }
 }
 
