@@ -5,10 +5,10 @@ const fswin = require("fswin")
 const CryptoJS = require("crypto-js")
 const { autoUpdater } = require("electron-updater")
 
-const { rootPath, ensureDirectoryExistence } = require("./utilities/path.js")
-const { getDragonflyAccount, getDragonflyToken } = require("./utilities/dragonfly")
-const { windowIndex } = require("./utilities/browser-window")
-const { downloadEditions, downloadAnnouncements } = require("./utilities/downloader.js")
+const { rootPath, ensureDirectoryExistence } = require("../shared/path")
+const { getDragonflyAccount, getDragonflyToken } = require("../frontend/util/dragonfly")
+const { windowIndex } = require("./util/browser-window")
+const { downloadEditions, downloadAnnouncements } = require("./util/downloader.js")
 
 const currentAppPath = rootPath(app.getAppPath())
 console.log("CAP", currentAppPath)
@@ -16,7 +16,7 @@ console.log("CAP", currentAppPath)
 ensureDirectoryExistence(currentAppPath + "\\tmp", true, "dir")
 
 // Require discord rpc
-const discordRPC = require("./assets/js/discord")
+const discordRPC = require("./util/discord")
 const { allowedNodeEnvironmentFlags } = require("process")
 
 if (require("electron-squirrel-startup")) {
@@ -57,7 +57,7 @@ const mainWindowSettings = {
     webPreferences: globalWebPreferences,
 }
 
-function createWindow(name, fileName, settings, rpc) {
+async function createWindow(name, fileName, settings, rpc) {
     console.log(`== Launching window "${name}" ==`)
     let w = new BrowserWindow(settings)
     let windowId = w.id
@@ -66,8 +66,7 @@ function createWindow(name, fileName, settings, rpc) {
         w.show()
         // if (name == "Login" && w) w.close()
     })
-
-    w.loadFile(path.join(__dirname, `sites/${fileName}.html`))
+    await w.loadFile(path.resolve(__dirname, '..', 'frontend', "sites", fileName, `${fileName}.html`))
 
     w.on("close", () => {
         openWindows.splice(windowIndex(windowId, openWindows), 1)
@@ -102,7 +101,7 @@ const createLoadingWindow = async () => {
     })
 
     console.log("> Loading page...")
-    await loadingWindow.loadFile(path.join(__dirname, "sites/loading.html"))
+    await loadingWindow.loadFile(path.join(__dirname, "..", "frontend", "sites", "loading", "loading.html"))
 
     loadingWindow.on("closed", e => {
         loadingWindow = null
@@ -115,7 +114,7 @@ const createLoadingWindow = async () => {
             .then(async update => {
                 console.log(`> Checked for updates (available: ${!!update})`)
                 console.log("Update value:", update)
-                if (!update || app.getVersion() == update?.updateInfo?.version) await continueLoadingWindow()
+                if (!update || app.getVersion() === update?.updateInfo?.version) await continueLoadingWindow()
             })
             .catch(async err => {
                 console.log(`Check for updates failed: ${err}`)
@@ -173,7 +172,7 @@ const createGameOutputWindow = async pid => {
     const windowId = gameOutputWindow.id
 
     outputWindows[pid] = gameOutputWindow
-    gameOutputWindow.loadFile(path.join(__dirname, "sites/game-output.html"))
+    gameOutputWindow.loadFile(path.join(__dirname, "..", "frontend", "sites", "game-output", "game-output.html"))
 
     gameOutputWindow.on("close", () => {
         openWindows.splice(windowIndex(windowId, openWindows), 1)

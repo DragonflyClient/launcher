@@ -1,18 +1,19 @@
 const { ipcRenderer, shell } = require("electron")
 const app = require("electron").remote.app
 const fs = require("fs")
-const { setEdition, startGame } = require("../assets/js/launch.js")
-const { rootPath } = require("../utilities/path.js")
+const path = require("path")
+const { setEdition, startGame } = require("../../util/launch")
+const { rootPath } = require("../../../shared/path")
 
-const minecraft = require("../utilities/minecraft.js")
+const minecraft = require("../../util/minecraft-auth")
 const {
     getDragonflyToken,
     getDragonflyAccount,
     currentEditionVersion,
     writeEditionVersion,
-} = require("../utilities/dragonfly.js")
-require("../assets/js/devtools")
-require("../utilities/developer")
+} = require("../../util/dragonfly")
+require("../../util/devtools")
+require("../../../backend/util/developer")
 
 // Receive current app version
 ipcRenderer.send("app_version")
@@ -82,7 +83,9 @@ const externalLinks = document.querySelectorAll('a[href^="http"]')
 Array.from(externalLinks).forEach(function (link) {
     link.addEventListener("click", e => {
         e.preventDefault()
-        shell.openExternal(link.getAttribute("href"))
+        shell.openExternal(link.getAttribute("href")).then(r => {
+            console.log("> [Shell] Opened external link")
+        })
     })
 })
 
@@ -95,12 +98,13 @@ const editionDetails = readEditionDetails()
 function readEditionDetails() {
     try {
         const workingDir = rootPath(app.getAppPath())
-        return JSON.parse(fs.readFileSync(workingDir + "\\tmp\\editions.json"))
+        const editionPath = path.resolve(workingDir, "tmp", "editions.json")
+        return JSON.parse(fs.readFileSync(editionPath))
     } catch (error) {
         const main = document.querySelector(".main")
         main.innerHTML = `
             <div class="error-container">
-                <img src="../assets/media/error.svg" />
+                <img src="../../assets/media/svg/error.svg"  alt="Error"/>
                 <h1>Whoops...</h1>
                 <p>An error occurred while trying to download necessary details!</p><br />
                 <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>
@@ -200,7 +204,7 @@ launchButton.addEventListener("click", async () => {
         await startGame(
             message => {
                 process.innerText = message
-                process.style.opacity = 1
+                process.style.opacity = "1"
             },
             () => {
                 process.dataset.progress = "finished"
@@ -238,12 +242,13 @@ const announcements = readAnnouncementDetails()
 function readAnnouncementDetails() {
     try {
         const workingDir = rootPath(app.getAppPath())
-        return JSON.parse(fs.readFileSync(workingDir + "\\tmp\\announcements.json"))
+        const editionPath = path.resolve(workingDir, "tmp", "announcements.json")
+        return JSON.parse(fs.readFileSync(editionPath))
     } catch (error) {
         const main = document.querySelector(".main")
         main.innerHTML = `
             <div class="error-container">
-                <img src="../assets/media/error.svg" />
+                <img src="../../assets/media/svg/error.svg" />
                 <h1>Whoops...</h1>
                 <p>An error occurred while trying to download necessary details!</p><br />
                 <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>
@@ -260,7 +265,7 @@ function innerAnnouncements() {
     announcements.forEach(announcement => {
         announcementContainer.innerHTML += `
             <div class="article">
-                ${announcement.image ? `<img class="media" src="${announcement.image}"/>` : ""}
+                ${announcement.image ? `<img class="media" src="${announcement.image}" alt="Announcement"/>` : ""}
                 <div class="text-wrapper">
                     <div class="line"></div>
                     <h1>${announcement.title}</h1>
@@ -275,3 +280,5 @@ function innerAnnouncements() {
 }
 
 innerAnnouncements()
+
+module.exports.insertAccountData = insertAccountData

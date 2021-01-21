@@ -1,6 +1,6 @@
 const { exec } = require("child_process")
-const { ensureDirectoryExistence, rootPath } = require("../../utilities/path.js")
-const app = require("electron").remote.app
+const { ensureDirectoryExistence, rootPath } = require("../../shared/path")
+const { ipcRenderer, remote: { app } } = require("electron")
 const fs = require("fs")
 const fse = require("fs-extra")
 const Swal = require("sweetalert2")
@@ -12,6 +12,7 @@ const crypto = require("crypto")
 const mkdirp = require("mkdirp")
 const getDirectoryName = require("path").dirname
 const os = require("os")
+const minecraft = require("./minecraft-auth");
 
 // the edition that is selected by the user
 let edition

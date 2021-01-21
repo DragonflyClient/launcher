@@ -4,7 +4,7 @@ const shell = require("electron").shell
 
 const Swal = require("sweetalert2")
 
-const { dragonflyAccountLogin } = require("../utilities/dragonfly.js")
+const { dragonflyAccountLogin } = require("../../util/dragonfly")
 
 const loginForm = document.getElementById("login-form")
 

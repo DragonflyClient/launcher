@@ -1,15 +1,14 @@
-const microsoftAuth = require("../utilities/ms-auth.js")
-const minecraftAuth = require("../utilities/minecraft.js")
+const microsoftAuth = require("../../util/microsoft-auth")
+const minecraftAuth = require("../../util/minecraft-auth")
 
 const button = document.getElementById("account-modal__button")
-
-const text = document.getElementsByClassName("text")[0]
 const full = document.getElementsByClassName("full-button")[0]
 
 const left = document.getElementsByClassName("left")[0]
 const right = document.getElementsByClassName("right")[0]
 
 const footer = document.getElementById("account-modal-footer")
+const { insertAccountData } = require("../../sites/home/home")
 
 const LOADING_ANIMATION = `
     <div class="sk-chase account-modal-animation">
@@ -45,14 +44,14 @@ function resetButton() {
 
     left.removeEventListener("click", addMinecraftAccount)
     left.innerHTML = `
-        <img class="img-part" src="../assets/media/png/minecraft-logo.png" alt="">
+        <img class="img-part" src="../../assets/media/png/minecraft-logo.png" alt="">
         <a class="text-part">Mojang</a>
     `
 
     right.removeEventListener("click", addMicrosoftAccount)
     right.setAttribute("disabled", "false")
     right.innerHTML = `
-        <img class="img-part" src="../assets/media/svg/microsoft-logo.svg" alt="">
+        <img class="img-part" src="../../assets/media/svg/microsoft-logo.svg" alt="">
         <a class="text-part">Microsoft</a>
     `
 }
@@ -196,7 +195,7 @@ function loadAccounts() {
     const current = minecraftAuth.getCurrentAccountIdentifier()
     const accounts = minecraftAuth.getAccounts()
 
-    if (Object.keys(accounts).length == 0) {
+    if (Object.keys(accounts).length === 0) {
         toggleAccountManagerStatus(true)
         return
     }
@@ -225,6 +224,7 @@ function loadAccounts() {
     )
 }
 
+const accountWrapper = document.querySelector(".account")
 function showAccountManagerModal() {
     loadAccounts()
 
@@ -240,6 +240,7 @@ function showAccountManagerModal() {
 
 function hideAccountModal() {
     if (isDirty) {
+        // noinspection JSIgnoredPromiseFromCall
         insertAccountData()
         isDirty = false
     } else {
@@ -306,7 +307,7 @@ async function deleteAccount(event, accountId) {
             element.remove()
         }
     }
-    if (document.getElementsByClassName("account-modal__account").length == 0) {
+    if (document.getElementsByClassName("account-modal__account").length === 0) {
         toggleAccountManagerStatus(true)
     }
     selectCurrentAccount(minecraftAuth.getCurrentAccountIdentifier())
@@ -323,7 +324,7 @@ function toggleAccountManagerStatus(empty = true) {
     if (empty) {
         document.getElementById("account-modal__accounts-header").textContent = "No accounts available."
         document.getElementById("account-modal__accounts").innerHTML = `
-            <img class="accounts-empty-img" src="../assets/media/svg/empty.svg" />
+            <img class="accounts-empty-img" src="../../assets/media/svg/empty.svg"  alt="Nothing here"/>
         `
     } else {
         document.getElementById("account-modal__accounts").innerHTML = ""
@@ -353,7 +354,7 @@ function createHtmlForAccount(isCurrent, identifier, account) {
                     <span class="account-modal__name">${account.profile.username}</span>
                     <span class="account-modal__uuid">${account.profile.uuid}</span>
                 </div>
-                <img class="account-modal__logout" src="../assets/media/svg/logout.svg" alt="logout">
+                <img class="account-modal__logout" src="../../assets/media/svg/logout.svg" alt="logout">
             </div>
         `
 }

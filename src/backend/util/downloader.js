@@ -1,7 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const app = require('electron').app;
-const { rootPath, ensureDirectoryExistence } = require('../utilities/path');
+const { rootPath, ensureDirectoryExistence } = require('../../shared/path');
 
 const workingDir = rootPath(app.getAppPath());
 
