@@ -1,7 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const fswin = require('fswin');
-var CryptoJS = require('crypto-js');
 
 module.exports.rootPath = function (appPath) {
     if (appPath.toLowerCase().indexOf('app.asar') > -1) {
