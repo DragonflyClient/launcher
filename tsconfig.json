@@ -3,6 +3,7 @@
         "module": "CommonJS",
         "target": "ES2020",
         "moduleResolution": "Node",
+        "esModuleInterop": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
         "removeComments": true,
