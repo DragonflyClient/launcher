@@ -1,79 +1,59 @@
-const { exec } = require("child_process")
-const { ensureDirectoryExistence, rootPath } = require("../../shared/path")
-const { ipcRenderer, remote: { app } } = require("electron")
-const fs = require("fs")
-const fse = require("fs-extra")
-const Swal = require("sweetalert2")
-const AdmZip = require("adm-zip")
-const xml2js = require("xml2js")
-const axios = require("axios")
-const request = require("request")
-const crypto = require("crypto")
-const mkdirp = require("mkdirp")
-const getDirectoryName = require("path").dirname
-const os = require("os")
-const minecraft = require("./minecraft-auth");
-const { chunksToLinesAsync, chomp } = require('@rauschma/stringio');
+import { ChildProcess, exec } from "child_process"
+import os from "os"
+import fs from "fs"
+// @ts-ignore
+import AdmZip from "adm-zip"
+// @ts-ignore
+import request from "request"
+// @ts-ignore
+import mkdirp from "mkdirp"
+// @ts-ignore
+import xml2js from "xml2js"
+import Swal from "sweetalert2"
+import axios from "axios"
+import crypto from "crypto"
+import path from "path"
+import fse from "fs-extra"
+import { ipcRenderer, remote } from "electron"
+const { app } = remote
 
-// the edition that is selected by the user
-let edition
+import LogParser from "./log-parser"
+import GlobalContext from "../../../shared/global-context"
+import { MinecraftAuth } from "../minecraft-auth"
+import { openGames } from "./launch"
+import { ensureDirectoryExistence, rootPath } from "../../../shared/path"
+import GameObject from "./game-object"
+import Edition from "../edition"
+import VersionConfiguration from "./version-configuration"
 
-// array of running games
-let openGames = []
+export default class GameLauncher {
+    private readonly targetVersion: string
+    private readonly targetOptifineVersion: string
+    private readonly targetOptifineName: string
 
-function setEdition(editionIn) {
-    edition = editionIn
-    console.log("* User changed to edition " + edition.title + " for Minecraft " + edition.minecraftVersion)
-}
+    private javaRuntime: string
+    private javaExe: string
+    private minecraftDir: string
+    private versionDir: string
+    private optifineVersionDir: string
+    private jsonFile: string
+    private jarFile: string
+    private uuid: string
+    private name: string
+    private accessToken: string
+    private json: VersionConfiguration
+    private classPathArgument: string
+    private assetsIndex: string
+    private assetsDir: string
+    private logFile: string
+    private gameProcess: ChildProcess
+    private openGameOutput: boolean
+    private gameObject: GameObject
 
-async function startGame(callback, finishCallback) {
-    const launcher = new Launcher(edition, finishCallback)
-
-    callback("Downloading Java")
-    await launcher.downloadJava()
-
-    callback("Preparing version")
-    launcher.prepareVersion()
-
-    callback("Setting up account")
-    await launcher.setupAccount()
-
-    callback("Downloading Dragonfly")
-    await launcher.downloadDragonfly()
-
-    callback("Parsing JSON configuration")
-    launcher.parseJsonConfiguration()
-
-    callback("Loading libraries")
-    launcher.loadLibraries()
-
-    callback("Loading native libraries")
-    launcher.loadNatives()
-
-    callback("Loading assets")
-    launcher.loadAssets()
-
-    callback("Loading log configuration")
-    launcher.loadLogConfiguration()
-
-    callback("Compiling mapping indices")
-    await launcher.compileMappings()
-
-    callback("Launching game")
-    launcher.executeCommand()
-
-    launcher.handleGameStart()
-    launcher.handleGameClose()
-    launcher.enableLogging()
-}
-
-class Launcher {
-    constructor(targetEdition, finishCallback) {
+    constructor(private readonly targetEdition: Edition, private readonly finishCallback: () => void) {
         this.targetVersion = targetEdition.minecraftVersion
         this.targetOptifineVersion = targetEdition.optifineVersion
         this.targetOptifineName = `${targetEdition.minecraftVersion}-OptiFine_${targetEdition.optifineVersion}`
-        this.targetEdition = targetEdition
-        this.finishCallback = finishCallback
     }
 
     async downloadJava() {
@@ -162,7 +142,7 @@ class Launcher {
     }
 
     async downloadDragonfly() {
-        if (global.developerMode) {
+        if ((global as unknown as GlobalContext).developerMode) {
             return console.log("> Skipping Dragonfly download due to developer mode being enabled")
         }
 
@@ -190,7 +170,7 @@ class Launcher {
 
                 console.log("    Downloading from " + url + "...")
 
-                mkdirp.sync(getDirectoryName(local))
+                mkdirp.sync(path.dirname(local))
                 await this.downloadFile(local, url)
 
                 console.log("    Finished")
@@ -200,17 +180,17 @@ class Launcher {
         }
     }
 
-    downloadFile(local, url) {
+    downloadFile(local: string, url: string) {
         return new Promise((resolve, reject) => {
             const writer = fs.createWriteStream(local)
             request(url).pipe(writer)
-            writer.on("finish", () => resolve())
+            writer.on("finish", () => resolve(undefined))
             writer.on("error", err => reject(err))
         })
     }
 
     async setupAccount() {
-        function throwError() {
+        function throwError(): never {
             Swal.fire({
                 title: `Unauthenticated`,
                 text: `Please make sure to login with a Minecraft or Mojang account before starting the game.`,
@@ -220,13 +200,14 @@ class Launcher {
             throw "unauthenticated"
         }
 
-        // take first account from launcher_accounts.json
-        let account = minecraft.getCurrentAccount() || throwError()
-        const accountIdentifier = minecraft.getCurrentAccountIdentifier()
+        let account = MinecraftAuth.getCurrentAccount()
+        if (account == null) throwError()
+
+        const accountIdentifier = MinecraftAuth.getCurrentAccountIdentifier()!!
 
         try {
-            await minecraft.refreshToken(accountIdentifier)
-            account = minecraft.getCurrentAccount()
+            await MinecraftAuth.refreshToken(accountIdentifier)
+            account = MinecraftAuth.getCurrentAccount()!!
             console.log(`> Refreshed account token of ${account.profile.username}`)
         } catch (error) {
             console.log(`! Could not refresh account token`)
@@ -240,7 +221,7 @@ class Launcher {
     }
 
     parseJsonConfiguration() {
-        this.json = JSON.parse(fs.readFileSync(this.jsonFile))
+        this.json = JSON.parse(fs.readFileSync(this.jsonFile).toString())
     }
 
     loadLibraries() {
@@ -265,8 +246,8 @@ class Launcher {
     loadNatives() {
         // parse natives from JSON
         const nativesFromJson = this.json.libraries
-            .filter(e => e.downloads.classifiers)
-            .map(e => e.downloads.classifiers["natives-windows"])
+            .filter(e => e.downloads?.classifiers?.["natives-windows"])
+            .map(e => e.downloads!!.classifiers!!["natives-windows"])
         const extractionDir = `${this.minecraftDir}\\dragonfly\\tmp\\natives_extract`
         const targetDir = `${this.minecraftDir}\\dragonfly\\natives-${this.targetVersion}`
 
@@ -307,12 +288,12 @@ class Launcher {
         this.deleteDirectory(extractionDir)
     }
 
-    recreateDirectory(dir) {
+    recreateDirectory(dir: string) {
         this.deleteDirectory(dir)
         fs.mkdirSync(dir, { recursive: true })
     }
 
-    deleteDirectory(dir) {
+    deleteDirectory(dir: string) {
         if (fs.existsSync(dir)) {
             fs.rmdirSync(dir, { recursive: true })
         }
@@ -320,10 +301,9 @@ class Launcher {
 
     loadAssets() {
         this.assetsIndex = this.json.assets
-        this.assetsDir =
-            this.assetsIndex !== "legacy"
-                ? `${this.minecraftDir}\\assets`
-                : `${this.minecraftDir}\\assets\\virtual\\legacy`
+        this.assetsDir = this.assetsIndex !== "legacy"
+            ? `${this.minecraftDir}\\assets`
+            : `${this.minecraftDir}\\assets\\virtual\\legacy`
         console.log(`> Assets index: ${this.assetsIndex}`)
         console.log(`> Assets directory: ${this.assetsDir}`)
     }
@@ -346,9 +326,9 @@ class Launcher {
                 },
             )
 
-            process.stdout.on("data", data => console.log(data))
-            process.stderr.on("data", data => console.error(data))
-            process.on("close", () => resolve())
+            process.stdout!!.on("data", data => console.log(data))
+            process.stderr!!.on("data", data => console.error(data))
+            process.on("close", () => resolve(undefined))
         })
     }
 
@@ -382,7 +362,7 @@ class Launcher {
         this.gameProcess = exec(command, { cwd: this.minecraftDir })
     }
 
-    buildCommand(jvmArgs, programArgs, mainClass) {
+    buildCommand(jvmArgs: string[], programArgs: { [key: string]: string }, mainClass: string) {
         let command = `"${this.javaExe}"`
         command += " "
         command += jvmArgs.join(" ")
@@ -394,7 +374,7 @@ class Launcher {
     }
 
     handleGameStart() {
-        this.openWithGameOutput = document.getElementById("open-game-output")?.checked ?? true
+        this.openGameOutput = (document.getElementById("open-game-output") as HTMLInputElement)?.checked ?? true
 
         this.gameObject = {
             gameVersion: this.targetVersion,
@@ -406,31 +386,31 @@ class Launcher {
         console.log("> Open games: ", openGames)
         console.log("> Game object: ", this.gameObject)
         ipcRenderer.send("open-game", { openGames: openGames, gameObject: this.gameObject })
-        if (this.openWithGameOutput) ipcRenderer.send("open-game-output", this.gameObject)
+        if (this.openGameOutput) ipcRenderer.send("open-game-output", this.gameObject)
 
         console.log(`> Game startup (${openGames.length} running)`)
         setTimeout(this.finishCallback, 4000)
     }
 
     async enableLogging() {
-        if (!this.openWithGameOutput) return
+        if (!this.openGameOutput) return
 
         const xmlParser = new xml2js.Parser()
         const logParser = new LogParser(xmlParser, this.gameObject)
 
         // noinspection ES6MissingAwait
-        logParser.readStdout(this.gameProcess.stdout)
+        logParser.readStdout(this.gameProcess.stdout!!)
         // noinspection ES6MissingAwait
-        logParser.readStderr(this.gameProcess.stderr)
+        logParser.readStderr(this.gameProcess.stderr!!)
     }
 
     handleGameClose() {
-        this.closeGameOutput = document.getElementById("close-game-output")?.checked ?? false
-        const closeGameOutput = this.closeGameOutput
+        const closeGameOutput = (document.getElementById("close-game-output") as HTMLInputElement)?.checked ?? false
         const command = this.gameProcess
+
         command.on("close", () => {
-            const closedGameObject = openGames.find(game => game.pid === command.pid)
-            openGames = openGames.filter(game => game.pid !== command.pid)
+            const closedGameObject = openGames.find(game => game.pid === command.pid)!!
+            openGames.splice(openGames.indexOf(closedGameObject), 1)
             ipcRenderer.send("game-closed", {
                 openGames: openGames,
                 closedGameObject: closedGameObject,
@@ -441,70 +421,3 @@ class Launcher {
         })
     }
 }
-
-class LogParser {
-    constructor(xmlParser, gameObject) {
-        this.xmlParser = xmlParser
-        this.gameObject = gameObject
-    }
-
-    async readStdout(stream) {
-        for await (const line of chunksToLinesAsync(stream)) {
-            this.parseMessage(chomp(line), "DEBUG", "STDOUT")
-        }
-    }
-
-    async readStderr(stream) {
-        for await (const line of chunksToLinesAsync(stream)) {
-            this.parseMessage(chomp(line), "ERROR", "STDERR")
-        }
-    }
-
-    parseMessage(data, defaultLevel, defaultLogger) {
-        try {
-            if (!data || !data.toString()) return
-            if (this.collectLines(data.toString())) return
-
-            const { gameObject, xml } = this
-            console.log(xml)
-
-            this.xmlParser.parseString(xml, function(err, result) {
-                let message
-                if (result) {
-                    const event = result["log4j:Event"]
-                    const { level, logger, thread, timestamp } = event["$"]
-
-                    message = { level, logger, thread, timestamp, message: event["log4j:Message"][0], }
-                } else {
-                    message = {
-                        level: defaultLevel,
-                        logger: defaultLogger,
-                        thread: "",
-                        timestamp: new Date().getTime(),
-                        message: xml,
-                    }
-                }
-
-                ipcRenderer.send("game-output-data", { message, pid: gameObject.pid })
-            })
-        } catch (e) {
-        }
-    }
-
-    collectLines(string) {
-        if (string.indexOf("<log4j:Event") !== -1) {
-            this.xml = string
-            return true
-        } else if (string.indexOf("<log4j:Message>") !== -1) {
-            this.xml += string
-            return true
-        } else if (string.indexOf("</log4j:Event>") !== -1) {
-            this.xml += string
-        } else {
-            this.xml = string
-        }
-    }
-}
-
-module.exports.setEdition = setEdition
-module.exports.startGame = startGame

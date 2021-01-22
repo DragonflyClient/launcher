@@ -2,10 +2,10 @@ const { ipcRenderer, shell } = require("electron")
 const app = require("electron").remote.app
 const fs = require("fs")
 const path = require("path")
-const { setEdition, startGame } = require("../../util/launch")
+const { setEdition, startGame } = require("../../util/launch/launch")
 const { rootPath } = require("../../../shared/path")
 
-const minecraft = require("../../util/minecraft-auth")
+const { MinecraftAuth } = require("../../util/minecraft-auth")
 const {
     getDragonflyToken,
     getDragonflyAccount,
@@ -24,7 +24,7 @@ ipcRenderer.on("app_version", (event, arg) => {
 
 const cwd = rootPath(app.getAppPath())
 const dragonflyToken = getDragonflyToken(cwd)
-minecraft.setAppPath(cwd)
+MinecraftAuth.setAppPath(cwd)
 
 const dragonflyNameEl = document.querySelector(".account-name__dragonfly")
 const minecraftNameEl = document.querySelector(".account-name__minecraft")
@@ -38,7 +38,7 @@ if (!dragonflyToken) {
 
 async function insertAccountData() {
     const dragonflyAccount = await getDragonflyAccount(dragonflyToken)
-    const minecraftAccount = minecraft.getCurrentAccount()
+    const minecraftAccount = MinecraftAuth.getCurrentAccount()
 
     await innerMinecraftAccountDetails(minecraftAccount)
     innerDragonflyAccountDetails(dragonflyAccount)
@@ -49,7 +49,7 @@ async function insertAccountData() {
 insertAccountData()
 
 async function innerMinecraftAccountDetails(account) {
-    if (!account || !(await minecraft.validateToken(account.accessToken, account.clientToken))) {
+    if (!account || !(await MinecraftAuth.validateToken(account.accessToken, account.clientToken))) {
         account = null
     }
 
