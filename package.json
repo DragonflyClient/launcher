@@ -19,17 +19,20 @@
         "extraResources": [
             "./extraResources"
         ],
+        "files": [
+            "./build/**/*"
+        ],
         "productName": "Dragonfly Launcher",
         "appId": "net.playdragonfly.Launcher",
         "win": {
-            "icon": "src/assets/media/png/Logo.png",
+            "icon": "build/frontend/assets/media/png/Logo.png",
             "target": [
                 "nsis"
             ]
         },
         "nsis": {
-            "installerIcon": "src/assets/media/ico/Logo.ico",
-            "uninstallerIcon": "src/assets/media/ico/Logo.ico",
+            "installerIcon": "build/frontend/assets/media/ico/Logo.ico",
+            "uninstallerIcon": "build/frontend/assets/media/ico/Logo.ico",
             "uninstallDisplayName": "Dragonfly Launcher",
             "license": "license.txt",
             "oneClick": false,
