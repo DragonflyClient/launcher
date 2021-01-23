@@ -248,7 +248,7 @@ function readAnnouncementDetails() {
         const main = document.querySelector(".main")
         main.innerHTML = `
             <div class="error-container">
-                <img src="../../assets/media/svg/error.svg" />
+                <img src="../../assets/media/svg/error.svg"  alt="Error"/>
                 <h1>Whoops...</h1>
                 <p>An error occurred while trying to download necessary details!</p><br />
                 <p>Please make sure you have a working internet connection and restart the Dragonfly launcher.</p>

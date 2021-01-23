@@ -83,8 +83,7 @@ export default class GameLauncher {
             if (fs.existsSync(this.javaExe)) {
                 return console.log("> Java is installed")
             }
-        } catch (e) {
-        }
+        } catch (e) {}
 
         console.log("> Download Java from: " + url)
 
@@ -127,9 +126,10 @@ export default class GameLauncher {
             console.log(targetOptifineVersion)
             Swal.fire({
                 title: `Cannot launch ${targetVersion}!`,
-                html: `Please make sure to download and run Minecraft ${targetVersion} from the Minecraft Launcher first. `
-                    + `Additionally OptiFine ${targetOptifineVersion} must be installed which can be downloaded on `
-                    + `<a href="https://www.optifine.net">optifine.net</a>.`,
+                html:
+                    `Please make sure to download and run Minecraft ${targetVersion} from the Minecraft Launcher first. ` +
+                    `Additionally OptiFine ${targetOptifineVersion} must be installed which can be downloaded on ` +
+                    `<a href="https://www.optifine.net">optifine.net</a>.`,
                 // TODO: Open link externally
                 icon: "error",
                 confirmButtonText: "Okay",
@@ -142,7 +142,7 @@ export default class GameLauncher {
     }
 
     async downloadDragonfly() {
-        if ((global as unknown as GlobalContext).developerMode) {
+        if (((global as unknown) as GlobalContext).developerMode) {
             return console.log("> Skipping Dragonfly download due to developer mode being enabled")
         }
 
@@ -165,8 +165,7 @@ export default class GameLauncher {
                     if (localHash === checksum) {
                         continue
                     }
-                } catch (e) {
-                }
+                } catch (e) {}
 
                 console.log("    Downloading from " + url + "...")
 
@@ -301,9 +300,10 @@ export default class GameLauncher {
 
     loadAssets() {
         this.assetsIndex = this.json.assets
-        this.assetsDir = this.assetsIndex !== "legacy"
-            ? `${this.minecraftDir}\\assets`
-            : `${this.minecraftDir}\\assets\\virtual\\legacy`
+        this.assetsDir =
+            this.assetsIndex !== "legacy"
+                ? `${this.minecraftDir}\\assets`
+                : `${this.minecraftDir}\\assets\\virtual\\legacy`
         console.log(`> Assets index: ${this.assetsIndex}`)
         console.log(`> Assets directory: ${this.assetsDir}`)
     }
@@ -315,15 +315,15 @@ export default class GameLauncher {
 
     compileMappings() {
         console.log("> Compiling mappings")
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const process = exec(
                 `"${this.javaExe}" -jar dragonfly\\bin\\mapping-index-compiler.jar ` +
-                `--version ${this.targetVersion} ` +
-                `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
-                `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
+                    `--version ${this.targetVersion} ` +
+                    `--temp-dir "dragonfly\\tmp\\mappings-index-compiler-${this.targetVersion}" ` +
+                    `--destination-dir "dragonfly\\mappings\\${this.targetVersion}"`,
                 {
                     cwd: this.minecraftDir,
-                },
+                }
             )
 
             process.stdout!!.on("data", data => console.log(data))
@@ -369,7 +369,9 @@ export default class GameLauncher {
         command += " "
         command += mainClass
         command += " "
-        command += Object.keys(programArgs).map(key => `--${key} ${programArgs[key]}`).join(" ")
+        command += Object.keys(programArgs)
+            .map(key => `--${key} ${programArgs[key]}`)
+            .join(" ")
         return command
     }
 
