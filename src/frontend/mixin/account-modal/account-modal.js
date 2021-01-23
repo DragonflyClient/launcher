@@ -1,5 +1,5 @@
 const microsoftAuth = require("../../util/microsoft-auth")
-const minecraftAuth = require("../../util/minecraft-auth")
+const { MinecraftAuth } = require("../../util/minecraft-auth")
 
 const button = document.getElementById("account-modal__button")
 const full = document.getElementsByClassName("full-button")[0]
@@ -170,30 +170,28 @@ function submitMojangForm(event) {
     const password = formData.get("password")
 
     setTimeout(() => {
-        minecraftAuth
-            .mojangLogin({
-                username: email,
-                password,
-            })
-            .then(response => {
-                if (response.error) {
-                    formElement.onsubmit = submitMojangForm
-                    infoElement.innerHTML = "⛔ Invalid credentials"
-                    passwordElement.value = ""
+        MinecraftAuth.mojangLogin({
+            username: email,
+            password,
+        }).then(response => {
+            if (response.error) {
+                formElement.onsubmit = submitMojangForm
+                infoElement.innerHTML = "⛔ Invalid credentials"
+                passwordElement.value = ""
 
-                    submitButton.removeAttribute("disabled")
-                    submitButton.innerText = "Login"
-                } else {
-                    insertAccount(response)
-                }
-            })
+                submitButton.removeAttribute("disabled")
+                submitButton.innerText = "Login"
+            } else {
+                insertAccount(response)
+            }
+        })
     }, 500)
 }
 
 function loadAccounts() {
     const targetElement = document.getElementById("account-modal__accounts")
-    const current = minecraftAuth.getCurrentAccountIdentifier()
-    const accounts = minecraftAuth.getAccounts()
+    const current = MinecraftAuth.getCurrentAccountIdentifier()
+    const accounts = MinecraftAuth.getAccounts()
 
     if (Object.keys(accounts).length === 0) {
         toggleAccountManagerStatus(true)
@@ -261,7 +259,7 @@ function hideAccountModal() {
 }
 
 function insertAccount(account) {
-    const identifier = minecraftAuth.addAccount(account)
+    const identifier = MinecraftAuth.addAccount(account)
 
     if (identifier === false) {
         showStatus(
@@ -292,16 +290,16 @@ function insertAccount(account) {
 async function switchAccount(event, accountId) {
     if (event.target.classList.contains("account-modal__logout")) return
 
-    minecraftAuth.setCurrentAccount(accountId)
+    MinecraftAuth.setCurrentAccount(accountId)
     try {
-        await minecraftAuth.refreshToken(accountId)
+        await MinecraftAuth.refreshToken(accountId)
     } catch (e) {}
     selectCurrentAccount(accountId)
     isDirty = true
 }
 
 async function deleteAccount(event, accountId) {
-    const switched = minecraftAuth.removeAccount(accountId)
+    const switched = MinecraftAuth.removeAccount(accountId)
     for (let element of document.getElementsByClassName("account-modal__account")) {
         if (element.getAttribute("data-account-id") === accountId) {
             element.remove()
@@ -310,9 +308,9 @@ async function deleteAccount(event, accountId) {
     if (document.getElementsByClassName("account-modal__account").length === 0) {
         toggleAccountManagerStatus(true)
     }
-    selectCurrentAccount(minecraftAuth.getCurrentAccountIdentifier())
+    selectCurrentAccount(MinecraftAuth.getCurrentAccountIdentifier())
     try {
-        await minecraftAuth.refreshToken(accountId)
+        await MinecraftAuth.refreshToken(accountId)
     } catch (e) {}
 
     if (switched) {
