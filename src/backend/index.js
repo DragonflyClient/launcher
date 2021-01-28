@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron")
+const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron")
 const path = require("path")
 const fs = require("fs")
 const fswin = require("fswin")
@@ -17,7 +17,6 @@ ensureDirectoryExistence(currentAppPath + "\\tmp", true, "dir")
 
 // Require discord rpc
 const discordRPC = require("./util/discord")
-const { allowedNodeEnvironmentFlags } = require("process")
 
 if (require("electron-squirrel-startup")) {
     app.quit()
@@ -66,7 +65,7 @@ async function createWindow(name, fileName, settings, rpc) {
         w.show()
         // if (name == "Login" && w) w.close()
     })
-    await w.loadFile(path.resolve(__dirname, '..', 'frontend', "sites", fileName, `${fileName}.html`))
+    await w.loadFile(path.resolve(__dirname, "..", "frontend", "sites", fileName, `${fileName}.html`))
 
     w.on("close", () => {
         openWindows.splice(windowIndex(windowId, openWindows), 1)
