@@ -22,6 +22,10 @@ if (require("electron-squirrel-startup")) {
     app.quit()
 }
 
+if (process.platform === "win32") {
+    app.setAppUserModelId(app.name)
+}
+
 let loadingWindow
 
 let loginWindow
